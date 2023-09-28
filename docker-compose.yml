@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+ vite_docker:
+    build: ./transcendence
+    container_name: vite_docker
+    entrypoint: /bin/sh
+    ports:
+      - 8000:8000
+    working_dir: /srv/app
+    volumes:
+      - type: bind
+        source: ./
+        target: /srv/app
+    restart: always
+    tty: true
