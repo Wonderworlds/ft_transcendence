@@ -1,15 +1,15 @@
 version: "3.8"
 services:
  vite_docker:
-    build: ./transcendence
+    image: node:bullseye
     container_name: vite_docker
-    entrypoint: /bin/sh
     ports:
-      - 8000:8000
-    working_dir: /srv/app
+      - 3000:3000
     volumes:
       - type: bind
-        source: ./
+        source: ./ft_transcendence
         target: /srv/app
     restart: always
+    working_dir: /srv/app/Pong
+    entrypoint: "npm run dev"
     tty: true
