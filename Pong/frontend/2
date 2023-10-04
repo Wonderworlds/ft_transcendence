@@ -1,0 +1,9 @@
+yarn run v1.22.19
+$ vite
+
+  VITE v4.4.10  ready in 167 ms
+
+  ➜  Local:   http://localhost:8000/
+  ➜  Network: http://172.19.0.3:8000/
+  ➜  press h to show help
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

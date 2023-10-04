@@ -7,6 +7,9 @@ import { UsersModule } from './users/users.module';
 import { Profile } from './typeorm/entities/Profile';
 import { Post } from './typeorm/entities/Post';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GatewayModule } from './gateway/gateway.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -24,8 +27,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 			synchronize: true
 		}),
 			inject: [ConfigService],
-  }), UsersModule],
+  }), UsersModule, GatewayModule, ThrottlerModule.forRoot([{
+	ttl: 10000,
+	limit: 2,
+  }])],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+	provide: APP_GUARD,
+	useClass: ThrottlerGuard,
+  }],
 })
 export class AppModule {}

@@ -9,13 +9,14 @@ services:
       - .env
     ports:
       - 3000:3000
+      - 8000:8000
     volumes:
       - type: bind
         source: ./Pong
         target: /srv/app
     restart: always
-    working_dir: /srv/app/backend
-    entrypoint: "yarn run start:dev"
+    working_dir: /srv/app/
+    entrypoint: "/bin/bash"
     tty: true
     networks:
       - transcendence
