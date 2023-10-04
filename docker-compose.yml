@@ -9,14 +9,14 @@ services:
       - .env
     ports:
       - 3000:3000
-      - 8000:8000
+      - 8080:8080
     volumes:
       - type: bind
         source: ./Pong
         target: /srv/app
     restart: always
     working_dir: /srv/app/
-    entrypoint: "/bin/bash"
+    entrypoint: /bin/bash init.bash
     tty: true
     networks:
       - transcendence
@@ -30,7 +30,6 @@ services:
       - 5432:5432
     env_file:
       - .env
-       
     volumes:
         - pgdata:/var/lib/postgresql
     networks:
@@ -43,6 +42,7 @@ volumes:
        type: none
        device: ./postgresql
        o: bind
+
 networks:
   transcendence:
     name: transcendence

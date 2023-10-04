@@ -8,6 +8,7 @@ type MessagePayload = {
 
 export const Websocket = () => {
 	const socket = useContext(WebsocketContext);
+	console.log(socket);
 	const [value, setValue] = useState('');
 	const [messages, setMessages] = useState<MessagePayload[]>([]);
 
