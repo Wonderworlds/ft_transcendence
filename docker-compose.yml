@@ -5,6 +5,8 @@ services:
     container_name: pong_container
     depends_on:
       - postgres_docker
+    env_file:
+      - .env
     ports:
       - 3000:3000
     volumes:
@@ -25,10 +27,9 @@ services:
     hostname: postgres
     ports:
       - 5432:5432
-    environment:
-        POSTGRES_DB: pong_db
-        POSTGRES_PASSWORD: mdp
-        POSTGRES_USER: postgres
+    env_file:
+      - .env
+       
     volumes:
         - pgdata:/var/lib/postgresql
     networks:
