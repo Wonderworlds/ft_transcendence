@@ -1,15 +1,47 @@
 version: "3.8"
 services:
- vite_docker:
+ pong_docker:
     image: node:bullseye
-    container_name: vite_docker
+    container_name: pong_container
+    depends_on:
+      - postgres_docker
     ports:
       - 3000:3000
     volumes:
       - type: bind
-        source: ./ft_transcendence
+        source: ./Pong
         target: /srv/app
     restart: always
-    working_dir: /srv/app/Pong
-    entrypoint: "npm run dev"
+    working_dir: /srv/app/backend
+    entrypoint: "yarn run start:dev"
     tty: true
+    networks:
+      - transcendence
+
+ postgres_docker:
+    image: postgres:latest
+    container_name: postgres_container
+    restart: always
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+        POSTGRES_DB: pong_db
+        POSTGRES_PASSWORD: mdp
+        POSTGRES_USER: postgres
+    volumes:
+        - pgdata:/var/lib/postgresql
+    networks:
+      - transcendence
+
+volumes:
+    pgdata:
+      driver: local
+      driver_opts:
+       type: none
+       device: ./postgresql
+       o: bind
+networks:
+  transcendence:
+    name: transcendence
+    driver: bridge
