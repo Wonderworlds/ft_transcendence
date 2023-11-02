@@ -3,7 +3,9 @@ import '../styles/components/_pongTitle.scss';
 
 const PongTitle = () => {
 	return (
-		<h1 className="pongTitle">PONG</h1>
+		<div className="pongTitle">
+			<h1>PONG</h1>
+		</div>
 	);
 };
 
