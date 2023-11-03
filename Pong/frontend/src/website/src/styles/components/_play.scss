@@ -1,0 +1,16 @@
+.playButton {
+	
+	display: flex;
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	
+	.playText {
+		font-weight: 400;
+		font-size: 1.5vw;
+		margin: auto;
+		text-align: center;
+		color: #802877;
+
+	}
+}

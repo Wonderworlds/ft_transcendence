@@ -1,6 +1,4 @@
 import React from 'react';
-import '../styles/components/_fortyTwo.scss';
-
 
 const FortyTwo = () => {
 	return (
