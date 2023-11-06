@@ -8,10 +8,23 @@ const NavBar = ({ pseudo }) => {
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">
-				<Link to="/"><PongTitle /></Link>
-				<Link to="/WaitingMatch"><Play /></Link>
-				<p>{pseudo}</p>
-				<Link to="/Chat"><Chat /></Link>
+				<div className= "navPongTitle">
+					<Link to="/Home"><PongTitle/></Link>
+				</div>
+				<div className= "navPlay">
+					<Link to="/WaitingMatch"><Play /></Link>
+				</div>
+				<div className="navRight">
+					<div className="navProfilePicture">
+						<Link to="/Parameters"><p>PP</p></Link>
+					</div>
+					<div className= "navPseudo">
+						<p>{pseudo}Benjamin</p>
+					</div>
+					<div className= "navChat">
+						<Link to="/Chat"><Chat /></Link>
+					</div>
+				</div>
 			</nav>
 		</header>
 	);

@@ -4,7 +4,7 @@ const Play = () => {
 	return (
 		<div>
 			<button className='playButton'>
-				<p className='playText'>Play</p>
+				<p className='playText'>PLAY</p>
 			</button>
 		</div>
 	);

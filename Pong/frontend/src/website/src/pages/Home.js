@@ -1,11 +1,16 @@
 import React from 'react';
 import NavBar from '../components/NavBar.js';
+import PlayBig from '../components/PlayBig.js';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
 	return (
-		<div className="logIn">
+		<div className="home">
 			<div className="navBar">
 				<NavBar />
+			</div>
+			<div className="divPlayMid">
+				<PlayBig />
 			</div>
 		</div>
 	);

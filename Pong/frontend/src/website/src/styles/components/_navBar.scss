@@ -1,9 +1,63 @@
 .headerNavBar {
+	display: fixed;
+	top: 0%;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.navBar {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding:  0 2rem;
-	background-color: #131212;
+	background-color: black;
+	color: white;
+	width: 100%;
+	margin-top: 1.5%;
 
 }
 
+
+.navPongTitle {
+	// background-color: grey;
+	display: fixed;
+	position: fixed;
+	left: 0.2%;
+	width: 25%;
+	font-size: 1vw;
+	align-items: center;
+	justify-content: center;
+}
+
+.navPlay {
+	// background-color: grey;
+	position: fixed;
+	left: 37.5%;
+	width: 25%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	
+}
+
+.navRight {
+	position: fixed;
+	right: 0%;
+	width: 25%;
+	display: flex;
+	align-items: center;
+	justify-content: right;
+
+	div {
+		position: relative;
+		right: 0%;
+		padding-right: 0.2%;
+		padding-left: 5%;
+	}
+
+	.navProfilePicture {
+
+		p {
+			color: white;
+		}
+	}
+}
