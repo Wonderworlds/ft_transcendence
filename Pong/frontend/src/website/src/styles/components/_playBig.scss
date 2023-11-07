@@ -10,8 +10,10 @@
 		font-size: 5.5vw;
 		margin: auto;
 		text-align: center;
-		color: #802877;
+		color: #ffffff;
 
+		&:hover {
+			color: #ff00aa99;
+		}
 	}
 }
-

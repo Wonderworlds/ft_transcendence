@@ -1,19 +1,24 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import PongTitle from './PongTitle';
 import Play from './Play';
 import Chat from './Chat';
 
 const NavBar = ({ pseudo }) => {
+
+	const location = useLocation();
+
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">
 				<div className= "navPongTitle">
 					<Link to="/Home"><PongTitle/></Link>
 				</div>
-				<div className= "navPlay">
-					<Link to="/WaitingMatch"><Play /></Link>
-				</div>
+				{location.pathname !== "/Home" &&
+					<div className= "navPlay">
+						<Link to="/WaitingMatch"><Play /></Link>
+					</div>
+				}
 				<div className="navRight">
 					<div className="navProfilePicture">
 						<Link to="/Parameters"><p>PP</p></Link>
