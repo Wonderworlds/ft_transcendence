@@ -1,10 +1,12 @@
 import React from 'react';
-import NavBar from '../components/NavBar.js';
+import ShearchingPlayer from '../components/ShearchingPlayer.js';
 
 const WaitingMatch = () => {
 	return (
-		<div>
-			
+		<div className="waitingMatch">
+			<div className="divWaitingMatch">
+				<ShearchingPlayer />
+			</div>
 		</div>
 	);
 };

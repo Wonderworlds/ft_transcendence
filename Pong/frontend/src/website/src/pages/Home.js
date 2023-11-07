@@ -1,7 +1,6 @@
 import React from 'react';
 import NavBar from '../components/NavBar.js';
 import PlayBig from '../components/PlayBig.js';
-import { Link } from 'react-router-dom';
 
 const Home = () => {
 	return (

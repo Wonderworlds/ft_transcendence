@@ -1,0 +1,42 @@
+.bodySearchingPlayer {
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: transparent;
+	
+	.searchingPlayerText {
+		font-size: 2.5vw;
+		font-weight: 400;
+		text-align: center;
+		
+		// Color animation
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke: .3px;
+		-webkit-text-stroke-color: #fff;
+		background: linear-gradient(to right, #802877, grey, #802877);
+		background-clip: text;
+		background-size: 400%;
+		background-position: 0;
+		animation: textshine 8s linear infinite;
+		
+	}
+
+	@keyframes textshine {
+		0% {
+			background-position: 0 0;
+		}
+		25% {
+			background-position: 100% 0;
+		}
+		50% {
+			background-position: 100% 100%;
+		}
+		75% {
+			background-position: 0 100%;
+		}
+		100% {
+			background-position: 0 0;
+		}
+	}
+}

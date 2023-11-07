@@ -5,7 +5,7 @@ const PlayBig = () => {
 	return (
 		<div>
 			<button className="playBigButton">
-			<Link to="/WaitingMatch"><p className="playBigText">PLAY</p></Link>
+				<Link to="/WaitingMatch"><p className="playBigText">PLAY</p></Link>
 			</button>
 		</div>
 	);
