@@ -23,7 +23,20 @@
 
 }
 
-.divWaitingMatch {
+.divCancel {
+	background-color: black;
+	position: absolute;
+	left: 0%;
+	right: 0%;
+	top: 0%;
+	bottom: 0%;
+	height: 10vh;
+	width: 26vw;
+	text-align: center;
+
+}
+
+.divSearchingPlayer {
 	position: absolute;
 	left: 34.5%;
 	right: 34.5%;

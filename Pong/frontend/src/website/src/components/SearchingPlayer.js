@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-const ShearchingPlayer = () => {
+const SearchingPlayer = () => {
 	return (
 		<div className="bodySearchingPlayer">
 			<p className="searchingPlayerText">Searching Player <span>.</span><span>.</span><span>.</span></p>
@@ -9,4 +8,4 @@ const ShearchingPlayer = () => {
 	);
 };
 
-export default ShearchingPlayer;
+export default SearchingPlayer;

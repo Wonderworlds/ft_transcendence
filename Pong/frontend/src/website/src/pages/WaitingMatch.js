@@ -1,11 +1,16 @@
 import React from 'react';
-import ShearchingPlayer from '../components/ShearchingPlayer.js';
+import SearchingPlayer from '../components/SearchingPlayer.js';
+import Cancel from '../components/Cancel.js';
+import { Link } from 'react-router-dom';
 
 const WaitingMatch = () => {
 	return (
 		<div className="waitingMatch">
-			<div className="divWaitingMatch">
-				<ShearchingPlayer />
+			<div className="divCancel">
+				<Link to="/Home"><Cancel /></Link>
+			</div>
+			<div className="divSearchingPlayer">
+				<SearchingPlayer />
 			</div>
 		</div>
 	);
