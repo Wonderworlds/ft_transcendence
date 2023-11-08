@@ -4,7 +4,7 @@ import PongTitle from './PongTitle';
 import Play from './Play';
 import Chat from './Chat';
 
-const NavBar = ({ pseudo }) => {
+const NavBar = ({ profilePicture, pseudo }) => {
 
 	const location = useLocation();
 
@@ -21,10 +21,10 @@ const NavBar = ({ pseudo }) => {
 				}
 				<div className="navRight">
 					<div className="navProfilePicture">
-						<Link to="/Parameters"><p>PP</p></Link>
+						<Link to="/Parameters"><p>{profilePicture}PP</p></Link>
 					</div>
 					<div className= "navPseudo">
-						<p>{pseudo}Benjamin</p>
+						<Link to="/Profile"><p>{pseudo}Benjamin</p></Link>
 					</div>
 					<div className= "navChat">
 						<Link to="/Chat"><Chat /></Link>

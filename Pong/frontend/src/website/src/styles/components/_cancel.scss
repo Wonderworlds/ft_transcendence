@@ -1,0 +1,20 @@
+.cancelButton {
+	
+	background-color: transparent;
+	display: flex;
+	border: none;
+	cursor: pointer;
+	
+	.cancelText {
+		font-weight: 400;
+		font-size: 1.5vw;
+		margin: auto;
+		text-align: center;
+		color: #802877;
+
+		&:hover {
+			color: #ff00aa99;
+		}
+	}
+
+}

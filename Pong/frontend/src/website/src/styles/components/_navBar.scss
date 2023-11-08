@@ -1,45 +1,37 @@
 .headerNavBar {
 	display: fixed;
 	top: 0%;
-	align-items: center;
-	justify-content: space-between;
+	margin-top: 1.5%;
 }
 
 .navBar {
 	display: flex;
-	align-items: center;
 	justify-content: space-between;
-	background-color: black;
+	align-items: center;
 	color: white;
 	width: 100%;
-	margin-top: 1.5%;
+	height: 5%;
 	
 	* {
 		transition: 0.25s ease-in-out;
 	}
-
 }
 
 .navPongTitle {
-	// background-color: grey;
 	display: fixed;
 	position: fixed;
 	left: 0.2%;
 	width: 25%;
 	font-size: 1vw;
-	align-items: center;
-	justify-content: center;
 }
 
 .navPlay {
-	// background-color: grey;
 	position: fixed;
 	left: 37.5%;
 	width: 25%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	
 }
 
 .navRight {
