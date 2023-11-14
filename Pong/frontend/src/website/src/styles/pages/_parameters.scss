@@ -1,0 +1,75 @@
+.parameters {
+
+	/* Parameters */
+	
+	position: relative;
+	width: 100%;
+	height: 100%;
+
+
+	/* panorama */
+	
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	top: 0px;
+	
+	background-image: url(../../../public/background_3.png);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	
+}
+
+.divParametersTitleMid {
+
+	position: absolute;
+	left: 32.25%;
+	right: 45.25%;
+	top: 8%;
+	bottom: 75%;
+	font-size: 2.5vw;
+	
+}
+
+.divChangeName {
+
+	display: flex;
+	justify-content: space-between;
+	margin-left: 10%;
+	margin-right: 20%;
+	margin-top: 15%;
+	font-size: 2.5vw;
+	
+	.titlePicture {
+
+		font-family: "inter";
+		color: white;
+	}
+}
+
+.divDoubleAuthentification {
+
+	display: flex;
+	align-items: first-start;
+	margin-top: 10%;
+	margin-left: 10%;
+	margin-right: 50%;
+
+	p {
+		margin-left: 3%;
+		margin-top: -1.8%;
+		font-family: 'inter';
+		font-size: 2.5vw;
+		color: white;
+	}
+}
+
+.divAcceptChange {
+
+	display: flex;
+	margin-top: 1%;
+	margin-left: 1%;
+	margin-right: 1%;
+}
