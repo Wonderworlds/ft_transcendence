@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import Home from './pages/Home';
 import WaitingMatch from './pages/WaitingMatch';
+import Profile from './pages/Profile';
 
   
   const App = () => {
@@ -14,6 +15,7 @@ import WaitingMatch from './pages/WaitingMatch';
           <Route path="/" element={<MainPage />} />
           <Route path="/Home" element={<Home/>} />
           <Route path="/WaitingMatch" element={<WaitingMatch/>} />
+          <Route path="/Profile" element={<Profile/>} />
         </Routes>
       </BrowserRouter>
     </div>

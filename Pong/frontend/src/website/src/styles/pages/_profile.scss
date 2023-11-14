@@ -1,0 +1,62 @@
+.profile {
+
+	/* Profile Page*/
+
+	position: relative;
+	width: 100%;
+	height: 100%;
+	
+	
+	/* Panorama */
+	
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	top: 0px;
+	
+	background-image: url(../../../public/background.png);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	
+}
+
+.top {
+	background-color: red;
+	display: flex;
+	width: 100%;
+	height: 20%;
+	margin-top: 2.5%;
+	p {
+		font-family: 'Inter';
+	}
+}
+
+.divRatio {
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50%;
+	height: 100%;
+	color: white;
+
+	.win {
+
+	}
+
+	.loose {
+
+	}
+}
+
+.divRank {
+	background-color: grey;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50%;
+	height: 100%;
+	color: white;
+}

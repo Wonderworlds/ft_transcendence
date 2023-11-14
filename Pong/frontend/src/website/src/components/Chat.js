@@ -5,7 +5,7 @@ const Chat = () => {
 	return (
 		<div>
 			<button className="chatButton">
-				<BsChatLeftText className='coucou'/>
+				<BsChatLeftText className="icon"/>
 			</button>	
 		</div>
 	);

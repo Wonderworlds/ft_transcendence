@@ -1,20 +1,20 @@
-.playButton {
+.playBigButton {
 	
 	background-color: transparent;
 	display: flex;
 	border: none;
 	cursor: pointer;
 	
-	.playText {
+	.playBigText {
 		font-weight: 400;
-		font-size: 1.5vw;
+		font-size: 5.5vw;
 		margin: auto;
 		text-align: center;
-		color: #802877;
+		color: #ffffff;
+		transition: 0.25s ease-in-out;
 
 		&:hover {
 			color: #ff00aa99;
 		}
 	}
-
 }

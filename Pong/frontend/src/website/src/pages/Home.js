@@ -1,11 +1,13 @@
 import React from 'react';
 import NavBar from '../components/NavBar.js';
+import PlayBig from '../components/PlayBig.js';
 
 const Home = () => {
 	return (
-		<div className="logIn">
-			<div className="navBar">
-				<NavBar />
+		<div className="home">
+			<NavBar />
+			<div className="divPlayMid">
+				<PlayBig />
 			</div>
 		</div>
 	);

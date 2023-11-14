@@ -1,17 +1,23 @@
 // Pages Styles Index
 @import "./_settings.scss";
 @import "./_mainPage.scss";
-@import "./home.scss";
+@import "./_home.scss";
+@import "./_waitingMatch.scss";
+@import "./_profile.scss";
 
 // Components Styles Index
 
+@import "../components/_pongTitle.scss";
 @import "../components/_chat.scss";
 @import "../components/_play.scss";
-@import "../components/_fortyTwo.scss";
 @import "../components/_logIn.scss";
-@import "../components/_pongTitle.scss";
+@import "../components/_navBar.scss";
+@import "../components/_playBig.scss";
+@import "../components/_searchingPlayer.scss";
+@import "../components/_cancel.scss";
 
 // Pages Index
 
 
 // Components Index
+
