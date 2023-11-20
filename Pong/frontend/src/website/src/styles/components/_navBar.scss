@@ -1,58 +1,79 @@
 .headerNavBar {
 	display: fixed;
 	top: 0%;
-	margin-top: 1.5%;
 }
 
 .navBar {
+	width: 100%;
+	height: 5%;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	color: white;
-	width: 100%;
-	height: 5%;
+	font-size: 1vw;
 	
 	* {
 		transition: 0.25s ease-in-out;
 	}
-}
-
-.navPongTitle {
-	display: fixed;
-	position: fixed;
-	left: 0.2%;
-	width: 25%;
-	font-size: 1vw;
-}
-
-.navPlay {
-	position: fixed;
-	left: 37.5%;
-	width: 25%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.navRight {
-	position: fixed;
-	right: 0%;
-	width: 25%;
-	display: flex;
-	align-items: center;
-	justify-content: right;
-
-	div {
-		position: relative;
-		right: 0%;
-		padding-right: 0.2%;
-		padding-left: 5%;
+	
+	.navPongTitle {
+		width: 32%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		margin-left: 0.5%;
 	}
-
-	.navProfilePicture {
+	
+	.navPlay {
+		width: 32%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.navRight {
+		width: 32%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 2%;
 
 		p {
 			color: white;
+
+			&:hover {
+				color: #ff00aa99;
+			}
 		}
+		
+		.navProfilePicture {
+			width: auto;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			
+		}
+		
+		.navPseudo {
+			width: auto;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.navChat {
+			width: auto;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 1%;
+		}
+		
 	}
 }

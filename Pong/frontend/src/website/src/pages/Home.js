@@ -5,7 +5,9 @@ import PlayBig from '../components/PlayBig.js';
 const Home = () => {
 	return (
 		<div className="home">
-			<NavBar />
+			<div className="divNav">
+				<NavBar />
+			</div>
 			<div className="divPlayMid">
 				<PlayBig />
 			</div>
