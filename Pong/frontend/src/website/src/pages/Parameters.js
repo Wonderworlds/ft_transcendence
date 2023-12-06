@@ -7,7 +7,7 @@ const Parameters = () => {
 	return (
 		<div className="parameters">
 			<div className="divNav">
-				<NavBar/>
+				<NavBar profilePicture="PP" pseudo="Benjamin"/>
 			</div>
 			<div className="divParametersTop">
 					<h1 className="titleParameter">Parameters</h1>

@@ -18,7 +18,7 @@ const Profile: React.FC<ProfileProps> = ({win, loose, rank}) => {
 	return (
 		<div className="profile">
 			<div className="divNav">
-				<NavBar />
+				<NavBar profilePicture="PP" pseudo="Benjamin"/>
 			</div>
 			<div className="top">
 				<div className="divRatio">

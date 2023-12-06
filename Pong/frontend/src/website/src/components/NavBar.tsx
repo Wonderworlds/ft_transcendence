@@ -12,7 +12,6 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo }) => {
 
 	const location = useLocation();
-
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">
@@ -26,10 +25,10 @@ const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo }) => {
 				}
 				<div className="navRight">
 					<div className="navProfilePicture">
-						<Link to="/Parameters"><p>{profilePicture}PP</p></Link>
+						<Link to="/Parameters"><p>{profilePicture}</p></Link>
 					</div>
 					<div className= "navPseudo">
-						<Link to="/Profile"><p>{pseudo}Benjamin</p></Link>
+						<Link to="/Profile"><p>{pseudo}</p></Link>
 					</div>
 					<div className= "navChat">
 						<Link to="/Chat"><Chat /></Link>
