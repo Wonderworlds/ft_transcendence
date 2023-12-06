@@ -9,7 +9,7 @@ import MatchHistory from './pages/MatchHistory';
 import Achievement from './pages/Achievement';
 import Friends from './pages/Friends';
 import Leaderboard from './pages/Leaderboard';
-import Parameters from './pages/Parameters';
+import Parameters from './pages/Parameters.tsx';
 
 	
 	const App = () => {
