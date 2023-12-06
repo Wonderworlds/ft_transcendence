@@ -1,7 +1,7 @@
 import React from 'react';
 import { BsChatLeftText } from 'react-icons/bs';
 
-const Chat = () => {
+const Chat: React.FC = () => {
 	return (
 		<div>
 			<button className="chatButton">

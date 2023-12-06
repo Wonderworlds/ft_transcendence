@@ -1,6 +1,6 @@
 import React from 'react';
-import NavBar from '../components/NavBar.js';
-import PlayBig from '../components/PlayBig.js';
+import NavBar from '../components/NavBar.tsx';
+import PlayBig from '../components/PlayBig.tsx';
 
 const Home = () => {
 	return (

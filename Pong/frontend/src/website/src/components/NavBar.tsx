@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import PongTitle from './PongTitle';
-import Play from './Play';
-import Chat from './Chat';
+import PongTitle from './PongTitle.tsx';
+import Play from './Play.tsx';
+import Chat from './Chat.tsx';
 
-const NavBar = ({ profilePicture, pseudo }) => {
+interface NavBarProps {
+	profilePicture: string;
+	pseudo: string;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo }) => {
 
 	const location = useLocation();
 

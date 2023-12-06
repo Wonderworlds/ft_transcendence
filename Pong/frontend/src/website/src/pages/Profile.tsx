@@ -1,11 +1,17 @@
 import React from 'react';
-import NavBar from '../components/NavBar.js';
-import NavProfile from '../components/NavProfile.js';
 import { useLocation } from 'react-router-dom';
-import ActiveInfo from '../components/ActiveInfo.js';
+import NavBar from '../components/NavBar.tsx';
+import NavProfile from '../components/NavProfile.tsx';
+import ActiveInfo from '../components/ActiveInfo.tsx';
 
 
-const Profile = ({win, loose, rank}) => {
+interface ProfileProps {
+	win: number;
+	loose: number;
+	rank: number;
+}
+
+const Profile: React.FC<ProfileProps> = ({win, loose, rank}) => {
 
 	const location = useLocation();
 

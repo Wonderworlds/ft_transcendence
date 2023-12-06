@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CheckButton = () => {
+const CheckButton: React.FC = () => {
 	return (
 		<div>
 			<button className="checkButton">

@@ -1,6 +1,6 @@
 import React from 'react';
-import PongTitle from '../components/PongTitle';
-import LogIn from '../components/LogIn';
+import PongTitle from '../components/PongTitle.tsx';
+import LogIn from '../components/LogIn.tsx';
 
 const MainPage = () => {
 	return (

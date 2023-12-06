@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const NavProfile = () => {
+const NavProfile: React.FC = () => {
 
 	const location = useLocation();
 	

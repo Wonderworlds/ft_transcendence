@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import Home from './pages/Home';
 import WaitingMatch from './pages/WaitingMatch';
-import Profile from './pages/Profile';
+import Profile from './pages/Profile.tsx';
 import MatchHistory from './pages/MatchHistory';
 import Achievement from './pages/Achievement';
 import Friends from './pages/Friends';
