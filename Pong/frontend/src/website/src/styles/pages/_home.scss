@@ -13,18 +13,18 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 
+	/* Items */
 
+	display: flex;
+	flex-direction: column;
 }
 
 .divPlayMid {
-	position: absolute;
-	left: 44.5%;
-	right: 44.5%;
-	top: 40%;
-	bottom: 40%;
-	height: 20vh;
-	width: 12vw;
-	margin: auto;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	text-align: center;
 
 }

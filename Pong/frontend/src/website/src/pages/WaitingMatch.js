@@ -1,6 +1,6 @@
 import React from 'react';
-import SearchingPlayer from '../components/SearchingPlayer.js';
-import Cancel from '../components/Cancel.js';
+import SearchingPlayer from '../components/SearchingPlayer.tsx';
+import Cancel from '../components/Cancel.tsx';
 import { Link } from 'react-router-dom';
 
 const WaitingMatch = () => {

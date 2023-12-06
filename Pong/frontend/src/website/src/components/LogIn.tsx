@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LogIn = () => {
+const LogIn: React.FC = () => {
 	
 	const to42Auth = () => {
 	  // 👇️ navigate to 42Auth

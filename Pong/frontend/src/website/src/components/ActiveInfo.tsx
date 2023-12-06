@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 
 
-const ActiveInfo = () => {
+const ActiveInfo: React.FC = () => {
 
 	const location = useLocation();
 

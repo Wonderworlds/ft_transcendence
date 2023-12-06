@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Play = () => {
+const Play: React.FC = () => {
 	return (
 		<div>
 			<button className='playButton'>

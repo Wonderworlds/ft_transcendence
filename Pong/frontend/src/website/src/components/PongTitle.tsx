@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PongTitle = () => {
+const PongTitle: React.FC = () => {
 	return (
 		<div className="pongTitle">
 			<h1>PONG</h1>

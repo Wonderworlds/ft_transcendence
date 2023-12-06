@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Cancel = () => {
+const Cancel: React.FC = () => {
 	return (
 		<div>
 			<button className='cancelButton'>
