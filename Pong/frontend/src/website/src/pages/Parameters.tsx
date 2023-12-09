@@ -3,7 +3,7 @@ import NavBar from '../components/NavBar.tsx';
 import { Link } from 'react-router-dom';
 
 
-const Parameters = () => {
+const Parameters: React.FC = () => {
 	return (
 		<div className="parameters">
 			<div className="divNav">

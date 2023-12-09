@@ -7,9 +7,10 @@ import Chat from './Chat.tsx';
 interface NavBarProps {
 	profilePicture: string;
 	pseudo: string;
+	setState: ()=>void;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo }) => {
+const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo, setState }) => {
 
 	const location = useLocation();
 	return (
@@ -27,8 +28,8 @@ const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo }) => {
 					<div className="navProfilePicture">
 						<Link to="/Parameters"><p>{profilePicture}</p></Link>
 					</div>
-					<div className= "navPseudo">
-						<Link to="/Profile"><p>{pseudo}</p></Link>
+					<div className= "navPseudo" onClick={() => setState(Pages.Profile)}>
+						<p>pseudo</p>
 					</div>
 					<div className= "navChat">
 						<Link to="/Chat"><Chat /></Link>

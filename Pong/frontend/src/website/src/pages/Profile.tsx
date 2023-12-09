@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 import NavBar from '../components/NavBar.tsx';
 import NavProfile from '../components/NavProfile.tsx';
 import ActiveInfo from '../components/ActiveInfo.tsx';
@@ -13,7 +13,7 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({win, loose, rank}) => {
 
-	const location = useLocation();
+	// const location = useLocation();
 
 	return (
 		<div className="profile">
