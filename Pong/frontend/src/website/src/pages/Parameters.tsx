@@ -1,5 +1,6 @@
 import React from 'react'
 import NavBar from '../components/NavBar.tsx';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 
@@ -23,7 +24,7 @@ const Parameters: React.FC = () => {
 					<div className="checkBox">
 						<p className="doubleAuth">double authentification</p>
 						<div className="whiteBox">
-							<input type="checkbox" class="inputcheckbox"/>
+							<input type="checkbox"/>
 						</div>
 					</div>
 				</div>
