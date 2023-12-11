@@ -28,7 +28,7 @@ const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo, setState }) => 
 					<div className="navProfilePicture">
 						<Link to="/Parameters"><p>{profilePicture}</p></Link>
 					</div>
-					<div className= "navPseudo" onClick={() => setState(Pages.Profile)}>
+					<div className= "navPseudo" /*onClick={() => setPage(Pages.Profile)}*/>
 						<p>pseudo</p>
 					</div>
 					<div className= "navChat">
