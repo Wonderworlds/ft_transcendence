@@ -23,99 +23,16 @@
 	display: flex;
 	width: 100%;
 	height: 25%;
-
-	.titleParameter {
-
-		display: flex;
-		margin-top: 10%;
-		width: 100%;
-		height: 75%;
-		justify-content: center;
-		font-size: 4vh;
-		scale: (2);
-		color: #FFFFFF;
-		font-family: 'Inter';
-
-	}
+	justify-content: center;
 	
 }
 
 .divParametersMiddle {
 
 	display: flex;
-
 	width: 100%;
 	height: 50%;
 
-	.divChangeName {
-
-		display: flex;
-		font-size: 6vh;
-		width: 50%;
-		height: 100%;
-		align-items: center;
-		flex-direction: column;
-		justify-content: space-around;
-
-		.whiteSpace {
-
-			display: flex;
-			padding-top: 2.5%;
-			padding-left: 11%;
-			transform: scale(1.4);
-		}
-
-		.pChangeName {
-
-			display: flex;
-			color: #FFFFFF;
-			font-family: 'Inter';
-		}
-
-		.checkBox {
-
-			display: flex;
-			width: 77%;
-			height: 25%;
-			flex-direction: row;
-			justify-content: space-around;
-
-			.doubleAuth{
-
-				display: flex;
-				color: #FFFFFF;
-				font-family: 'Inter';
-
-			}
-
-			.whiteBox {
-	
-				display: flex;
-				justify-content: space-between;
-				padding-top: 5.6%;
-				transform: scale(2);
-			}
-	
-		}
-	}
-
-	.divPicture {
-
-		display: flex;
-		width: 50%;
-		height: 100%;
-		align-items: center;
-		flex-direction: column;
-
-		.titlePicture {
-
-			display: flex;
-			font-size: 6vh;
-			font-family: "Inter";
-			color: #FFFFFF;
-
-		}
-	}
 }
 
 .divParametersBottom {
@@ -123,43 +40,5 @@
 	display: flex;
 	width: 100%;
 	height: 25%;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
 	
-	.divAcceptChange {
-
-		display: flex;
-		width: 60%;
-		height: 100%;
-		align-items: center;
-		justify-content: right;
-	
-			.acceptChangeText {
-	
-				font-weight: 400;
-				font-size: 3vw;
-				cursor: pointer;
-				margin: auto;
-				text-align: center;
-				color:#FFFFFF;
-				font-family: 'inter';
-			}
-		}
-
-	.disconnectText {
-
-		display: flex;
-		justify-self: center;
-		align-items: center;
-		height: 30%;
-		padding-right: 40%;
-		font-weight: 400;
-		font-size: 2vw;
-		text-align: center;
-		justify-self: center;
-		margin: auto;
-		color:#FFFFFF;
-		font-family: 'inter';
-	}
 }
