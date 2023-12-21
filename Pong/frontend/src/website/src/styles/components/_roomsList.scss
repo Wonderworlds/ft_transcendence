@@ -1,0 +1,186 @@
+.divRoomsList {
+
+	display: flex;
+	width: 100%;
+	height: 100%;
+	border-color: white;
+	border-style: none solid none none;
+	flex-direction: column;
+	align-items: center;
+
+
+	.divToFriend {
+
+		display: flex;
+		width: 100%;
+		height: 10%;
+		align-items: center;
+		justify-content: center;
+		border-color: white;
+		border-style: none none solid none;
+
+		h1 {
+
+			color: white;
+			font-family: "Inter";
+
+		}
+
+	}
+
+	.divTitleRooms {
+
+		display: flex;
+		width: 100%;
+		height: 10%;
+		align-items: center;
+		justify-content: center;
+		
+		h1 {
+
+			color: white;
+			font-family: "Inter";
+
+		}
+
+	}
+
+	.divDisplayRooms {
+
+		display: flex;
+		width: 90%;
+		height: 60%;
+		flex-direction: column;
+		align-items: center;
+		padding-top: 5%;
+
+		p {
+
+			color: white;
+			font-family: "Inter";
+			height: 10%;
+
+		}
+
+	}
+	.divAddRooms {
+
+		display: flex;
+		width: 95%;
+		height: 18%;
+		flex-direction: column;
+		align-items: center;
+
+		.divIdRooms {
+
+			display: flex;
+			width: 100%;
+			height: 30%;
+			flex-direction: row;
+			align-items: center;
+
+			.divId {
+
+				display: flex;
+				width: 20%;
+				height: 100%;
+				align-items: center;
+				justify-content: center;
+
+				p {
+
+					color: white;
+					font-family: "Inter";
+
+				}
+
+			}
+
+			.divInputNameRoom {
+
+				display: flex;
+				width: 80%;
+				height: 100%;
+				align-items: center;
+				justify-content: center;
+	
+				.name {
+		
+					width: 90%;
+
+				}
+	
+			}
+
+		}
+
+		.divPswRooms {
+
+			display: flex;
+			width: 100%;
+			height: 30%;
+			flex-direction: row;
+			align-items: center;
+
+			.divPsw {
+
+				display: flex;
+				width: 30%;
+				height: 100%;
+				align-items: center;
+				justify-content: center;
+
+				p {
+
+					color: white;
+					font-family: "Inter";
+
+				}
+
+			}
+
+			.divInputPswRoom {
+
+				display: flex;
+				width: 70%;
+				height: 100%;
+				align-items: center;
+				justify-content: center;
+	
+				.psw {
+		
+					width: 90%;
+
+				}
+	
+			}
+
+		}
+
+		.divSendRooms {
+
+			display: flex;
+			height: 30%;
+			width: 90%;
+			justify-content: center;
+			align-items: center;
+
+			button {
+
+				color: white;
+				font-family: "Inter";
+				background-color: rgba($color: #000000, $alpha: 0.8);
+				border: none;
+				cursor: pointer;
+				width: 100%;
+				height: 100%;
+				justify-content: center;
+				align-items: center;
+	
+			}
+
+		}
+
+	}
+
+}

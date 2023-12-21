@@ -10,6 +10,8 @@ import Achievement from './pages/Achievement.tsx';
 import Friends from './pages/Friends.tsx';
 import Leaderboard from './pages/Leaderboard.tsx';
 import Parameters from './pages/Parameters.tsx';
+import Chat from './pages/Chat.tsx';
+import Rooms from './pages/Rooms.tsx';
 
 
 export enum Pages {
@@ -22,6 +24,7 @@ export enum Pages {
 	Friends,
 	Leaderboard,
 	Parameters,
+	Chat,
 
 }
 
@@ -66,6 +69,8 @@ export enum Pages {
 						<Route path="/Profile/Friends" element={<Friends />} />
 						<Route path="/Profile/Leaderboard" element={<Leaderboard />} />
 					<Route path="/Parameters" element={<Parameters />} />
+					<Route path="/Chat" element={<Chat />} />
+					<Route path="/Rooms" element={<Rooms />} />
 				</Routes>
 			</BrowserRouter>
 		</div>

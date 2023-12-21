@@ -1,6 +1,5 @@
 import React from 'react'
 import NavBar from '../components/NavBar.tsx';
-import { Link } from 'react-router-dom';
 import ParametersTitle from '../components/ParametersTitle.tsx';
 import ChangeName from '../components/ChangeName.tsx';
 import PutPicture from '../components/PutPicture.tsx';
