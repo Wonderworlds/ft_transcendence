@@ -8,7 +8,9 @@ const MainPage: React.FC = () => {
 			<div className="divPongTitleMid">
 				<PongTitle />
 			</div>
-			<LogIn />
+			<div className="divLogInButton">
+				<LogIn />
+			</div>
 		</div>
 	);
 };

@@ -28,8 +28,8 @@ const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo, setState }) => 
 					<div className="navProfilePicture">
 						<Link to="/Parameters"><p>{profilePicture}</p></Link>
 					</div>
-					<div className= "navPseudo" /*onClick={() => setPage(Pages.Profile)}*/>
-						<p>pseudo</p>
+					<div className= "navPseudo">
+						<Link to="/Profile"><p>pseudo</p></Link>
 					</div>
 					<div className= "navChat">
 						<Link to="/Chat"><Chat /></Link>
