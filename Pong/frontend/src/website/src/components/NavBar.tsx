@@ -7,10 +7,9 @@ import Chat from './Chat.tsx';
 interface NavBarProps {
 	profilePicture: string;
 	pseudo: string;
-	setState: ()=>void;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo, setState }) => {
+const NavBar: React.FC<NavBarProps> = ({ profilePicture, pseudo}) => {
 
 	const location = useLocation();
 	return (
