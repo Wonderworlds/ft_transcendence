@@ -13,51 +13,10 @@ import Parameters from './pages/Parameters.tsx';
 import Chat from './pages/Chat.tsx';
 import Rooms from './pages/Rooms.tsx';
 
-
-export enum Pages {
-	MainPage = 0,
-	Home,
-	WaitingMatch,
-	Profile,
-	MatchHistory,
-	Achievement,
-	Friends,
-	Leaderboard,
-	Parameters,
-	Chat,
-
-}
-
 	const App = () => {
-		// const [page, setPage] = React.useState<Pages>(Pages.Home);
-
-
-		// function renderSwitch(param: Pages) {
-		// 	switch (param) {
-		// 		case Pages.MainPage:
-		// 			return (<MainPage/>);
-		// 		case Pages.Home:
-		// 			return (<Home/>);
-		// 		case Pages.WaitingMatch:
-		// 			return (<WaitingMatch/>);
-		// 		case Pages.Profile:
-		// 			return (<Profile win={9} loose={1} rank={1}/>);
-		// 		case Pages.MatchHistory:
-		// 			return (<MatchHistory/>);
-		// 		case Pages.Achievement:
-		// 			return (<Achievement/>);
-		// 		case Pages.Friends:
-		// 			return (<Friends/>);
-		// 		case Pages.Leaderboard:
-		// 			return (<Leaderboard/>);
-		// 		case Pages.Parameters:
-		// 			return (<Parameters/>);
-		// 	}
-		// }
 
 		return (
 		<div className="App">
-			{/* {renderSwitch(page)} */}
 			<BrowserRouter>
 				<Routes>
 					<Route path="/" element={<MainPage />} />
