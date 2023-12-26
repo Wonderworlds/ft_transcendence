@@ -1,16 +1,29 @@
-import React from 'react';
-import InviteFriendButton from './InviteFriendButton';
-import DeleteFriendButton from './DeleteFriendButton';
+import React from "react";
+import DropdownMenu from "./DropdownMenu.tsx";
 
-const ExtendFriend:React.FC = () => {
+const ExtendFriend: React.FC = () => {
+	
+	const inviteFriend = () => {
+		console.log("j'invite un ami");
+	}
+	const deleteFriend = () => {
+		console.log("j'enleve un ami");
+	};
+	
+	const dropdownActions = [
+	{
+		name: "Invite Friend",
+		onClick: inviteFriend,
+	},
+	{
+		name: "Delete Friend",
+		onClick: deleteFriend,
+	},
+	];
+
 	return (
 		<div className="headerExtendFriend">
-			<div className="divInviteFriendButton">
-				<InviteFriendButton/>
-			</div>
-			<div className="divDeleteFriendButton">
-				<DeleteFriendButton/>
-			</div>
+			<DropdownMenu dropdownButtonName="..." dropdownActions={dropdownActions} />
 		</div>
 	);
 };

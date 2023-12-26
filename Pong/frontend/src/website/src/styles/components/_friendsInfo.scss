@@ -2,8 +2,9 @@
 	width: 45%;
 	height: 10%;
 	display: flex;
-	align-items: center;
 	flex-direction: row;
+	justify-content: center;
+	align-items: center;
 	margin-block: 0.25%;
 }
 
@@ -19,15 +20,17 @@
 	
 	border: 2px solid transparent;
 	border-radius: 10px;
-
+	
 	background-clip: padding-box, border-box;
 	background-origin: border-box;
 	
-	p {
-		margin-left: 0.5em;
-	}
-
-	button {
-		border: none;
+	.divExtendFriend {
+		
+		width: 10%;
+		height: 100%;
+		
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 }

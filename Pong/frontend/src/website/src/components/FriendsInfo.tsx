@@ -1,5 +1,5 @@
 import React from 'react';
-import FriendButton from './FriendButton.tsx';
+import ExtendFriend from './ExtendFriend.tsx';
 
 interface FriendsInfoProps
 {
@@ -15,8 +15,8 @@ const FriendsInfo: React.FC<FriendsInfoProps> = ({pP, pseudo, status}) => {
 				<p>
 					{pP} {pseudo}  {status}
 				</p>
-				<div className="divFriendButton">
-					<FriendButton />
+				<div className="divExtendFriend">
+					<ExtendFriend />
 				</div>
 			</div>
 		</div>
