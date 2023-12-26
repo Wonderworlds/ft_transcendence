@@ -16,7 +16,7 @@ const ExtendFriend: React.FC = () => {
 		onClick: inviteFriend,
 	},
 	{
-		name: "Delete Friend",
+		name: "Deleteffff Friend",
 		onClick: deleteFriend,
 	},
 	];
