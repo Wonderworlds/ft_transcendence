@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const MenuFriend: React.FC = () => {
 	return (
-		<div className="divMenuFriendChat">
+		<div className="HeaderMenuFriend">
 			<div className="divTitleFriendChat">
 				<h1>friends</h1>
 			</div>

@@ -2,7 +2,7 @@ import React from 'react'
 
 const ListMembersRooms: React.FC = () => {
 	return (
-		<div className="divListMember">
+		<div className="headerListMember">
 			<div className="divTitleMembers">
 				<h1>members</h1>
 			</div>

@@ -1,11 +1,4 @@
-.chat {
-
-	/* Main Page */
-	
-	position: relative;
-	width: 100%;
-	height: 100%;
-
+.headerChat {
 
 	/* panorama */
 	
@@ -24,7 +17,7 @@
 
 		display: flex;
 		width: 100%;
-		height: 95%;
+		height: 92.8%;
 		background-color: rgba($color: #000000, $alpha: 0.6);
 		border-color: white;
 		border-style: solid none none none;
@@ -35,6 +28,8 @@
 			display: flex;
 			width: 20%;
 			height: 100%;
+			border-color: white;
+			border-style: none solid none none;
 
 		}
 

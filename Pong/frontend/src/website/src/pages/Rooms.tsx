@@ -6,7 +6,7 @@ import ListMembersRooms from '../components/ListMemberRooms.tsx';
 
 const Rooms: React.FC = () => {
 	return (
-		<div className="rooms">
+		<div className="headerRooms">
 			<div className="divNav">
 				<NavBar profilePicture="PP" pseudo="Benjamin"/>
 			</div>

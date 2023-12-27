@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const RoomsList: React.FC = () => {
 	return (
-		<div className="divRoomsList">
+		<div className="headerRoomsList">
 			<div className="divToFriend">
 				<Link to="/Chat"><h1 className='friends'>friends</h1></Link>
 			</div>

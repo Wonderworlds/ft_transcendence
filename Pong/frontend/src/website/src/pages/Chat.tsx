@@ -1,17 +1,17 @@
 import React from 'react';
 import NavBar from '../components/NavBar.tsx';
-import ChatFriend from '../components/ChatFriend.tsx';
 import ChatWithFriend from '../components/ChatWithFriend.tsx';
+import MenuFriend from '../components/MenuFriend.tsx';
 
 const Chat: React.FC = () => {
 	return (
-		<div className="chat">
+		<div className="headerChat">
 			<div className="divNav">
 				<NavBar profilePicture="PP" pseudo="Benjamin"/>
 			</div>
 			<div className="blackScreen">
 				<div className="divFriend">
-					<ChatFriend />
+					<MenuFriend/>
 				</div>
 				<div className="divChatWithFriend">
 					<ChatWithFriend />

@@ -1,4 +1,4 @@
-.ChatWithFriendPart {
+.headerChatWithFriend {
 
 	display: flex;
 	width: 100%;
@@ -8,18 +8,27 @@
 	align-items: center;
 	padding-top: 1%;
 
-	.DivShowMessage {
+	.divShowMessage {
 
 		display: flex;
 		width: 90%;
 		height: 84%;
 		flex-direction: column;
+		align-items: start;
+		overflow-y: scroll;
 
 		p {
 
 			color: white;
 			font-family: "Inter";
+			font-size: 3vh;
+			width: 100%;
+            height: 5%;
 
+			display: flex;
+            align-items: center;
+
+			margin-block: 0.25%;
 		}
 
 	}
@@ -67,8 +76,13 @@
 				background-color: rgba($color: #000000, $alpha: 0.8);
 				border: none;
 				cursor: pointer;
+				font-size: 3vh;
 				width: 50%;
-				height: 50%;				
+				height: 50%;
+
+				display: flex;
+				justify-content: center;
+				align-items: center;	
 			}
 
 		}

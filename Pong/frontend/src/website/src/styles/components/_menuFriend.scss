@@ -1,23 +1,29 @@
-.divMenuFriendChat {
+.HeaderMenuFriend {
 
 	display: flex;
 	width: 100%;
 	height: 100%;
 	flex-direction: column;
 	align-items: center;
+	justify-content: center;
 
 	.divTitleFriendChat {
 
 		display: flex;
 		width: 100%;
 		height: 10%;
-		align-items: center;
-		justify-content: center;
 
 		h1 {
 
-			color: white;
-			font-family: "Inter";
+            color: white;
+            font-family: "Inter";
+            font-size: 5vh;
+            width: 100%;
+            height: 100%;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
 		}
 
@@ -29,14 +35,22 @@
 		width: 90%;
 		height: 65%;
 		flex-direction: column;
-		align-items: center;
+		align-items: start;
+		overflow-y: scroll;
 
 		p {
 
 			color: white;
 			font-family: "Inter";
-			height: 10%;
+			font-size: 3vh;
+			width: 100%;
+            height: 10%;
 
+			display: flex;
+			justify-content: center;
+            align-items: center;
+
+			margin-block: 0.25%;
 		}
 
 	}
@@ -71,6 +85,7 @@
 				cursor: pointer;
 				align-items: center;
 				justify-content: center;
+				font-size: 2vh;
 	
 			}
 
@@ -86,7 +101,9 @@
 
 			.test {
 
+				display: flex;
 				width: 90%;
+				height: 40%;
 			}
 
 		}
@@ -104,7 +121,14 @@
 		h1 {
 
 			color: white;
-			font-family: "Inter";
+            font-family: "Inter";
+            font-size: 5vh;
+            width: 100%;
+            height: 100%;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
 		}
 
