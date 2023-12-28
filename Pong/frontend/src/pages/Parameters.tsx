@@ -9,7 +9,7 @@ const Parameters: React.FC = () => {
 	return (
 		<div className="parameters">
 			<div className="divNav">
-				<NavBar profilePicture="PP" pseudo="Benjamin" />
+				<NavBar />
 			</div>
 			<div className="divParametersTop">
 				<ParametersTitle />

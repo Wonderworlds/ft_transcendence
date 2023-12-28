@@ -8,7 +8,7 @@ const Rooms: React.FC = () => {
 	return (
 		<div className="headerRooms">
 			<div className="divNav">
-				<NavBar profilePicture="PP" pseudo="Benjamin" />
+				<NavBar />
 			</div>
 			<div className="blackScreen">
 				<div className="divRooms">

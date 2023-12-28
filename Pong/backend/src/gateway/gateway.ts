@@ -1,10 +1,11 @@
 import { OnModuleInit } from "@nestjs/common";
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io";
+import { Status, UserFront } from "src/dtos/User.dto";
 
 @WebSocketGateway({
 	cors: {
-		origin: ['http://localhost:8080']
+		origin: [process.env.FRONT_URL],
 	}
 })
 export class MyGateway implements OnModuleInit {
@@ -25,5 +26,15 @@ export class MyGateway implements OnModuleInit {
 			msg: 'New Message',
 			content: body,
 		})
+	}
+
+	@SubscribeMessage('getUser')
+	onGetUser(client: any) {
+		console.log("Event getUser");
+		const user: UserFront = {pseudo: "fmauguin",
+			ppImg: "vite.svg",
+			status: Status.Online};
+		
+		this.server.to(client.id).emit('onGetUser', user);
 	}
 }
