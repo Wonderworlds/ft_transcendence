@@ -1,11 +1,10 @@
-import React from 'react'
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
 
 const RoomsList: React.FC = () => {
 	return (
 		<div className="headerRoomsList">
 			<div className="divToFriend">
-				<Link to="/Chat"><h1 className='friends'>friends</h1></Link>
+				{/* <Link to="/Chat"><h1 className='friends'>friends</h1></Link> */}
 			</div>
 			<div className="divTitleRooms">
 				<h1>rooms</h1>
@@ -22,7 +21,7 @@ const RoomsList: React.FC = () => {
 						<p>name</p>
 					</div>
 					<div className="divInputNameRoom">
-						<input type="text" id="idRoom" name="idRoom" className="name"/>
+						<input type="text" id="idRoom" name="idRoom" className="name" />
 					</div>
 				</div>
 				<div className="divPswRooms">
@@ -30,7 +29,7 @@ const RoomsList: React.FC = () => {
 						<p>password</p>
 					</div>
 					<div className="divInputPswRoom">
-						<input type="text" id="pswRoom" name="pswRoom" className="psw"/>
+						<input type="text" id="pswRoom" name="pswRoom" className="psw" />
 					</div>
 				</div>
 				<div className="divSendRooms">

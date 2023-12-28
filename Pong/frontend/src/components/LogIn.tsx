@@ -1,13 +1,14 @@
 import React from 'react';
-import { PrincipalWebsocketContext } from '../context/WebsocketContext';
-import { User } from '../utils/types';
-import { useNavigate } from 'react-router-dom';
-import { Socket, io } from 'socket.io-client';
+import { Pages, User } from '../utils/types';
 
-const LogIn: React.FC = () => {
+interface LogInProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	setuser: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const LogIn: React.FC<LogInProps> = ({ setpage, setuser }) => {
 	const [username, setusername] = React.useState('');
 
-	const navigate = useNavigate();
 	React.useEffect(() => {
 		// socket.on('onLogin', (user: User) => {
 		// 	if (user.pseudo === '') return console.log('username not valid');
@@ -26,8 +27,11 @@ const LogIn: React.FC = () => {
 	// };
 
 	function tmpAuth() {
-		const socket = io(`${import.meta.env.VITE_BURL}?${username}`);
-		console.log(socket);
+		if (username === '') return;
+		setuser((prev: User) => {
+			return { ...prev, pseudo: username };
+		});
+		setpage(Pages.Home);
 		// socket.emit('login', username);
 	}
 

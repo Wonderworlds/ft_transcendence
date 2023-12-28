@@ -1,6 +1,6 @@
 import React from 'react';
 import Achievement from '../pages/Achievement.tsx';
-import { TabOption } from '../pages/Profile.tsx';
+import { TabOption } from '../utils/types.tsx';
 
 interface ActiveInfoProps {
 	tab: TabOption;

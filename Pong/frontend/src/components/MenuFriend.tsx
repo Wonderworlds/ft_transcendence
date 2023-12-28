@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
 
 const MenuFriend: React.FC = () => {
 	return (
@@ -20,11 +19,13 @@ const MenuFriend: React.FC = () => {
 					<button>add</button>
 				</div>
 				<div className="divInputAddFriend">
-					<input type="text" id="searchFriend" name="searchFriend" class="test"/>
+					<input type="text" id="searchFriend" name="searchFriend" />
 				</div>
 			</div>
 			<div className="divChangePageServer">
-				<Link to="/Rooms"><h1 className='disconnectText'>rooms</h1></Link>
+				{/* <Link to="/Rooms">
+					<h1 className="disconnectText">rooms</h1>
+				</Link> */}
 			</div>
 		</div>
 	);
