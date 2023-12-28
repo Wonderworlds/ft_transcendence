@@ -7,11 +7,11 @@ const Chat: React.FC = () => {
 	return (
 		<div className="headerChat">
 			<div className="divNav">
-				<NavBar profilePicture="PP" pseudo="Benjamin"/>
+				<NavBar profilePicture="PP" pseudo="Benjamin" />
 			</div>
 			<div className="blackScreen">
 				<div className="divFriend">
-					<MenuFriend/>
+					<MenuFriend />
 				</div>
 				<div className="divChatWithFriend">
 					<ChatWithFriend />

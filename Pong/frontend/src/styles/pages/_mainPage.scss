@@ -1,4 +1,11 @@
-.parameters {
+.mainPage {
+
+	/* Main Page */
+	
+	position: relative;
+	width: 100%;
+	height: 100%;
+
 
 	/* panorama */
 	
@@ -8,37 +15,24 @@
 	left: 0px;
 	top: 0px;
 	
-	background-image: url(../../../public/background_3.png);
+	background-image: url(background.png);
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
-
-	display: flex;
-	flex-direction: column;
 	
 }
 
-.divParametersTop {
-
-	display: flex;
-	width: 100%;
-	height: 25%;
-	justify-content: center;
-	
-}
-
-.divParametersMiddle {
-
-	display: flex;
+.divPongTitleMid {
 	width: 100%;
 	height: 50%;
-
-}
-
-.divParametersBottom {
-
 	display: flex;
-	width: 100%;
-	height: 25%;
+	justify-content: center;
+	font-size: 2.5vw;
 	
+}
+.divLogInButton {
+	width: 100%;
+	height: 50%;
+	display: flex;
+	justify-content: center;
 }

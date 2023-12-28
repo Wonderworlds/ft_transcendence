@@ -1,6 +1,6 @@
 import React from 'react';
 import NavBar from '../components/NavBar.tsx';
-import RoomsList from '../components/RoomsList.tsx'
+import RoomsList from '../components/RoomsList.tsx';
 import ChatWithFriend from '../components/ChatWithFriend.tsx';
 import ListMembersRooms from '../components/ListMemberRooms.tsx';
 
@@ -8,7 +8,7 @@ const Rooms: React.FC = () => {
 	return (
 		<div className="headerRooms">
 			<div className="divNav">
-				<NavBar profilePicture="PP" pseudo="Benjamin"/>
+				<NavBar profilePicture="PP" pseudo="Benjamin" />
 			</div>
 			<div className="blackScreen">
 				<div className="divRooms">

@@ -1,7 +1,7 @@
 version: "3.8"
 services:
  pong_docker:
-    image: node:bullseye
+    image: node:latest
     container_name: pong_container
     depends_on:
       - postgres_docker

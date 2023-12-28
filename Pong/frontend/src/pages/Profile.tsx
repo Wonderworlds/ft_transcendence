@@ -1,9 +1,8 @@
 import React from 'react';
 // import { useLocation } from 'react-router-dom';
-import NavBar from '../components/NavBar.tsx';
 import NavProfile from '../components/NavProfile.tsx';
 import ActiveInfo from '../components/ActiveInfo.tsx';
-
+import NavBar from '../components/NavBar.tsx';
 
 interface ProfileProps {
 	win: number;
@@ -11,14 +10,13 @@ interface ProfileProps {
 	rank: number;
 }
 
-const Profile: React.FC<ProfileProps> = ({win, loose, rank}) => {
-
+const Profile: React.FC<ProfileProps> = ({ win, loose, rank }) => {
 	// const location = useLocation();
 
 	return (
 		<div className="profile">
 			<div className="divNav">
-				<NavBar profilePicture="PP" pseudo="Benjamin"/>
+				<NavBar profilePicture="PP" pseudo="Benjamin" />
 			</div>
 			<div className="top">
 				<div className="divRatio">

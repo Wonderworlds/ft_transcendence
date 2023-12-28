@@ -7,7 +7,9 @@ const WaitingMatch: React.FC = () => {
 	return (
 		<div className="waitingMatch">
 			<div className="divCancel">
-				<Link to="/Home"><Cancel /></Link>
+				<Link to="/Home">
+					<Cancel />
+				</Link>
 			</div>
 			<div className="divSearchingPlayer">
 				<SearchingPlayer />
