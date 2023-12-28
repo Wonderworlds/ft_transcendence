@@ -26,7 +26,7 @@ const Parameters: React.FC<ParametersProps> = ({ setpage, user, setuser }) => {
 				<PutPicture />
 			</div>
 			<div className="divParametersBottom">
-				<ButtonAcceptDisconnect />
+				<ButtonAcceptDisconnect setpage={setpage} setuser={setuser} />
 			</div>
 		</div>
 	);
