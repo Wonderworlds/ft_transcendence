@@ -15,14 +15,16 @@
 	justify-content: space-between;
 	align-items: center;
 	
-	padding: 8px;
-	background: linear-gradient(grey, grey), linear-gradient((50deg, purple, rgba(255, 0, 255, 0.9)));
-	
-	border: 2px solid transparent;
-	border-radius: 10px;
-	
-	background-clip: padding-box, border-box;
-	background-origin: border-box;
+	padding-left: 1vh;
+	padding-right: 1vh;
+	background: grey;
+	border: 0.4vh solid black;
+
+	p {
+		display: flex;
+		flex-wrap: wrap;
+		font-size: 1.5vh;
+	}
 	
 	.divExtendFriend {
 		

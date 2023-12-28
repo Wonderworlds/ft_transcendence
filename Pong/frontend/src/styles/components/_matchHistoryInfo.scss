@@ -12,17 +12,15 @@
 	height: 100%;
 	display: flex;
 	justify-content: space-between;
+	align-items: center;	
 	
-	padding: 8px;
-	background: linear-gradient(grey, grey), linear-gradient((50deg, purple, rgba(255, 0, 255, 0.9)));
-	
-	border: 2px solid transparent;
-	border-radius: 10px;
-
-	background-clip: padding-box, border-box;
-	background-origin: border-box;
+	background: grey;
+	border: 2px solid black;
 	
 	p {
-		margin-left: 0.5em;
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: 0.5%;
+		margin-right: 0.5%;
 	}
 }
