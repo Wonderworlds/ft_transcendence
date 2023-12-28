@@ -2,12 +2,12 @@ import { Link, useLocation } from 'react-router-dom';
 import PongTitle from './PongTitle.tsx';
 import Play from './Play.tsx';
 import Chat from './Chat.tsx';
-import { WebsocketContext } from '../context/WebsocketContext';
+import { PrincipalWebsocketContext } from '../context/WebsocketContext';
 import { User } from '../utils/types.tsx';
 import React from 'react';
 
 const NavBar: React.FC = () => {
-	const socket = React.useContext(WebsocketContext);
+	const socket = React.useContext(PrincipalWebsocketContext);
 	const [pp, setpp] = React.useState('42_Logo.svg');
 	const [pseudo, setpseudo] = React.useState('pseudo');
 

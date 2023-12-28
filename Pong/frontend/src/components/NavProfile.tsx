@@ -1,27 +1,51 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { TabOption } from '../pages/Profile';
 
-const NavProfile: React.FC = () => {
+interface NavProfileProps {
+	settab: React.Dispatch<React.SetStateAction<any>>;
+}
 
-	const location = useLocation();
-	
+const NavProfile: React.FC<NavProfileProps> = ({ settab }) => {
 	return (
-
 		<div className="headerNavProfile">
 			<nav className="navProfile">
 				<div>
-					<Link to="/Profile/MatchHistory"><p>Match History</p></Link>
+					<div
+						onClick={() => {
+							settab(TabOption.History);
+						}}
+					>
+						<p>Match History</p>
+					</div>
 				</div>
 				<div>
-					<Link to="/Profile/Achievement"><p>Achievement</p></Link>
+					<div
+						onClick={() => {
+							settab(TabOption.Achievement);
+						}}
+					>
+						<p>Achievement</p>
+					</div>
 				</div>
 				<div>
-					<Link to="/Profile/Friends"><p>Friends</p></Link>
+					<div
+						onClick={() => {
+							settab(TabOption.Friend);
+						}}
+					>
+						<p>Friends</p>
+					</div>
 				</div>
 				<div>
-					<Link to="/Profile/Leaderboard"><p>Leaderboard</p></Link>
+					<div
+						onClick={() => {
+							settab(TabOption.Leaderboard);
+						}}
+					>
+						<p>Leaderboard</p>
+					</div>
 				</div>
-			</nav>			
+			</nav>
 		</div>
 	);
 };

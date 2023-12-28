@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { WebsocketContext } from '../context/WebsocketContext';
+import { PrincipalWebsocketContext } from '../context/WebsocketContext';
 
 type MessagePayload = {
 	content: string;
@@ -7,7 +7,7 @@ type MessagePayload = {
 };
 
 export const Websocket = () => {
-	const socket = useContext(WebsocketContext);
+	const socket = useContext(PrincipalWebsocketContext);
 	console.log(socket);
 	const [value, setValue] = useState('');
 	const [messages, setMessages] = useState<MessagePayload[]>([]);
@@ -29,7 +29,7 @@ export const Websocket = () => {
 	}, []);
 
 	const onSubmit = () => {
-		socket.emit('newMessage', value);
+		socket.emit('getFriends');
 		setValue('');
 	};
 

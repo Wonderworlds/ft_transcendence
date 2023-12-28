@@ -1,5 +1,4 @@
 import React from 'react';
-// import { useLocation } from 'react-router-dom';
 import NavProfile from '../components/NavProfile.tsx';
 import ActiveInfo from '../components/ActiveInfo.tsx';
 import NavBar from '../components/NavBar.tsx';
@@ -10,8 +9,16 @@ interface ProfileProps {
 	rank: number;
 }
 
+export enum TabOption {
+	Null = '',
+	History = 'matchHistory',
+	Achievement = 'achievement',
+	Friend = 'friend',
+	Leaderboard = 'leaderboard',
+}
+
 const Profile: React.FC<ProfileProps> = ({ win, loose, rank }) => {
-	// const location = useLocation();
+	const [tab, settab] = React.useState(TabOption.Null);
 
 	return (
 		<div className="profile">
@@ -29,10 +36,10 @@ const Profile: React.FC<ProfileProps> = ({ win, loose, rank }) => {
 			</div>
 			<div className="bottom">
 				<div className="divNavProfile">
-					<NavProfile />
+					<NavProfile settab={settab} />
 				</div>
 				<div className="divActiveInfo">
-					<ActiveInfo />
+					<ActiveInfo tab={tab} />
 				</div>
 			</div>
 		</div>
