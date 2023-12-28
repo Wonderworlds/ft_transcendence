@@ -4,22 +4,29 @@ import ParametersTitle from '../components/ParametersTitle.tsx';
 import ChangeName from '../components/ChangeName.tsx';
 import PutPicture from '../components/PutPicture.tsx';
 import ButtonAcceptDisconnect from '../components/ButtonAcceptDisconnect.tsx';
+import { User } from '../utils/types.tsx';
 
-const Parameters: React.FC = () => {
+interface ParametersProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	setuser: React.Dispatch<React.SetStateAction<any>>;
+	user: User;
+}
+
+const Parameters: React.FC<ParametersProps> = ({ setpage, user, setuser }) => {
 	return (
 		<div className="parameters">
 			<div className="divNav">
-				<NavBar />
+				<NavBar setpage={setpage} user={user} />
 			</div>
 			<div className="divParametersTop">
 				<ParametersTitle />
 			</div>
 			<div className="divParametersMiddle">
-				<ChangeName />
+				<ChangeName setuser={setuser} />
 				<PutPicture />
 			</div>
 			<div className="divParametersBottom">
-				<ButtonAcceptDisconnect />
+				<ButtonAcceptDisconnect setpage={setpage} setuser={setuser} />
 			</div>
 		</div>
 	);

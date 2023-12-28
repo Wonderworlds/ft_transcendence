@@ -1,59 +1,63 @@
-import { Link, useLocation } from 'react-router-dom';
 import PongTitle from './PongTitle.tsx';
 import Play from './Play.tsx';
 import Chat from './Chat.tsx';
-import { PrincipalWebsocketContext } from '../context/WebsocketContext';
-import { User } from '../utils/types.tsx';
+import { Pages, User } from '../utils/types.tsx';
 import React from 'react';
 
-const NavBar: React.FC = () => {
-	const socket = React.useContext(PrincipalWebsocketContext);
-	const [pp, setpp] = React.useState('42_Logo.svg');
-	const [pseudo, setpseudo] = React.useState('pseudo');
+interface NavBarProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	user: User;
+}
 
-	React.useEffect(() => {
-		socket.on('onGetUser', (user: User) => {
-			setpp(user.ppImg);
-			setpseudo(user.pseudo);
-		});
-		socket.emit('getUser');
-		return () => {
-			socket.off('onGetUser');
-		};
-	}, []);
-
-	const location = useLocation();
-
+const NavBar: React.FC<NavBarProps> = ({ setpage, user }) => {
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">
 				<div className="navPongTitle">
-					<Link to="/Home">
+					<div
+						onClick={() => {
+							setpage(Pages.Home);
+						}}
+					>
 						<PongTitle />
-					</Link>
-				</div>
-				{location.pathname !== '/Home' && (
-					<div className="navPlay">
-						<Link to="/WaitingMatch">
-							<Play />
-						</Link>
 					</div>
-				)}
+				</div>
+				<div className="navPlay">
+					<div
+						onClick={() => {
+							setpage(Pages.WaitingMatch);
+						}}
+					>
+						<Play />
+					</div>
+				</div>
 				<div className="navRight">
 					<div className="navProfilePicture">
-						<Link to="/Parameters">
-							<img src={pp} />
-						</Link>
+						<div
+							onClick={() => {
+								setpage(Pages.Parameter);
+							}}
+						>
+							<img src={user.ppImg} />
+						</div>
 					</div>
 					<div className="navPseudo">
-						<Link to="/Profile">
-							<p>{pseudo}</p>
-						</Link>
+						<div
+							onClick={() => {
+								setpage(Pages.Profile);
+							}}
+						>
+							<p>{user.pseudo}</p>
+						</div>
 					</div>
 					<div className="navChat">
-						<Link to="/Chat">
+						<div
+							onClick={() => {
+								setpage(Pages.Chat);
+							}}
+						>
 							<Chat />
-						</Link>
+						</div>
 					</div>
 				</div>
 			</nav>

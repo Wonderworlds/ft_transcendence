@@ -1,12 +1,22 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Pages } from '../utils/types';
 
-const ButtonAccept: React.FC = () => {
+interface ButtonAcceptProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const ButtonAccept: React.FC<ButtonAcceptProps> = ({ setpage }) => {
 	return (
-		<div className='divAcceptButton'>
-			<button className='acceptButton'>
-				<Link to="/Home"><p className='acceptText'>accept change</p></Link>
-			</button>	
+		<div className="divAcceptButton">
+			<button className="acceptButton">
+				<div
+					onClick={() => {
+						setpage(Pages.Home);
+					}}
+				>
+					<p className="acceptText">accept change</p>
+				</div>
+			</button>
 		</div>
 	);
 };

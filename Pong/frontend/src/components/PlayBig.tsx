@@ -1,11 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Pages, User } from '../utils/types';
 
-const PlayBig: React.FC = () => {
+interface PlayBigProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	user: User;
+}
+
+const PlayBig: React.FC<PlayBigProps> = ({ setpage, user }) => {
 	return (
 		<div>
 			<button className="playBigButton">
-				<Link to="/WaitingMatch"><p className="playBigText">PLAY</p></Link>
+				<div
+					onClick={() => {
+						setpage(Pages.WaitingMatch);
+					}}
+				>
+					<p className="playBigText">PLAY</p>
+				</div>
 			</button>
 		</div>
 	);

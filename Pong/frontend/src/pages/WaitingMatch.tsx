@@ -1,15 +1,23 @@
 import React from 'react';
 import SearchingPlayer from '../components/SearchingPlayer.tsx';
 import Cancel from '../components/Cancel.tsx';
-import { Link } from 'react-router-dom';
+import { Pages, User } from '../utils/types.tsx';
 
-const WaitingMatch: React.FC = () => {
+interface WaitingMatchProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	user: User;
+}
+
+const WaitingMatch: React.FC<WaitingMatchProps> = ({ setpage, user }) => {
 	return (
 		<div className="waitingMatch">
-			<div className="divCancel">
-				<Link to="/Home">
-					<Cancel />
-				</Link>
+			<div
+				className="divCancel"
+				onClick={() => {
+					setpage(Pages.Home);
+				}}
+			>
+				<Cancel />
 			</div>
 			<div className="divSearchingPlayer">
 				<SearchingPlayer />

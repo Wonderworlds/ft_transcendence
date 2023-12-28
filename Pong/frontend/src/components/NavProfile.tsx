@@ -1,5 +1,5 @@
 import React from 'react';
-import { TabOption } from '../pages/Profile';
+import { TabOption } from '../utils/types';
 
 interface NavProfileProps {
 	settab: React.Dispatch<React.SetStateAction<any>>;

@@ -2,12 +2,18 @@ import React from 'react';
 import NavBar from '../components/NavBar.tsx';
 import ChatWithFriend from '../components/ChatWithFriend.tsx';
 import MenuFriend from '../components/MenuFriend.tsx';
+import { User } from '../utils/types.tsx';
 
-const Chat: React.FC = () => {
+interface ChatProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	user: User;
+}
+
+const Chat: React.FC<ChatProps> = ({ setpage, user }) => {
 	return (
 		<div className="headerChat">
 			<div className="divNav">
-				<NavBar />
+				<NavBar setpage={setpage} user={user} />
 			</div>
 			<div className="blackScreen">
 				<div className="divFriend">

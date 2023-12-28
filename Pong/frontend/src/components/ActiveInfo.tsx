@@ -1,9 +1,6 @@
 import React from 'react';
-import MatchHistoryInfo from './MatchHistoryInfo.tsx';
-import FriendsInfo from './FriendsInfo.tsx';
 import Achievement from '../pages/Achievement.tsx';
-import { TabOption } from '../pages/Profile.tsx';
-import MatchHistory from '../pages/MatchHistory.tsx';
+import { TabOption } from '../utils/types.tsx';
 
 interface ActiveInfoProps {
 	tab: TabOption;

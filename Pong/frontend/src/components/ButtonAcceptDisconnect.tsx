@@ -1,15 +1,23 @@
 import React from 'react';
-import ButtonAccept from "../components/ButtonAccept.tsx"
-import ButtonDisconnect from "../components/ButtonDisconnect.tsx"
+import ButtonAccept from '../components/ButtonAccept.tsx';
+import ButtonDisconnect from '../components/ButtonDisconnect.tsx';
 
-const ButtonAcceptDisconnect: React.FC = () => {
+interface ButtonAcceptDisconnectProps {
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	setuser: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const ButtonAcceptDisconnect: React.FC<ButtonAcceptDisconnectProps> = ({
+	setpage,
+	setuser,
+}) => {
 	return (
 		<div className="divButton">
 			<div className="elem1">
-				<ButtonAccept/>
+				<ButtonAccept setpage={setpage} />
 			</div>
 			<div className="elem2">
-				<ButtonDisconnect/>
+				<ButtonDisconnect setpage={setpage} setuser={setuser} />
 			</div>
 		</div>
 	);

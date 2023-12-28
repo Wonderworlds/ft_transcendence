@@ -2,28 +2,29 @@ import React from 'react';
 import NavProfile from '../components/NavProfile.tsx';
 import ActiveInfo from '../components/ActiveInfo.tsx';
 import NavBar from '../components/NavBar.tsx';
+import { TabOption, User } from '../utils/types.tsx';
 
 interface ProfileProps {
 	win: number;
 	loose: number;
 	rank: number;
+	setpage: React.Dispatch<React.SetStateAction<any>>;
+	user: User;
 }
 
-export enum TabOption {
-	Null = '',
-	History = 'matchHistory',
-	Achievement = 'achievement',
-	Friend = 'friend',
-	Leaderboard = 'leaderboard',
-}
-
-const Profile: React.FC<ProfileProps> = ({ win, loose, rank }) => {
+const Profile: React.FC<ProfileProps> = ({
+	win,
+	loose,
+	rank,
+	setpage,
+	user,
+}) => {
 	const [tab, settab] = React.useState(TabOption.Null);
 
 	return (
 		<div className="profile">
 			<div className="divNav">
-				<NavBar />
+				<NavBar setpage={setpage} user={user} />
 			</div>
 			<div className="top">
 				<div className="divRatio">
