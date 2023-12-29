@@ -52,9 +52,9 @@ const App = () => {
 	}
 
 	return (
-		<div className="App">
-			<UserContextProvider>{whichPage(page)}</UserContextProvider>
-		</div>
+		<UserContextProvider>
+			<div className="App">{whichPage(page)}</div>
+		</UserContextProvider>
 	);
 };
 

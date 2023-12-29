@@ -1,10 +1,6 @@
 import React, { useContext } from 'react';
 import { Pages } from '../utils/types';
-import {
-	UserContext,
-	getUser,
-	updateUserContext,
-} from '../context/UserContext';
+import { UserContext, getUser } from '../context/UserContext';
 
 interface LogInProps {
 	setpage: React.Dispatch<React.SetStateAction<any>>;
@@ -12,7 +8,7 @@ interface LogInProps {
 
 const LogIn: React.FC<LogInProps> = ({ setpage }) => {
 	const [username, setusername] = React.useState('');
-
+	const user = getUser();
 	// const to42Auth = () => {
 	// 	// 👇️ navigate to 42Auth
 	// 	window.location.replace(
@@ -20,12 +16,11 @@ const LogIn: React.FC<LogInProps> = ({ setpage }) => {
 	// 	);
 	// };
 
-	function tmpAuth() {
+	const tmpAuth = () => {
 		if (username === '') return;
-		console.log(React.useContext(UserContext));
-		// updateUserContext({ ...user, pseudo: username });
+		user.setPseudo(username);
 		setpage(Pages.Home);
-	}
+	};
 
 	const handleChange = (event: any) => {
 		setusername(event.target.value);
