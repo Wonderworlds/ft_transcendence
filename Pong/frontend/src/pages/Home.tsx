@@ -1,20 +1,20 @@
 import React from 'react';
 import NavBar from '../components/NavBar.tsx';
 import PlayBig from '../components/PlayBig.tsx';
-import { User } from '../utils/types.tsx';
 
 interface HomeProps {
 	setpage: React.Dispatch<React.SetStateAction<any>>;
-	user: User;
 }
-const Home: React.FC<HomeProps> = ({ setpage, user }) => {
+const Home: React.FC<HomeProps> = ({ setpage }) => {
+	console.log('Home');
+
 	return (
 		<div className="home">
 			<div className="divNav">
-				<NavBar setpage={setpage} user={user} />
+				<NavBar setpage={setpage} />
 			</div>
 			<div className="divPlayMid">
-				<PlayBig setpage={setpage} user={user} />
+				<PlayBig setpage={setpage} />
 			</div>
 		</div>
 	);

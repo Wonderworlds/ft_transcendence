@@ -5,7 +5,7 @@ import { ValidSocket } from 'src/utils/types';
 
 @WebSocketGateway()
 export class WebsocketGateway
-          implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
+          implements OnGatewayInit, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server;
 
@@ -13,20 +13,6 @@ export class WebsocketGateway
 
   afterInit(server: Server) {
     this.websocketService.server = this.server;
-  }
-
-  async handleConnection(
-          @ConnectedSocket() user:ValidSocket)
-  {
-    user.name = user.handshake.query.name as string;
-    console.info(`User ${user.name} | Connected | wsID: ${user.id}`);
-    if (this.websocketService.getUser(user.name))
-    {
-        console.info('user already exist');
-        user.disconnect();
-    }
-    else
-      this.websocketService.addUser(user);
   }
 
   async handleDisconnect(@ConnectedSocket() user: ValidSocket) {

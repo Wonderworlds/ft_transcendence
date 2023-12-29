@@ -20,8 +20,9 @@ export class PongGateway extends WebsocketGateway {
     return users
   }
 
-  override async handleConnection(user: ValidSocket): Promise<void> {
+   async handleConnection(user: ValidSocket): Promise<void> {
       user.name = user.handshake.query.name as string;
+      console.info("pong gateway");
       console.info(`User ${user.name} | Connected to PongGateway | wsID: ${user.id}`);
       if (this.websocketService.getUser(user.name))
       {

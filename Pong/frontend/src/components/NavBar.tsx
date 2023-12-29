@@ -1,15 +1,17 @@
 import PongTitle from './PongTitle.tsx';
 import Play from './Play.tsx';
 import Chat from './Chat.tsx';
-import { Pages, User } from '../utils/types.tsx';
+import { Pages } from '../utils/types.tsx';
 import React from 'react';
+import { getUser } from '../context/UserContext.tsx';
 
 interface NavBarProps {
 	setpage: React.Dispatch<React.SetStateAction<any>>;
-	user: User;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ setpage, user }) => {
+const NavBar: React.FC<NavBarProps> = ({ setpage }) => {
+	const user = getUser();
+
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">

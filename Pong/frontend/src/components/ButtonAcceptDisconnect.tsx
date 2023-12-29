@@ -4,12 +4,10 @@ import ButtonDisconnect from '../components/ButtonDisconnect.tsx';
 
 interface ButtonAcceptDisconnectProps {
 	setpage: React.Dispatch<React.SetStateAction<any>>;
-	setuser: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const ButtonAcceptDisconnect: React.FC<ButtonAcceptDisconnectProps> = ({
 	setpage,
-	setuser,
 }) => {
 	return (
 		<div className="divButton">
@@ -17,7 +15,7 @@ const ButtonAcceptDisconnect: React.FC<ButtonAcceptDisconnectProps> = ({
 				<ButtonAccept setpage={setpage} />
 			</div>
 			<div className="elem2">
-				<ButtonDisconnect setpage={setpage} setuser={setuser} />
+				<ButtonDisconnect setpage={setpage} />
 			</div>
 		</div>
 	);

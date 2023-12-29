@@ -1,12 +1,11 @@
 import React from 'react';
-import { Pages, User } from '../utils/types';
+import { Pages } from '../utils/types';
 
 interface PlayBigProps {
 	setpage: React.Dispatch<React.SetStateAction<any>>;
-	user: User;
 }
 
-const PlayBig: React.FC<PlayBigProps> = ({ setpage, user }) => {
+const PlayBig: React.FC<PlayBigProps> = ({ setpage }) => {
 	return (
 		<div>
 			<button className="playBigButton">
