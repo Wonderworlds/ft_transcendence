@@ -3,11 +3,9 @@ import TitleChangeName from '../components/TitleChangeName.tsx';
 import WhiteCase from '../components/WhiteCase.tsx';
 import DoubleAuthentification from '../components/DoubleAuthentification.tsx';
 
-interface ChangeNameProps {
-	setuser: React.Dispatch<React.SetStateAction<any>>;
-}
+interface ChangeNameProps {}
 
-const ChangeName: React.FC<ChangeNameProps> = ({ setuser }) => {
+const ChangeName: React.FC<ChangeNameProps> = () => {
 	return (
 		<div className="divChangeName">
 			<div className="elem1">

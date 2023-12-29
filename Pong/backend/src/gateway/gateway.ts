@@ -1,30 +1,29 @@
-import { OnModuleInit } from "@nestjs/common";
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "socket.io";
+import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway } from "@nestjs/websockets";
+import { Socket } from "socket.io";
 import { Status, UserFront } from "src/dtos/User.dto";
+import { ValidSocket } from "src/utils/types";
 import { WebsocketGateway } from "src/websocket/websocket.gateway";
 
 @WebSocketGateway({
 	cors: {
 		origin: [process.env.FRONT_URL],
-	}
+	},
 })
-export class MyGateway extends WebsocketGateway  {
+export class MyGateway extends WebsocketGateway implements OnGatewayConnection {
+
+	async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
+		user.name = user.handshake.query.name as string;
+		console.info("principal gateway");
+		console.info(`User ${user.name} | Connected to Principal Gateway | wsID: ${user.id}`);
+	}
 
 	@SubscribeMessage('login')
-	onLogin(client: any, @MessageBody() body: string) {
+	onLogin(client: Socket, body: string) {
 		console.log("Event login");
-		let user: UserFront = {pseudo: "",
+		let user: UserFront = {pseudo: body,
 			ppImg: "vite.svg",
 			status: Status.Online};
-		if (!this.websocketService.getUser(body))
-			this.server.to(client.id).emit('onLogin', user);
-		else
-		{
-			user.pseudo = body;
-			this.server.to(client.id).emit('onLogin', user);
-		}
-		
+		this.server.to(client.id).emit('onUpdateUser', user);
 	}
 
 	@SubscribeMessage('newMessage')
@@ -44,5 +43,16 @@ export class MyGateway extends WebsocketGateway  {
 			status: Status.Online};
 		
 		this.server.to(client.id).emit('onGetUser', user);
+	}
+
+	@SubscribeMessage('updateUserName')
+	onUpdateUser(client: any, @MessageBody() body: string) {
+		console.log("Event updateUserName");
+		console.log(JSON.stringify(client));
+		const user: UserFront = {pseudo: body,
+			ppImg: "vite.svg",
+			status: Status.Online};
+		
+		this.server.to(client.id).emit('onUpdateUser', user);
 	}
 }

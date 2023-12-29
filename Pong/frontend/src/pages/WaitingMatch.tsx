@@ -5,10 +5,9 @@ import { Pages, User } from '../utils/types.tsx';
 
 interface WaitingMatchProps {
 	setpage: React.Dispatch<React.SetStateAction<any>>;
-	user: User;
 }
 
-const WaitingMatch: React.FC<WaitingMatchProps> = ({ setpage, user }) => {
+const WaitingMatch: React.FC<WaitingMatchProps> = ({ setpage }) => {
 	return (
 		<div className="waitingMatch">
 			<div

@@ -6,37 +6,56 @@ import Profile from './pages/Profile.tsx';
 import Parameters from './pages/Parameters.tsx';
 import Chat from './pages/Chat.tsx';
 import React from 'react';
-import { Pages, Status, User } from './utils/types.tsx';
+import { Pages } from './utils/types.tsx';
+import { WebsocketProvider } from './context/WebsocketContext.tsx';
+import { UserContextProvider } from './context/UserContext.tsx';
 
 const App = () => {
-	const newuser: User = {
-		pseudo: '',
-		ppImg: 'vite.svg',
-		status: Status.Online,
-	};
 	const [page, setpage] = React.useState(Pages.Root);
-	const [user, setuser] = React.useState(newuser);
 
+	console.log('app');
 	function whichPage(page: Pages) {
 		switch (page) {
 			case Pages.Root:
-				return <MainPage setpage={setpage} setuser={setuser} />;
+				return <MainPage setpage={setpage} />;
 			case Pages.Home:
-				return <Home setpage={setpage} user={user} />;
+				return (
+					<WebsocketProvider>
+						<Home setpage={setpage} />;
+					</WebsocketProvider>
+				);
 			case Pages.WaitingMatch:
-				return <WaitingMatch setpage={setpage} user={user} />;
+				return (
+					<WebsocketProvider>
+						<WaitingMatch setpage={setpage} />
+					</WebsocketProvider>
+				);
 			case Pages.Profile:
 				return (
-					<Profile setpage={setpage} win={9} loose={1} rank={1} user={user} />
+					<WebsocketProvider>
+						<Profile setpage={setpage} win={9} loose={1} rank={1} />
+					</WebsocketProvider>
 				);
 			case Pages.Parameter:
-				return <Parameters setpage={setpage} user={user} setuser={setuser} />;
+				return (
+					<WebsocketProvider>
+						<Parameters setpage={setpage} />;
+					</WebsocketProvider>
+				);
 			case Pages.Chat:
-				return <Chat setpage={setpage} user={user} />;
+				return (
+					<WebsocketProvider>
+						<Chat setpage={setpage} />
+					</WebsocketProvider>
+				);
 		}
 	}
 
-	return <div className="App">{whichPage(page)}</div>;
+	return (
+		<UserContextProvider>
+			<div className="App">{whichPage(page)}</div>
+		</UserContextProvider>
+	);
 };
 
 export default App;

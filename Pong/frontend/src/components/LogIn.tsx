@@ -1,24 +1,14 @@
-import React from 'react';
-import { Pages, User } from '../utils/types';
+import React, { useContext } from 'react';
+import { Pages } from '../utils/types';
+import { UserContext, getUser } from '../context/UserContext';
 
 interface LogInProps {
 	setpage: React.Dispatch<React.SetStateAction<any>>;
-	setuser: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const LogIn: React.FC<LogInProps> = ({ setpage, setuser }) => {
+const LogIn: React.FC<LogInProps> = ({ setpage }) => {
 	const [username, setusername] = React.useState('');
-
-	React.useEffect(() => {
-		// socket.on('onLogin', (user: User) => {
-		// 	if (user.pseudo === '') return console.log('username not valid');
-		// 	navigate('/Home');
-		// });
-		// return () => {
-		// 	socket.off('onLogin');
-		// };
-	}, []);
-
+	const user = getUser();
 	// const to42Auth = () => {
 	// 	// 👇️ navigate to 42Auth
 	// 	window.location.replace(
@@ -26,14 +16,11 @@ const LogIn: React.FC<LogInProps> = ({ setpage, setuser }) => {
 	// 	);
 	// };
 
-	function tmpAuth() {
+	const tmpAuth = () => {
 		if (username === '') return;
-		setuser((prev: User) => {
-			return { ...prev, pseudo: username };
-		});
+		user.setPseudo(username);
 		setpage(Pages.Home);
-		// socket.emit('login', username);
-	}
+	};
 
 	const handleChange = (event: any) => {
 		setusername(event.target.value);
