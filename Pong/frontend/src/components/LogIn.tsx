@@ -1,12 +1,7 @@
-import React, { useContext } from 'react';
-import { Pages } from '../utils/types';
-import { UserContext, getUser } from '../context/UserContext';
+import React from 'react';
+import { getUser } from '../context/UserContext';
 
-interface LogInProps {
-	setpage: React.Dispatch<React.SetStateAction<any>>;
-}
-
-const LogIn: React.FC<LogInProps> = ({ setpage }) => {
+const LogIn: React.FC = () => {
 	const [username, setusername] = React.useState('');
 	const user = getUser();
 	// const to42Auth = () => {
@@ -19,7 +14,7 @@ const LogIn: React.FC<LogInProps> = ({ setpage }) => {
 	const tmpAuth = () => {
 		if (username === '') return;
 		user.setPseudo(username);
-		setpage(Pages.Home);
+		user.setLoggedIn(true);
 	};
 
 	const handleChange = (event: any) => {

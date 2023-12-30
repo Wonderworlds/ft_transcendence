@@ -2,14 +2,14 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, We
 import { Socket } from "socket.io";
 import { Status, UserFront } from "src/dtos/User.dto";
 import { ValidSocket } from "src/utils/types";
-import { WebsocketGateway } from "src/websocket/websocket.gateway";
+import { AGateway } from "src/websocket/Agateway";
 
 @WebSocketGateway({
 	cors: {
 		origin: [process.env.FRONT_URL],
 	},
 })
-export class MyGateway extends WebsocketGateway implements OnGatewayConnection {
+export class MyGateway extends AGateway {
 
 	async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
 		user.name = user.handshake.query.name as string;

@@ -4,8 +4,8 @@ import { stringify } from 'querystring';
 import { Server, Socket } from 'socket.io';
 import { UserDto } from 'src/dtos/User.dto';
 import { ValidSocket } from 'src/utils/types';
-import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 import { Pong } from './Pong';
+import { AGateway } from 'src/websocket/Agateway';
 
 @WebSocketGateway({
   cors: {
@@ -13,7 +13,7 @@ import { Pong } from './Pong';
   },
   namespace: "/pong",
 })
-export class PongGateway extends WebsocketGateway {
+export class PongGateway extends AGateway {
 
   removeTwoUser() : {p1: ValidSocket, p2: ValidSocket} {
     const users = {p1: this.websocketService.popUser(), p2 : this.websocketService.popUser()};
