@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Profile } from "./Profile";
-import { Post } from "./Post";
+import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Room } from "./Room";
+import { Match } from "./Match";
+import { LadderType } from "src/utils/types";
 
 @Entity({ name: 'users'})
 export class User {
@@ -10,19 +11,30 @@ export class User {
 	@Column({ unique: true})
 	username: string;
 
-	@Column()
-	password: string;
+	@Column({ unique: true})
+	pseudo: string;
 
-	@Column({ default: new Date()})
-	createAt: Date;
+	@Column()
+	ppImg: string;
+
+	@Column({nullable: true})
+	password: string;
 
 	@Column({nullable: true})
 	authStrategy: string;
 
-	@OneToOne(() => Profile)
-	@JoinColumn()
-	profile: Profile;
+	@Column({default: LadderType.bronze})
+	rank: LadderType;
 
-	@OneToMany(() => Post, (post) => post.user)
-	posts: Post[];
+	@OneToMany(() => Room, (room: Room) => room.owner)
+	owners: Room[];
+
+	@ManyToMany(() => Room, (room: Room) => room.admins)
+	admins: Promise<Room>[];
+
+	@ManyToMany(() => Room, (room: Room) => room.users)
+	rooms: Promise<Room>[];
+
+	@OneToMany(() => Match, (match: Match) => match.players)
+	matchs: Promise<Match>[];
 }
