@@ -8,16 +8,15 @@ interface ProfileProps {
 	win: number;
 	loose: number;
 	rank: number;
-	setpage: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const Profile: React.FC<ProfileProps> = ({ win, loose, rank, setpage }) => {
+const Profile: React.FC<ProfileProps> = ({ win, loose, rank }) => {
 	const [tab, settab] = React.useState(TabOption.Null);
 
 	return (
 		<div className="profile">
 			<div className="divNav">
-				<NavBar setpage={setpage} />
+				<NavBar />
 			</div>
 			<div className="top">
 				<div className="divRatio">

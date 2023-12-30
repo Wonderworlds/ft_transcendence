@@ -1,17 +1,16 @@
 import React from 'react';
 import { Pages } from '../utils/types';
+import { getUser } from '../context/UserContext';
 
-interface PlayBigProps {
-	setpage: React.Dispatch<React.SetStateAction<any>>;
-}
+const PlayBig: React.FC = () => {
+	const user = getUser();
 
-const PlayBig: React.FC<PlayBigProps> = ({ setpage }) => {
 	return (
 		<div>
 			<button className="playBigButton">
 				<div
 					onClick={() => {
-						setpage(Pages.WaitingMatch);
+						user.setPage(Pages.WaitingMatch);
 					}}
 				>
 					<p className="playBigText">PLAY</p>

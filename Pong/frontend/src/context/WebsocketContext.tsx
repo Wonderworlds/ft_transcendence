@@ -40,6 +40,7 @@ export const WebsocketProvider = ({
 
 		return () => {
 			socket.off('connect');
+			socket.off('onUpdateUser');
 			socket.off('disconnect');
 		};
 	}, []);

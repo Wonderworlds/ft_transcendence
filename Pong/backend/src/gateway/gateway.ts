@@ -67,15 +67,6 @@ export class MyGateway implements OnGatewayInit, OnGatewayDisconnect, OnGatewayC
 		this.matchQueue.delete(client.name);
 	}
 
-	@SubscribeMessage('newMessage')
-	onNewMessage(@MessageBody() body: any) {
-		console.log(body);
-		this.server.emit('onMessage', {
-			msg: 'New Message',
-			content: body,
-		})
-	}
-
 	@SubscribeMessage('login')
 	async onLogin(@ConnectedSocket() client: ValidSocket, @MessageBody() body: UserDto) {
 		console.info(`User ${client.name} | onLogin`);

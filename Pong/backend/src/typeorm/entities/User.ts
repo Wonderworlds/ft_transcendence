@@ -42,6 +42,9 @@ export class User {
 	@ManyToMany(() => Room, (room: Room) => room.users)
 	rooms: Promise<Room>[];
 
-	@OneToMany(() => Match, (match: Match) => match.players)
-	matchs: Promise<Match>[];
+	@OneToMany(() => Match, (match: Match) => match.winner)
+	wins: Match[]
+
+	@OneToMany(() => Match, (match: Match) => match.loser)
+	loses: Match[]
 }

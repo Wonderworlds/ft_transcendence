@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { Status } from '../utils/types';
+import { Pages, Status } from '../utils/types';
 import { UserDto } from '../utils/dtos';
 import { getAxios } from './AxiosContext';
 
@@ -16,6 +16,9 @@ type UserContextType = {
 	setStatus: React.Dispatch<React.SetStateAction<Status>>;
 	loggedIn: boolean;
 	setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+	page: Pages;
+	setPage: React.Dispatch<React.SetStateAction<Pages>>;
+	getMatchHistory: () => void;
 	userAsDto: () => UserDto;
 	updateUser: (body: UserDto) => void;
 	createUser: (body: UserDto) => void;
@@ -35,6 +38,7 @@ export const UserContextProvider = ({
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
 	const [loggedIn, setLoggedIn] = React.useState<boolean>(false);
+	const [page, setPage] = React.useState<Pages>(Pages.Root);
 
 	function userAsDto() {
 		const userDto: UserDto = {
@@ -74,7 +78,14 @@ export const UserContextProvider = ({
 			});
 			updateUser(body);
 		}
+		setPage(Pages.Home);
 		setLoggedIn(true);
+	}
+
+	async function getMatchHistory() {
+		await client.get(`/users/${username}/matchs`).then((res) => {
+			console.log(res);
+		});
 	}
 
 	return (
@@ -95,6 +106,9 @@ export const UserContextProvider = ({
 				userAsDto,
 				updateUser,
 				createUser,
+				page,
+				setPage,
+				getMatchHistory,
 			}}
 		>
 			{children}

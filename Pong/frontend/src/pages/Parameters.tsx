@@ -5,15 +5,11 @@ import ChangeName from '../components/ChangeName.tsx';
 import PutPicture from '../components/PutPicture.tsx';
 import ButtonAcceptDisconnect from '../components/ButtonAcceptDisconnect.tsx';
 
-interface ParametersProps {
-	setpage: React.Dispatch<React.SetStateAction<any>>;
-}
-
-const Parameters: React.FC<ParametersProps> = ({ setpage }) => {
+const Parameters: React.FC = () => {
 	return (
 		<div className="parameters">
 			<div className="divNav">
-				<NavBar setpage={setpage} />
+				<NavBar />
 			</div>
 			<div className="divParametersTop">
 				<ParametersTitle />
@@ -23,7 +19,7 @@ const Parameters: React.FC<ParametersProps> = ({ setpage }) => {
 				<PutPicture />
 			</div>
 			<div className="divParametersBottom">
-				<ButtonAcceptDisconnect setpage={setpage} />
+				<ButtonAcceptDisconnect />
 			</div>
 		</div>
 	);

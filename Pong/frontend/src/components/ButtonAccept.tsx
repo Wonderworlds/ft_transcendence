@@ -1,17 +1,16 @@
 import React from 'react';
+import { getUser } from '../context/UserContext';
 import { Pages } from '../utils/types';
 
-interface ButtonAcceptProps {
-	setpage: React.Dispatch<React.SetStateAction<any>>;
-}
+const ButtonAccept: React.FC = () => {
+	const user = getUser();
 
-const ButtonAccept: React.FC<ButtonAcceptProps> = ({ setpage }) => {
 	return (
 		<div className="divAcceptButton">
 			<button className="acceptButton">
 				<div
 					onClick={() => {
-						setpage(Pages.Home);
+						user.setPage(Pages.Home);
 					}}
 				>
 					<p className="acceptText">accept change</p>

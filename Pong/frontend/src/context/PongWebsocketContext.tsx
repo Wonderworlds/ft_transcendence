@@ -18,9 +18,6 @@ export const PongWebsocketProvider = ({
 	const socket = io(urlName);
 
 	useEffect(() => {
-		console.log('PonSocket');
-		console.log(urlName);
-		console.log(socket);
 		socket.on('connect', () => {
 			console.log('connect pong');
 		});

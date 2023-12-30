@@ -5,36 +5,41 @@ import { Pages } from '../utils/types.tsx';
 import React from 'react';
 import { getUser } from '../context/UserContext.tsx';
 
-interface NavBarProps {
-	setpage: React.Dispatch<React.SetStateAction<any>>;
-}
-
-const NavBar: React.FC<NavBarProps> = ({ setpage }) => {
+const NavBar: React.FC = () => {
 	const user = getUser();
+
+	const playElement = () => {
+		return user.page == Pages.Home ? (
+			<div></div>
+		) : (
+			<div
+				className="navPlay"
+				onClick={() => {
+					user.setPage(Pages.WaitingMatch);
+				}}
+			>
+				<Play />
+			</div>
+		);
+	};
+
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">
 				<div
 					className="navPongTitle"
 					onClick={() => {
-						setpage(Pages.Home);
+						user.setPage(Pages.Home);
 					}}
 				>
 					<PongTitle />
 				</div>
-				<div
-					className="navPlay"
-					onClick={() => {
-						setpage(Pages.WaitingMatch);
-					}}
-				>
-					<Play />
-				</div>
+				{playElement()}
 				<div className="navRight">
 					<div
 						className="navProfilePicture"
 						onClick={() => {
-							setpage(Pages.Parameter);
+							user.setPage(Pages.Parameter);
 						}}
 					>
 						<img src={user.ppImg} />
@@ -42,7 +47,7 @@ const NavBar: React.FC<NavBarProps> = ({ setpage }) => {
 					<div
 						className="navPseudo"
 						onClick={() => {
-							setpage(Pages.Profile);
+							user.setPage(Pages.Profile);
 						}}
 					>
 						<p>{user.pseudo}</p>
@@ -50,7 +55,7 @@ const NavBar: React.FC<NavBarProps> = ({ setpage }) => {
 					<div
 						className="navChat"
 						onClick={() => {
-							setpage(Pages.Chat);
+							user.setPage(Pages.Chat);
 						}}
 					>
 						<Chat />

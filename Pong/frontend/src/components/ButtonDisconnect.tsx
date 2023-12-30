@@ -1,17 +1,15 @@
 import React from 'react';
 import { Pages } from '../utils/types';
+import { getUser } from '../context/UserContext';
 
-interface ButtonAcceptProps {
-	setpage: React.Dispatch<React.SetStateAction<any>>;
-}
-
-const ButtonAccept: React.FC<ButtonAcceptProps> = ({ setpage }) => {
+const ButtonAccept: React.FC = () => {
+	const user = getUser();
 	return (
 		<div className="divdisconnectButton">
 			<button className="disconnectButton">
 				<div
 					onClick={() => {
-						setpage(Pages.Root);
+						user.setPage(Pages.Root);
 					}}
 				>
 					<p className="disconnectText">disconnect</p>

@@ -8,19 +8,27 @@ import Parameters from './Parameters.tsx';
 import Chat from './Chat.tsx';
 import { ChatWebsocketProvider } from '../context/ChatWebsocketContext.tsx';
 import { PongWebsocketProvider } from '../context/PongWebsocketContext.tsx';
+import { getUser } from '../context/UserContext.tsx';
 
 const Home: React.FC = () => {
-	const [page, setpage] = React.useState(Pages.Home);
+	const user = getUser();
+
+	async function tmpAuth() {
+		user.getMatchHistory();
+	}
 
 	const homeElement = () => {
 		return (
 			<div className="home">
 				<div className="divNav">
-					<NavBar setpage={setpage} />
+					<NavBar />
 				</div>
 				<div className="divPlayMid">
-					<PlayBig setpage={setpage} />
+					<PlayBig />
 				</div>
+				<button className="logInButton" onClick={tmpAuth}>
+					<p className="logInText">Log In</p>
+				</button>
 			</div>
 		);
 	};
@@ -32,22 +40,22 @@ const Home: React.FC = () => {
 			case Pages.WaitingMatch:
 				return (
 					<PongWebsocketProvider>
-						<WaitingMatch setpage={setpage} />
+						<WaitingMatch />
 					</PongWebsocketProvider>
 				);
 			case Pages.Profile:
-				return <Profile setpage={setpage} win={9} loose={1} rank={1} />;
+				return <Profile win={9} loose={1} rank={1} />;
 			case Pages.Parameter:
-				return <Parameters setpage={setpage} />;
+				return <Parameters />;
 			case Pages.Chat:
 				return (
 					<ChatWebsocketProvider>
-						<Chat setpage={setpage} />
+						<Chat />
 					</ChatWebsocketProvider>
 				);
 		}
 	}
-	return <>{whichPage(page)}</>;
+	return <>{whichPage(user.page)}</>;
 };
 
 export default Home;
