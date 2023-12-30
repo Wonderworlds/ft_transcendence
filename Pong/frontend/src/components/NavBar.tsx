@@ -11,7 +11,6 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ setpage }) => {
 	const user = getUser();
-	console.log(user);
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">

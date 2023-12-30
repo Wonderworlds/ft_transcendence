@@ -11,19 +11,36 @@ import { AGateway } from "src/websocket/Agateway";
 })
 export class MyGateway extends AGateway {
 
-	async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
-		user.name = user.handshake.query.name as string;
-		console.info("principal gateway");
-		console.info(`User ${user.name} | Connected to Principal Gateway | wsID: ${user.id}`);
+	matchQueue: Map<string, ValidSocket> = new Map<string, ValidSocket>();
+
+	override async handleDisconnect(@ConnectedSocket() client: ValidSocket) {
+		console.info(`User ${client.name} | Disconnected`);
+		if (this.matchQueue.get(client.name))
+			this.matchQueue.delete(client.name);
+		this.websocketService.removeUser(client);
+	  }
+	
+	@SubscribeMessage('searchMatch')
+	onSearchMatch(@ConnectedSocket() client: ValidSocket) {
+		console.info(`User ${client.name} | searchMatch`);
+		if (this.matchQueue.get(client.name))
+			return ;
+		if (this.matchQueue.size > 0)
+		{
+			const iterator = this.matchQueue.values();
+			const opponent = iterator.next().value;
+			this.matchQueue.delete(opponent.name);
+			this.server.to([client.id, opponent.id]).emit('matchFound');
+			console.info(`MatchMaking found: ${opponent.name} | ${client.name}`);
+		}
+		else
+			this.matchQueue.set(client.name, client);
 	}
 
-	@SubscribeMessage('login')
-	onLogin(client: Socket, body: string) {
-		console.log("Event login");
-		let user: UserFront = {pseudo: body,
-			ppImg: "vite.svg",
-			status: Status.Online};
-		this.server.to(client.id).emit('onUpdateUser', user);
+	@SubscribeMessage('cancelSearch')
+	onCancelSearch(@ConnectedSocket() client: ValidSocket) {
+		console.info(`User ${client.name} | cancelSearch`);
+		this.matchQueue.delete(client.name);
 	}
 
 	@SubscribeMessage('newMessage')
@@ -35,24 +52,9 @@ export class MyGateway extends AGateway {
 		})
 	}
 
-	@SubscribeMessage('getUser')
-	onGetUser(client: any) {
-		console.log("Event getUser");
-		const user: UserFront = {pseudo: "fmauguin",
-			ppImg: "vite.svg",
-			status: Status.Online};
-		
-		this.server.to(client.id).emit('onGetUser', user);
-	}
-
 	@SubscribeMessage('updateUserName')
-	onUpdateUser(client: any, @MessageBody() body: string) {
+	onUpdateUser(@ConnectedSocket() client: ValidSocket) {
 		console.log("Event updateUserName");
-		console.log(JSON.stringify(client));
-		const user: UserFront = {pseudo: body,
-			ppImg: "vite.svg",
-			status: Status.Online};
-		
-		this.server.to(client.id).emit('onUpdateUser', user);
+		this.server.to(client.id).emit('onUpdateUser', client);
 	}
 }

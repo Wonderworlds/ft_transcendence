@@ -7,7 +7,6 @@ import Home from './Home.tsx';
 
 const MainPage: React.FC = () => {
 	const user = getUser();
-	console.log(user);
 
 	const mainPageELement = () => {
 		return (
