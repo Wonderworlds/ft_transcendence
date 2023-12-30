@@ -2,10 +2,12 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect,
 import { WebsocketService } from './websocket.service';
 import { Server } from 'socket.io';
 import { ValidSocket } from 'src/utils/types';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 @WebSocketGateway()
-export class WebsocketGateway
-          implements OnGatewayInit, OnGatewayDisconnect
+export class AGateway
+          implements OnGatewayInit, OnGatewayDisconnect, OnGatewayConnection
 {
   @WebSocketServer() server: Server;
 
@@ -14,6 +16,19 @@ export class WebsocketGateway
   afterInit(server: Server) {
     this.websocketService.server = this.server;
   }
+
+  async handleConnection(user: ValidSocket): Promise<void> {
+	user.name = user.handshake.query.name as string;
+	console.info("pong gateway");
+	console.info(`User ${user.name} | Connected to PongGateway | wsID: ${user.id}`);
+	if (this.websocketService.getUser(user.name))
+	{
+		console.info('user already exist');
+		user.disconnect();
+	}
+	else
+	  this.websocketService.addUser(user);
+}
 
   async handleDisconnect(@ConnectedSocket() user: ValidSocket) {
     console.info(`User ${user.name} | Disconnected`);

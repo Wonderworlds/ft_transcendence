@@ -17,6 +17,7 @@ export const WebsocketProvider = ({
 	children: React.ReactNode;
 }) => {
 	console.log('websocket');
+
 	const urlName = `${import.meta.env.VITE_BURL}?name=${getUser().pseudo}`;
 	const socket = io(urlName);
 	return (

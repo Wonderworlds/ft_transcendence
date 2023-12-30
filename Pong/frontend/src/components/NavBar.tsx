@@ -15,51 +15,46 @@ const NavBar: React.FC<NavBarProps> = ({ setpage }) => {
 	return (
 		<header className="headerNavBar">
 			<nav className="navBar">
-				<div className="navPongTitle">
-					<div
-						onClick={() => {
-							setpage(Pages.Home);
-						}}
-					>
-						<PongTitle />
-					</div>
+				<div
+					className="navPongTitle"
+					onClick={() => {
+						setpage(Pages.Home);
+					}}
+				>
+					<PongTitle />
 				</div>
-				<div className="navPlay">
-					<div
-						onClick={() => {
-							setpage(Pages.WaitingMatch);
-						}}
-					>
-						<Play />
-					</div>
+				<div
+					className="navPlay"
+					onClick={() => {
+						setpage(Pages.WaitingMatch);
+					}}
+				>
+					<Play />
 				</div>
 				<div className="navRight">
-					<div className="navProfilePicture">
-						<div
-							onClick={() => {
-								setpage(Pages.Parameter);
-							}}
-						>
-							<img src={user.ppImg} />
-						</div>
+					<div
+						className="navProfilePicture"
+						onClick={() => {
+							setpage(Pages.Parameter);
+						}}
+					>
+						<img src={user.ppImg} />
 					</div>
-					<div className="navPseudo">
-						<div
-							onClick={() => {
-								setpage(Pages.Profile);
-							}}
-						>
-							<p>{user.pseudo}</p>
-						</div>
+					<div
+						className="navPseudo"
+						onClick={() => {
+							setpage(Pages.Profile);
+						}}
+					>
+						<p>{user.pseudo}</p>
 					</div>
-					<div className="navChat">
-						<div
-							onClick={() => {
-								setpage(Pages.Chat);
-							}}
-						>
-							<Chat />
-						</div>
+					<div
+						className="navChat"
+						onClick={() => {
+							setpage(Pages.Chat);
+						}}
+					>
+						<Chat />
 					</div>
 				</div>
 			</nav>
