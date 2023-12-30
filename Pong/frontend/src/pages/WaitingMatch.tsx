@@ -1,7 +1,7 @@
 import React from 'react';
 import SearchingPlayer from '../components/SearchingPlayer.tsx';
 import Cancel from '../components/Cancel.tsx';
-import { Pages, User } from '../utils/types.tsx';
+import { Pages } from '../utils/types.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
 
 interface WaitingMatchProps {
@@ -9,17 +9,17 @@ interface WaitingMatchProps {
 }
 
 const WaitingMatch: React.FC<WaitingMatchProps> = ({ setpage }) => {
-	const socketContext = getSocket();
+	const socket = getSocket().socket;
 
 	React.useEffect(() => {
-		socketContext.socket.on('matchFound', () => {
+		socket.on('matchFound', () => {
 			console.log('Match Found');
 			// Need to change page to PONG;
 		});
-		socketContext.socket.emit('searchMatch');
+		socket.emit('searchMatch');
 
 		return () => {
-			socketContext.socket.off('matchFound');
+			socket.off('matchFound');
 		};
 	}, []);
 
@@ -28,6 +28,7 @@ const WaitingMatch: React.FC<WaitingMatchProps> = ({ setpage }) => {
 			<div
 				className="divCancel"
 				onClick={() => {
+					socket.emit('cancelSearch');
 					setpage(Pages.Home);
 				}}
 			>

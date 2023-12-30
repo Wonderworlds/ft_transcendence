@@ -35,7 +35,6 @@ export abstract class AGateway
     console.info(`User ${user.name} | Disconnected`);
     this.websocketService.removeUser(user);
 		const users = Object.keys(this.websocketService.users);
-		this.websocketService.sendMessage(user, 'user_disconnected', users);
   }
 
   @SubscribeMessage('handshake')
