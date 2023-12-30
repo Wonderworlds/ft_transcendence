@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import { Status } from '../utils/types';
 import { UserDto } from '../utils/dtos';
+import { getAxios } from './AxiosContext';
 
 type UserContextType = {
 	username: string;
@@ -17,6 +18,7 @@ type UserContextType = {
 	setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 	userAsDto: () => UserDto;
 	updateUser: (body: UserDto) => void;
+	createUser: (body: UserDto) => void;
 };
 
 export const UserContext = createContext({} as UserContextType);
@@ -26,6 +28,7 @@ export const UserContextProvider = ({
 }: {
 	children: React.ReactNode;
 }) => {
+	const client = getAxios().client;
 	const [username, setUsername] = React.useState<string>('');
 	const [pseudo, setPseudo] = React.useState<string>('');
 	const [ppImg, setppImg] = React.useState<string>('pp_default.png');
@@ -36,7 +39,7 @@ export const UserContextProvider = ({
 	function userAsDto() {
 		const userDto: UserDto = {
 			username: username,
-			pseudo: pseudo ? pseudo : username,
+			pseudo: pseudo,
 			ppImg: ppImg,
 			twoFA: doubleAuth,
 			status: status,
@@ -44,11 +47,31 @@ export const UserContextProvider = ({
 		return userDto;
 	}
 
+	React.useEffect(() => {
+		if (username) {
+			client.put(`/users/${username}`, userAsDto());
+		}
+	}, [pseudo, ppImg, status, doubleAuth]);
+
 	function updateUser(body: UserDto) {
+		if (username != body.username) setUsername(body.username);
 		if (pseudo != body.pseudo) setPseudo(body.pseudo);
 		if (ppImg != body.ppImg) setppImg(body.ppImg);
 		if (status != body.status) setStatus(body.status);
 		if (body.twoFA && doubleAuth != body.twoFA) setDoubleAuth(body.twoFA);
+	}
+
+	async function createUser(body: UserDto) {
+		let found = true;
+		await client.get(`/users/${body.username}`).then((res) => {
+			if (!res.data) found = false;
+			else updateUser(res.data);
+		});
+		if (!found) {
+			await client.post('/users', body);
+			setPseudo(body.username);
+		}
+		setLoggedIn(true);
 	}
 
 	return (
@@ -68,6 +91,7 @@ export const UserContextProvider = ({
 				setLoggedIn,
 				userAsDto,
 				updateUser,
+				createUser,
 			}}
 		>
 			{children}

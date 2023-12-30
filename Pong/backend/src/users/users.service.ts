@@ -25,4 +25,5 @@ export class UsersService {
 	async updateUser(username: string, user: UserDto) {
 		return await this.userRepository.update({ username }, { ...user});
 	}
+
 }

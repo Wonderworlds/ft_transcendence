@@ -6,24 +6,12 @@ import WaitingMatch from './WaitingMatch.tsx';
 import Profile from './Profile.tsx';
 import Parameters from './Parameters.tsx';
 import Chat from './Chat.tsx';
-import { getUser } from '../context/UserContext.tsx';
-import { getSocket } from '../context/WebsocketContext.tsx';
 import { ChatWebsocketProvider } from '../context/ChatWebsocketContext.tsx';
 import { PongWebsocketProvider } from '../context/PongWebsocketContext copy.tsx';
 
 const Home: React.FC = () => {
-	const user = getUser();
 	const [page, setpage] = React.useState(Pages.Home);
-	const [pseudo, setpseudo] = React.useState('');
 
-	const tmpAuth = () => {
-		if (pseudo === '') return;
-		console.log('click');
-	};
-
-	const handleChange = (event: any) => {
-		setpseudo(event.target.value);
-	};
 	const homeElement = () => {
 		return (
 			<div className="home">
@@ -32,18 +20,6 @@ const Home: React.FC = () => {
 				</div>
 				<div className="divPlayMid">
 					<PlayBig setpage={setpage} />
-				</div>
-				<div>
-					<input
-						type="text"
-						name="pseudo"
-						placeholder="pseudo"
-						value={pseudo}
-						onChange={handleChange}
-					/>
-					<button className="logInButton" onClick={tmpAuth}>
-						<p className="logInText">Log In</p>
-					</button>
 				</div>
 			</div>
 		);

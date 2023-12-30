@@ -11,6 +11,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { Match } from './typeorm/entities/Match';
 import { Message } from './typeorm/entities/Message';
 import { Room } from './typeorm/entities/Room';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -30,8 +31,8 @@ import { Room } from './typeorm/entities/Room';
 			inject: [ConfigService],
   }), UsersModule, GatewayModule, ThrottlerModule.forRoot([{
 	ttl: 10000,
-	limit: 2,
-  }])],
+	limit: 5,
+  }]), AuthModule],
   controllers: [AppController],
   providers: [AppService, {
 	provide: APP_GUARD,
