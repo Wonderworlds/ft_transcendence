@@ -2,16 +2,15 @@ import { OnModuleInit, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/c
 import { ConnectedSocket, MessageBody, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { stringify } from 'querystring';
 import { Server, Socket } from 'socket.io';
-import { UserDto } from 'src/dtos/User.dto';
 import { ValidSocket } from 'src/utils/types';
 import { Pong } from './Pong';
 import { AGateway } from 'src/websocket/Agateway';
 
 @WebSocketGateway({
-  cors: {
-    origin: [process.env.FRONT_URL],
-  },
-  namespace: "/pong",
+	cors: {
+		origin: [process.env.FRONT_URL],
+	},
+	namespace: "/pong"
 })
 export class PongGateway extends AGateway {
 
@@ -20,7 +19,7 @@ export class PongGateway extends AGateway {
     return users
   }
 
-   async handleConnection(user: ValidSocket): Promise<void> {
+   override async handleConnection(user: ValidSocket): Promise<void> {
       user.name = user.handshake.query.name as string;
       console.info("pong gateway");
       console.info(`User ${user.name} | Connected to PongGateway | wsID: ${user.id}`);

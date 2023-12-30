@@ -4,12 +4,15 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './typeorm/entities/User';
 import { UsersModule } from './users/users.module';
-import { Profile } from './typeorm/entities/Profile';
-import { Post } from './typeorm/entities/Post';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GatewayModule } from './gateway/gateway.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { Match } from './typeorm/entities/Match';
+import { Message } from './typeorm/entities/Message';
+import { Room } from './typeorm/entities/Room';
+import { AuthModule } from './auth/auth.module';
+import { PongModule } from './pong/pong.module';
 
 @Module({
   imports: [
@@ -23,14 +26,14 @@ import { APP_GUARD } from '@nestjs/core';
 			username: configService.get('POSTGRES_USER'),
 			password: configService.get('POSTGRES_PASSWORD'),
 			database: configService.get('POSTGRES_DB'),
-			entities: [User, Profile, Post],
+			entities: [User, Match, Message, Room],
 			synchronize: true
 		}),
 			inject: [ConfigService],
-  }), UsersModule, GatewayModule, ThrottlerModule.forRoot([{
+  }), UsersModule, GatewayModule, PongModule, ThrottlerModule.forRoot([{
 	ttl: 10000,
-	limit: 2,
-  }])],
+	limit: 5,
+  }]), AuthModule],
   controllers: [AppController],
   providers: [AppService, {
 	provide: APP_GUARD,

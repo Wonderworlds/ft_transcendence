@@ -11,11 +11,11 @@ const LogIn: React.FC = () => {
 	// 	);
 	// };
 
-	const tmpAuth = () => {
+	async function tmpAuth() {
 		if (username === '') return;
-		user.setPseudo(username);
-		user.setLoggedIn(true);
-	};
+		const userDto = { ...user.userAsDto(), username: username };
+		user.createUser(userDto);
+	}
 
 	const handleChange = (event: any) => {
 		setusername(event.target.value);
