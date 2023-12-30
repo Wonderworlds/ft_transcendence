@@ -12,6 +12,7 @@ import { Match } from './typeorm/entities/Match';
 import { Message } from './typeorm/entities/Message';
 import { Room } from './typeorm/entities/Room';
 import { AuthModule } from './auth/auth.module';
+import { PongModule } from './pong/pong.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { AuthModule } from './auth/auth.module';
 			synchronize: true
 		}),
 			inject: [ConfigService],
-  }), UsersModule, GatewayModule, ThrottlerModule.forRoot([{
+  }), UsersModule, GatewayModule, PongModule, ThrottlerModule.forRoot([{
 	ttl: 10000,
 	limit: 5,
   }]), AuthModule],

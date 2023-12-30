@@ -7,7 +7,7 @@ import Profile from './Profile.tsx';
 import Parameters from './Parameters.tsx';
 import Chat from './Chat.tsx';
 import { ChatWebsocketProvider } from '../context/ChatWebsocketContext.tsx';
-import { PongWebsocketProvider } from '../context/PongWebsocketContext copy.tsx';
+import { PongWebsocketProvider } from '../context/PongWebsocketContext.tsx';
 
 const Home: React.FC = () => {
 	const [page, setpage] = React.useState(Pages.Home);

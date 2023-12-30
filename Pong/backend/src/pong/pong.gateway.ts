@@ -7,10 +7,10 @@ import { Pong } from './Pong';
 import { AGateway } from 'src/websocket/Agateway';
 
 @WebSocketGateway({
-  cors: {
-    origin: [process.env.FRONT_URL],
-  },
-  namespace: "/pong",
+	cors: {
+		origin: [process.env.FRONT_URL],
+	},
+	namespace: "/pong"
 })
 export class PongGateway extends AGateway {
 
@@ -19,7 +19,7 @@ export class PongGateway extends AGateway {
     return users
   }
 
-   async handleConnection(user: ValidSocket): Promise<void> {
+   override async handleConnection(user: ValidSocket): Promise<void> {
       user.name = user.handshake.query.name as string;
       console.info("pong gateway");
       console.info(`User ${user.name} | Connected to PongGateway | wsID: ${user.id}`);

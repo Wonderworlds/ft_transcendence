@@ -8,8 +8,6 @@ export class UsersController {
 
 	@Post()
 	async createUser(@Body() newUser: UserDto) {
-		if (!newUser.pseudo)
-			newUser.pseudo = newUser.username;
 		return await this.userService.createUserDB(newUser);
 	}
 

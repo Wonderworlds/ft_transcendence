@@ -68,8 +68,11 @@ export const UserContextProvider = ({
 			else updateUser(res.data);
 		});
 		if (!found) {
-			await client.post('/users', body);
-			setPseudo(body.username);
+			body.pseudo = body.username;
+			await client.post('/users', body).catch(() => {
+				return;
+			});
+			updateUser(body);
 		}
 		setLoggedIn(true);
 	}
