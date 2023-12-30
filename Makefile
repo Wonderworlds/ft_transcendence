@@ -6,7 +6,7 @@
 #    By: fmauguin <fmauguin@student.42.fr >         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/11 21:40:38 by fmauguin          #+#    #+#              #
-#    Updated: 2023/10/04 18:57:30 by fmauguin         ###   ########.fr        #
+#    Updated: 2023/12/30 07:48:21 by fmauguin         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,10 @@ down:
 
 prune:
 	docker system prune --force
+
+clean: stop down
+	-sudo rm -rf ${vol_db}/*
+
 
 fclean: stop down
 	-docker rm -f $$(docker ps -a -q)

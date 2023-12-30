@@ -1,12 +1,12 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { WebsocketService } from './websocket.service';
 import { Server } from 'socket.io';
-import { ValidSocket } from 'src/utils/types';
 import { Injectable } from '@nestjs/common';
+import { ValidSocket } from 'src/utils/types';
 
 @Injectable()
 @WebSocketGateway()
-export class AGateway
+export abstract class AGateway
           implements OnGatewayInit, OnGatewayDisconnect, OnGatewayConnection
 {
   @WebSocketServer() server: Server;
@@ -17,24 +17,24 @@ export class AGateway
     this.websocketService.server = this.server;
   }
 
-  async handleConnection(user: ValidSocket): Promise<void> {
+  async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
 	user.name = user.handshake.query.name as string;
-	console.info("pong gateway");
-	console.info(`User ${user.name} | Connected to PongGateway | wsID: ${user.id}`);
 	if (this.websocketService.getUser(user.name))
 	{
-		console.info('user already exist');
+		console.info(`user: ${user.name} already exist`);
 		user.disconnect();
+		return ;
 	}
 	else
 	  this.websocketService.addUser(user);
+	console.info(`User ${user.name} | Connected to AGateway | wsID: ${user.id}`);
+	console.info(`Users number ${this.websocketService.getUsersSize()}`);
 }
 
   async handleDisconnect(@ConnectedSocket() user: ValidSocket) {
     console.info(`User ${user.name} | Disconnected`);
     this.websocketService.removeUser(user);
 		const users = Object.keys(this.websocketService.users);
-		this.websocketService.sendMessage(user, 'user_disconnected', users);
   }
 
   @SubscribeMessage('handshake')

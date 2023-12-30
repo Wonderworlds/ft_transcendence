@@ -1,6 +1,8 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Profile } from "./Profile";
-import { Post } from "./Post";
+import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Room } from "./Room";
+import { Match } from "./Match";
+import { Message } from "./Message";
+import { Status } from "src/utils/types";
 
 @Entity({ name: 'users'})
 export class User {
@@ -10,19 +12,36 @@ export class User {
 	@Column({ unique: true})
 	username: string;
 
-	@Column()
-	password: string;
+	@Column({ unique: true})
+	pseudo: string;
 
-	@Column({ default: new Date()})
-	createAt: Date;
+	@Column()
+	ppImg: string;
 
 	@Column({nullable: true})
-	authStrategy: string;
+	password: string;
 
-	@OneToOne(() => Profile)
-	@JoinColumn()
-	profile: Profile;
+	@Column({default: false})
+	twoFA: boolean;
 
-	@OneToMany(() => Post, (post) => post.user)
-	posts: Post[];
+	@Column({default: 0})
+	rank: Number;
+
+	@Column({default: Status.Online})
+	status: Status;
+
+	@OneToMany(() => Message, (msg: Message) => msg.sender)
+	msgs: Room[];
+
+	@OneToMany(() => Room, (room: Room) => room.owner)
+	owners: Room[];
+
+	@ManyToMany(() => Room, (room: Room) => room.admins)
+	admins: Promise<Room>[];
+
+	@ManyToMany(() => Room, (room: Room) => room.users)
+	rooms: Promise<Room>[];
+
+	@OneToMany(() => Match, (match: Match) => match.players)
+	matchs: Promise<Match>[];
 }

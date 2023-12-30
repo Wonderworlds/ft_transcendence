@@ -6,6 +6,8 @@ import WaitingMatch from './WaitingMatch.tsx';
 import Profile from './Profile.tsx';
 import Parameters from './Parameters.tsx';
 import Chat from './Chat.tsx';
+import { ChatWebsocketProvider } from '../context/ChatWebsocketContext.tsx';
+import { PongWebsocketProvider } from '../context/PongWebsocketContext.tsx';
 
 const Home: React.FC = () => {
 	const [page, setpage] = React.useState(Pages.Home);
@@ -28,13 +30,21 @@ const Home: React.FC = () => {
 			case Pages.Home:
 				return homeElement();
 			case Pages.WaitingMatch:
-				return <WaitingMatch setpage={setpage} />;
+				return (
+					<PongWebsocketProvider>
+						<WaitingMatch setpage={setpage} />
+					</PongWebsocketProvider>
+				);
 			case Pages.Profile:
 				return <Profile setpage={setpage} win={9} loose={1} rank={1} />;
 			case Pages.Parameter:
 				return <Parameters setpage={setpage} />;
 			case Pages.Chat:
-				return <Chat setpage={setpage} />;
+				return (
+					<ChatWebsocketProvider>
+						<Chat setpage={setpage} />
+					</ChatWebsocketProvider>
+				);
 		}
 	}
 	return <>{whichPage(page)}</>;
