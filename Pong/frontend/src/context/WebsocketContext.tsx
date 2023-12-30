@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import { Socket, io } from 'socket.io-client';
 import { getUser } from './UserContext';
+import { UserDto } from '../utils/dtos';
 
 // const urlName = `${import.meta.env.VITE_BURL}?name=${getUser().pseudo}`;
 type WebSocketContextType = {
@@ -19,16 +20,26 @@ export const WebsocketProvider = ({
 }) => {
 	console.log('websocket');
 	const user = getUser();
-	const urlName = `${import.meta.env.VITE_BURL}?name=${getUser().pseudo}`;
-	const socket = io(urlName);
+	const url = `${import.meta.env.VITE_BURL}?name=${user.username}`;
+	const socket = io(url);
 
 	React.useEffect(() => {
+		socket.on('connect', () => {
+			console.log('connect');
+			socket.emit('login', user.userAsDto());
+		});
 		socket.on('disconnect', () => {
 			console.log('disconnect');
 			user.setLoggedIn(false);
 		});
 
+		socket.on('onUpdateUser', (updatedUser: UserDto) => {
+			console.log('onUpdatedUser');
+			user.updateUser(updatedUser);
+		});
+
 		return () => {
+			socket.off('connect');
 			socket.off('disconnect');
 		};
 	}, []);

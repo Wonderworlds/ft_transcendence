@@ -13,8 +13,7 @@ const LogIn: React.FC = () => {
 
 	const tmpAuth = () => {
 		if (username === '') return;
-
-		user.setPseudo(username);
+		user.setUsername(username);
 		user.setLoggedIn(true);
 	};
 

@@ -10,12 +10,14 @@ type WebSocketContextType = {
 
 export const PongWebsocketContext = createContext({} as WebSocketContextType);
 
-export const WebsocketProvider = ({
+export const PongWebsocketProvider = ({
 	children,
 }: {
 	children: React.ReactNode;
 }) => {
-	const urlName = `${import.meta.env.VITE_BURL}/pong?name=${getUser().pseudo}`;
+	const urlName = `${import.meta.env.VITE_BURL}/pong?name=${
+		getUser().username
+	}`;
 	const socket = io(urlName);
 
 	function disconnect(): void {

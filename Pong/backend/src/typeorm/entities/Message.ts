@@ -7,8 +7,8 @@ export class Message {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column()
-	sender: string;
+	@OneToMany(() => User, (user: User) => user.msgs)
+	sender: User;
 
 	@Column()
 	body: string;

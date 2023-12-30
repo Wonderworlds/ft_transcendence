@@ -10,12 +10,14 @@ type WebSocketContextType = {
 
 export const ChatWebsocketContext = createContext({} as WebSocketContextType);
 
-export const WebsocketProvider = ({
+export const ChatWebsocketProvider = ({
 	children,
 }: {
 	children: React.ReactNode;
 }) => {
-	const urlName = `${import.meta.env.VITE_BURL}/chat?name=${getUser().pseudo}`;
+	const urlName = `${import.meta.env.VITE_BURL}/chat?name=${
+		getUser().username
+	}`;
 	const socket = io(urlName);
 
 	function disconnect(): void {

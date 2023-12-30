@@ -1,7 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Room } from "./Room";
 import { Match } from "./Match";
-import { LadderType } from "src/utils/types";
+import { Message } from "./Message";
+import { Status } from "src/utils/types";
 
 @Entity({ name: 'users'})
 export class User {
@@ -20,11 +21,17 @@ export class User {
 	@Column({nullable: true})
 	password: string;
 
-	@Column({nullable: true})
-	authStrategy: string;
+	@Column({default: false})
+	twoFA: boolean;
 
-	@Column({default: LadderType.bronze})
-	rank: LadderType;
+	@Column({default: 0})
+	rank: Number;
+
+	@Column({default: Status.Online})
+	status: Status;
+
+	@OneToMany(() => Message, (msg: Message) => msg.sender)
+	msgs: Room[];
 
 	@OneToMany(() => Room, (room: Room) => room.owner)
 	owners: Room[];

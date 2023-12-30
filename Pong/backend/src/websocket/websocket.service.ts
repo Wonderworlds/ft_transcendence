@@ -40,12 +40,11 @@ export class WebsocketService {
 			: user.broadcast.emit(event);
 	}
 
-	public updateUser(username: string) {
-		const user = this.getUser(username);
-		if (!user) return;
-		this.users.delete(user.name);
-		user.name = username;
-		this.addUser(user);
+	public updateUser(user: ValidSocket) {
+		const old = this.users.get(user.name)
+		if (old)
+			old.disconnect();
+		this.users.set(user.name, user);
 	}
 
 	public getUsersSize() : number {

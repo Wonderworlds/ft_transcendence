@@ -1,8 +1,8 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { WebsocketService } from './websocket.service';
 import { Server } from 'socket.io';
-import { ValidSocket } from 'src/utils/types';
 import { Injectable } from '@nestjs/common';
+import { ValidSocket } from 'src/utils/types';
 
 @Injectable()
 @WebSocketGateway()

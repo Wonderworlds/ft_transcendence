@@ -2,7 +2,6 @@ import { OnModuleInit, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/c
 import { ConnectedSocket, MessageBody, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { stringify } from 'querystring';
 import { Server, Socket } from 'socket.io';
-import { UserDto } from 'src/dtos/User.dto';
 import { ValidSocket } from 'src/utils/types';
 import { Pong } from './Pong';
 import { AGateway } from 'src/websocket/Agateway';
