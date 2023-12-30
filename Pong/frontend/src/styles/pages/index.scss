@@ -7,6 +7,7 @@
 @import "./_parameters.scss";
 @import "./_chat.scss";
 @import "./_rooms.scss";
+@import "./_game.scss";
 
 // Components Styles Index
 
@@ -45,3 +46,5 @@
 @import "../components/_chatWithFriend.scss";
 @import "../components/_roomsList.scss";
 @import "../components/_listMemberRooms.scss";
+@import "../components/_gameDisplayTop.scss";
+@import "../components/_gameDisplay.scss"
