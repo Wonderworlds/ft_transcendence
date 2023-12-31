@@ -1,6 +1,7 @@
 import React from 'react';
-import Achievement from '../pages/Achievement.tsx';
 import { TabOption } from '../utils/types.tsx';
+import MatchHistory from '../pages/MatchHistory.tsx';
+import Achievement from '../pages/Achievement.tsx';
 
 interface ActiveInfoProps {
 	tab: TabOption;
@@ -14,8 +15,7 @@ const ActiveInfo: React.FC<ActiveInfoProps> = ({ tab }) => {
 			case TabOption.History:
 				return (
 					<div className="divInfo">
-						<p>history</p>
-						{/* <MatchHistory /> */}
+						<MatchHistory />
 					</div>
 				);
 			case TabOption.Achievement:

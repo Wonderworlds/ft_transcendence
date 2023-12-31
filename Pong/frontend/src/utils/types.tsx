@@ -4,6 +4,13 @@ export enum Status {
 	DnD = 'Do Not Disturb',
 }
 
+export type Match = {
+	me: User;
+	adversary: User;
+	myScore: number;
+	adversaryScore: number;
+}
+
 export type User = {
 	pseudo: string;
 	ppImg: string;
