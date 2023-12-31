@@ -6,8 +6,6 @@
 	padding-top: 0.5%;
 	padding-left: 0.5%;
 	padding-right: 0.5%;
-	overflow-y: scroll;
-	overflow-x: hidden;
 	
 	.divInfo {
 		width: 100%;
@@ -15,26 +13,5 @@
 		display: flex;
 		flex-direction: column;
 		font-size: 2vh;
-	}
-	
-	.divFriendsInfo {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: row;
-		
-		.friendList {
-			width: 92%;
-			height: 100%;
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-evenly;
-		}
-
-		.divfriendButton {
-			background-color: aquamarine;
-			width: 8%;
-			height: 100%;
-		}
 	}
 }

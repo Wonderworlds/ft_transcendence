@@ -24,14 +24,11 @@
 		height: 70%;
 		position: absolute;
 		top: 15%;
+		font-size: 2.5vh;
 
 		display: inline-flex;
 		justify-content: center;
-
-		min-width: 10%;
-		min-height: 10%;
-		overflow-y: scroll;
-		font-size: 2.5vh;
+		align-items: center;
 		color: white;
 		
 		/* Change the background color of the dropdown button when the dropdown content is shown */

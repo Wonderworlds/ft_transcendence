@@ -2,7 +2,7 @@ import React from 'react';
 import NavProfile from '../components/NavProfile.tsx';
 import ActiveInfo from '../components/ActiveInfo.tsx';
 import NavBar from '../components/NavBar.tsx';
-import { TabOption, User } from '../utils/types.tsx';
+import { TabOption } from '../utils/types.tsx';
 
 interface ProfileProps {
 	win: number;

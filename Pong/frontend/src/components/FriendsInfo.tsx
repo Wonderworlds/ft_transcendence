@@ -9,12 +9,13 @@ interface FriendsInfoProps
 }
 
 const FriendsInfo: React.FC<FriendsInfoProps> = ({pP, pseudo, status}) => {
+	
 	return (
 		<div className="headerFriendsInfo">
 			<div className="FriendsInfoBox">
-				<p>
-					{pP} {pseudo}  {status}
-				</p>
+				<div className="divFriendInfo">
+					<p>{pP} {pseudo} {status}</p>
+				</div>
 				<div className="divExtendFriend">
 					<ExtendFriend />
 				</div>
