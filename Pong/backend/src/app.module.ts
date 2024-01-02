@@ -7,7 +7,6 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GatewayModule } from './gateway/gateway.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { Match } from './typeorm/entities/Match';
 import { Message } from './typeorm/entities/Message';
 import { Room } from './typeorm/entities/Room';
@@ -35,9 +34,6 @@ import { PongModule } from './pong/pong.module';
 	limit: 5,
   }]), AuthModule],
   controllers: [AppController],
-  providers: [AppService, {
-	provide: APP_GUARD,
-	useClass: ThrottlerGuard,
-  }],
+  providers: [AppService],
 })
 export class AppModule {}

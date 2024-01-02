@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto, MatchDto } from 'src/utils/dtos';
 
-@Controller('users')
+@Controller({path: 'users'})
 export class UsersController {
 	constructor(private userService:UsersService) {};
 
 	@Post()
-	async createUser(@Body() newUser: UserDto) {
+	async createUser(@Body() newUser: UserDto, @Headers() head: any) {
 		return await this.userService.createUserDB(newUser);
 	}
 
@@ -17,21 +17,26 @@ export class UsersController {
 		return await this.userService.createMatchDB(matchInfo);
 	}
 
+	@Get(':pseudo')
+	async getUserByPseudo(@Param('pseudo') pseudo: string) {
+		return await this.userService.findUserByPseudo(pseudo);
+	}
+
 	@Get(':username')
 	async getUserByUsername(@Param('username') username: string) {
+		console.info('getUserByUsername');	
 		return await this.userService.findUserByUsername(username);
 	}
 
 	@Put(':username')
 	async UpdateUserbyUsername(@Param('username') username: string, @Body() user: UserDto) {
-		console.info(user);	
+		console.info('UpdateUserbyUsername');	
 		return this.userService.updateUser(username, user);
 	}
 
-	@Get(':username/matchs')
-	async getMatchHistoryByUser(@Param('username') username: string) {
-		const res = await this.userService.getMatchHistory(username);
-		return res;
+	@Get(':pseudo/matchs')
+	async getMatchHistoryByUser(@Param('pseudo') pseudo: string) {
+		return await this.userService.getMatchHistory(pseudo);
 	}
 }
 

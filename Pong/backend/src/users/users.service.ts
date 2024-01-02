@@ -12,10 +12,6 @@ export class UsersService {
     @InjectRepository(Match) private matchRepository: Repository<Match>,
   ) {}
 
-  findUsers(username: string) {
-    return this.userRepository.find({ relations: ['wins', 'loses'] });
-  }
-
   async createUserDB(user: UserDto) {
     const newUser = this.userRepository.create({
       ...user,
@@ -23,18 +19,25 @@ export class UsersService {
     return await this.userRepository.save(newUser);
   }
 
+  async findUserByPseudo(pseudo: string): Promise<User> | undefined {
+    const user = await this.userRepository.findOneBy({ pseudo: pseudo });
+    return user;
+  }
+
+  
   async findUserByUsername(username: string): Promise<User> | undefined {
     const user = await this.userRepository.findOneBy({ username: username });
     return user;
   }
 
   async updateUser(username: string, user: UserDto) {
-    return await this.userRepository.update({ username }, { ...user });
+    const res = await this.userRepository.update({ username }, { ...user });
+    console.info(res);
   }
 
-  async getMatchHistory(username: string): Promise<Array<Match>> | undefined {
+  async getMatchHistory(pseudo: string): Promise<Array<Match>> | undefined {
     const user = await this.userRepository.findOne({
-      where: { username: username },
+      where: { pseudo: pseudo },
       relations: ['wins', 'loses'],
     });
     if (user) {
@@ -44,10 +47,10 @@ export class UsersService {
   }
 
   async createMatchDB(matchInfo: MatchDto) {
-    const p1 = await this.findUserByUsername(matchInfo.P1);
+    const p1 = await this.findUserByPseudo(matchInfo.P1);
 	if (!p1)
 		return ;
-    const p2 = await this.findUserByUsername(matchInfo.P2);
+    const p2 = await this.findUserByPseudo(matchInfo.P2);
     if (!p2)
 		return ;
 	const newMatch = this.matchRepository.create({

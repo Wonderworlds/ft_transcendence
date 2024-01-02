@@ -18,9 +18,6 @@ export class User {
 	@Column()
 	ppImg: string;
 
-	@Column({nullable: true})
-	password: string;
-
 	@Column({default: false})
 	twoFA: boolean;
 
@@ -29,6 +26,15 @@ export class User {
 
 	@Column({default: Status.Online})
 	status: Status;
+
+	@ManyToMany(() => User, (user: User) => user.friends)
+	friends: Promise<User>[];
+
+	@ManyToMany(() => User, (user: User) => user.blockedBy)
+	blocked: Promise<User>[];
+	
+	@ManyToMany(() => User, (user: User) => user.blocked)
+	blockedBy: Promise<User>[];
 
 	@OneToMany(() => Message, (msg: Message) => msg.sender)
 	msgs: Room[];

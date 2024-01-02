@@ -33,8 +33,7 @@ export class MyGateway implements OnGatewayInit, OnGatewayDisconnect, OnGatewayC
 		}
 		else
 		  this.websocketService.addUser(user);
-		console.info(`User ${user.name} | Connected to Principal Gateway | wsID: ${user.id}`);
-		console.info(`Users number ${this.websocketService.getUsersSize()}`);
+		console.info(`User ${user.name} | Connected to Gateway | wsID: ${user.id}`);
 	}
 
 	async handleDisconnect(@ConnectedSocket() client: ValidSocket) {

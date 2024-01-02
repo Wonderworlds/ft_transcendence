@@ -15,3 +15,8 @@ export enum Status {
 	Offline = 'Offline',
 	DnD = 'Do Not Disturb',
 }
+
+export enum eventGame {
+	UP = 'UP',
+	DOWN = 'DOWN',
+}

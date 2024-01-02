@@ -9,7 +9,7 @@ export type Match = {
 	adversary: User;
 	myScore: number;
 	adversaryScore: number;
-}
+};
 
 export type User = {
 	pseudo: string;
@@ -32,4 +32,9 @@ export enum TabOption {
 	Achievement = 'achievement',
 	Friend = 'friend',
 	Leaderboard = 'leaderboard',
+}
+
+export enum eventGame {
+	UP = 'UP',
+	DOWN = 'DOWN',
 }

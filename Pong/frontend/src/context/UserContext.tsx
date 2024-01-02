@@ -68,14 +68,20 @@ export const UserContextProvider = ({
 	async function createUser(body: UserDto) {
 		let found = true;
 		await client.get(`/users/${body.username}`).then((res) => {
+			console.log(res);
 			if (!res.data) found = false;
 			else updateUser(res.data);
 		});
 		if (!found) {
 			body.pseudo = body.username;
-			await client.post('/users', body).catch(() => {
-				return;
-			});
+			client
+				.post('/users', body)
+				.then((res) => {
+					console.log(res);
+				})
+				.catch(() => {
+					return;
+				});
 			updateUser(body);
 		}
 		setPage(Pages.Home);
@@ -83,7 +89,7 @@ export const UserContextProvider = ({
 	}
 
 	async function getMatchHistory() {
-		await client.get(`/users/${username}/matchs`).then((res) => {
+		await client.get(`/users/${pseudo}/matchs`).then((res) => {
 			console.log(res);
 		});
 	}
