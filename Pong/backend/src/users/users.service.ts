@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/typeorm/entities/Match';
 import { User } from 'src/typeorm/entities/User';
+import { debug } from 'src/utils/DEBUG';
 import { UserDto, MatchDto, SecureUserDto } from 'src/utils/dtos';
 import { Repository } from 'typeorm';
 
@@ -16,6 +17,7 @@ export class UsersService {
     const newUser = this.userRepository.create({
       ...user,
     });
+    debug('createUserDB', newUser);
     return await this.userRepository.save(newUser);
   }
 

@@ -1,21 +1,28 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Req, Session } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Req, Request, Session, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LogInUserDto, UserDto } from 'src/utils/dtos';
-import { Request } from 'express';
+import { LocalAuthGuard } from './local.auth.guard';
+import { JwtAuthGuard } from './jwt.auth.guard';
+import { SkipAuth } from './constants';
 
 @Controller('auth')
 export class AuthController {
 	constructor(private authService : AuthService) {};
 
-	@HttpCode(HttpStatus.OK)
-	@Post('/login')
-	logIn(@Body() secureUser: LogInUserDto)
+	@SkipAuth()
+	@Post('/signup')
+	signUp(@Body() secureUser: LogInUserDto)
 	{
-		try {
-			return this.authService.onLoginLogic(secureUser);
-		} catch (error: any) {
-			return new BadRequestException('LogIn Failed', error);
-		}
+			secureUser.username = secureUser.username.toLowerCase();
+			return this.authService.createUser(secureUser);
+	}
+
+	@SkipAuth()
+	@UseGuards(LocalAuthGuard)
+	@Post('/login')
+	logIn(@Req() req: any)
+	{
+		return this.authService.login(req.user);
 	}
 
 	@Get()
@@ -23,5 +30,22 @@ export class AuthController {
 	{
 		console.info(session);
 		return ;
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Get('user')
+	getUser(@Req() req: any)
+	{
+		console.info(req.user);
+		return req.user;
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post('user')
+	PostUser(@Req() req: any, @Body() body: any)
+	{
+		console.info(req.user);
+		console.info(body);
+		return body;
 	}
 }
