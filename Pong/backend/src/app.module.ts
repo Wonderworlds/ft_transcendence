@@ -5,13 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './typeorm/entities/User';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GatewayModule } from './gateway/gateway.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { Match } from './typeorm/entities/Match';
 import { Message } from './typeorm/entities/Message';
 import { Room } from './typeorm/entities/Room';
-import { AuthModule } from './auth/auth.module';
 import { PongModule } from './pong/pong.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -29,7 +28,7 @@ import { PongModule } from './pong/pong.module';
 			synchronize: true
 		}),
 			inject: [ConfigService],
-  }), UsersModule, GatewayModule, PongModule, ThrottlerModule.forRoot([{
+  }), UsersModule, PongModule, ThrottlerModule.forRoot([{
 	ttl: 10000,
 	limit: 5,
   }]), AuthModule],

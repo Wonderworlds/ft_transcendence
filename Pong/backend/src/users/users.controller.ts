@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Headers, Param, Post, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserDto, MatchDto } from 'src/utils/dtos';
+import { UserDto, MatchDto, SecureUserDto } from 'src/utils/dtos';
 
 @Controller({path: 'users'})
 export class UsersController {
 	constructor(private userService:UsersService) {};
 
 	@Post()
-	async createUser(@Body() newUser: UserDto, @Headers() head: any) {
+	async createUser(@Body() newUser: SecureUserDto) {
 		return await this.userService.createUserDB(newUser);
 	}
 
@@ -38,5 +38,6 @@ export class UsersController {
 	async getMatchHistoryByUser(@Param('pseudo') pseudo: string) {
 		return await this.userService.getMatchHistory(pseudo);
 	}
+
 }
 

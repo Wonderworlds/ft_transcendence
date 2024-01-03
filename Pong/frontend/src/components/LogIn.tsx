@@ -1,25 +1,22 @@
 import React from 'react';
 import { getUser } from '../context/UserContext';
+import { getAxios } from '../context/AxiosContext';
 
 const LogIn: React.FC = () => {
-	const [username, setusername] = React.useState('');
+	const [username, setUsername] = React.useState<string>('');
+	const [password, setPassword] = React.useState<string>('');
 	const user = getUser();
-	// const to42Auth = () => {
-	// 	// 👇️ navigate to 42Auth
-	// 	window.location.replace(
-	// 		'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-cfd734c4063d40cb2633f45c599ec496546613e86ccc386934324d52e798e452&redirect_uri=http%3A%2F%2Flocalhost%3A8080&response_type=code'
-	// 	);
-	// };
+	const axios = getAxios().client;
 
-	async function tmpAuth() {
-		if (username === '') return;
+	React.useEffect(() => {
+		axios.get('auth').then((res) => console.log(res));
+	}, []);
+
+	async function Auth() {
+		if (username === '' || password === '') return;
 		const userDto = { ...user.userAsDto(), username: username };
 		user.createUser(userDto);
 	}
-
-	const handleChange = (event: any) => {
-		setusername(event.target.value);
-	};
 
 	return (
 		<div>
@@ -28,9 +25,20 @@ const LogIn: React.FC = () => {
 				name="Username"
 				placeholder="Username"
 				value={username}
-				onChange={handleChange}
+				onChange={(event) => {
+					setUsername(event.target.value);
+				}}
 			/>
-			<button className="logInButton" onClick={tmpAuth}>
+			<input
+				type="text"
+				name="password"
+				placeholder="Password"
+				value={password}
+				onChange={(event) => {
+					setPassword(event.target.value);
+				}}
+			/>
+			<button className="logInButton" onClick={Auth}>
 				<p className="logInText">Log In</p>
 			</button>
 		</div>

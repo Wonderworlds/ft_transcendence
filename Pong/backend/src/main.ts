@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
+import * as session from 'express-session';
 
 async function bootstrap() {
   const httpsOptions = {
@@ -14,6 +15,16 @@ async function bootstrap() {
   );
 
   app.enableCors();
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: true,
+      }
+    }),
+  );
   await app.listen(3000);
 }
 bootstrap();

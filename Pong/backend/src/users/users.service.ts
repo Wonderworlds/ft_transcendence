@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/typeorm/entities/Match';
 import { User } from 'src/typeorm/entities/User';
-import { UserDto, MatchDto } from 'src/utils/dtos';
+import { UserDto, MatchDto, SecureUserDto } from 'src/utils/dtos';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UsersService {
     @InjectRepository(Match) private matchRepository: Repository<Match>,
   ) {}
 
-  async createUserDB(user: UserDto) {
+  async createUserDB(user: SecureUserDto) : Promise<User> {
     const newUser = this.userRepository.create({
       ...user,
     });
@@ -59,5 +59,9 @@ export class UsersService {
 		loser: matchInfo.scoreP1 > matchInfo.scoreP2 ? p2 : p1,
 	  });
     return await this.matchRepository.save(newMatch);
+  }
+
+  userToDto(user: User) : UserDto {
+    return ({...user});
   }
 }
