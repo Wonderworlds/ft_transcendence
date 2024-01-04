@@ -1,25 +1,24 @@
 import PongTitle from './PongTitle.tsx';
 import Play from './Play.tsx';
 import Chat from './Chat.tsx';
-import { Pages } from '../utils/types.tsx';
 import React from 'react';
 import { getUser } from '../context/UserContext.tsx';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
 	const user = getUser();
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const playElement = () => {
-		return user.page == Pages.Home ? (
+		return location.pathname.toLowerCase() == '/home' ? (
 			<div></div>
 		) : (
-			<div
-				className="navPlay"
-				onClick={() => {
-					user.setPage(Pages.WaitingMatch);
-				}}
-			>
-				<Play />
-			</div>
+			<Link to={'/game'}>
+				<div className="navPlay">
+					<Play />
+				</div>
+			</Link>
 		);
 	};
 
@@ -29,7 +28,7 @@ const NavBar: React.FC = () => {
 				<div
 					className="navPongTitle"
 					onClick={() => {
-						user.setPage(Pages.Home);
+						navigate('/home');
 					}}
 				>
 					<PongTitle />
@@ -39,7 +38,7 @@ const NavBar: React.FC = () => {
 					<div
 						className="navProfilePicture"
 						onClick={() => {
-							user.setPage(Pages.Parameter);
+							navigate('/stats');
 						}}
 					>
 						<img src={user.ppImg} />
@@ -47,17 +46,12 @@ const NavBar: React.FC = () => {
 					<div
 						className="navPseudo"
 						onClick={() => {
-							user.setPage(Pages.Profile);
+							navigate('/profile');
 						}}
 					>
 						<p>{user.pseudo}</p>
 					</div>
-					<div
-						className="navChat"
-						onClick={() => {
-							user.setPage(Pages.Chat);
-						}}
-					>
+					<div className="navChat" onClick={() => {}}>
 						<Chat />
 					</div>
 				</div>

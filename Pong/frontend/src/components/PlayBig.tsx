@@ -1,20 +1,13 @@
 import React from 'react';
-import { Pages } from '../utils/types';
-import { getUser } from '../context/UserContext';
+import { Link } from 'react-router-dom';
 
 const PlayBig: React.FC = () => {
-	const user = getUser();
-
 	return (
 		<div>
 			<button className="playBigButton">
-				<div
-					onClick={() => {
-						user.setPage(Pages.WaitingMatch);
-					}}
-				>
+				<Link to={'/game'}>
 					<p className="playBigText">PLAY</p>
-				</div>
+				</Link>
 			</button>
 		</div>
 	);

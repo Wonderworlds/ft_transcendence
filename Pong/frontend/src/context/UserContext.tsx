@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { Pages, Status } from '../utils/types';
+import { Status } from '../utils/types';
 import { getAxios } from './AxiosContext';
 import { AxiosError } from 'axios';
 import { UserDto } from '../utils/dtos';
@@ -19,9 +19,6 @@ type UserContextType = {
 	setStatus: React.Dispatch<React.SetStateAction<Status>>;
 	loggedIn: boolean;
 	setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-	page: Pages;
-	setPage: React.Dispatch<React.SetStateAction<Pages>>;
-	ready: boolean;
 };
 
 export const UserContext = createContext({} as UserContextType);
@@ -35,8 +32,6 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
 	const [loggedIn, setLoggedIn] = React.useState<boolean>(false);
-	const [page, setPage] = React.useState<Pages>(Pages.Home);
-	const [ready, setReady] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
 		if (axios.ready) {
@@ -44,13 +39,14 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				.get('users')
 				.then((res) => {
 					updateUser(res.data);
-					setReady(true);
+					setLoggedIn(true);
 				})
 				.catch((err: AxiosError) => console.log(err));
 		}
 	}, [axios.ready]);
 
 	function updateUser(body: UserDto) {
+		console.log('updateUser');
 		if (username != body.username) setUsername(body.username);
 		if (pseudo != body.pseudo) setPseudo(body.pseudo);
 		if (ppImg != body.ppImg) setppImg(body.ppImg);
@@ -76,9 +72,6 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				setStatus,
 				loggedIn,
 				setLoggedIn,
-				page,
-				setPage,
-				ready,
 			}}
 		>
 			{children}
