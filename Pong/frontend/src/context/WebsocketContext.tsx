@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { Socket, io } from 'socket.io-client';
-import { getUser } from './UserContext';
+import { getAxios } from './AxiosContext';
 
 // const urlName = `${import.meta.env.VITE_BURL}?name=${getUser().pseudo}`;
 type WebSocketContextType = {
@@ -9,22 +9,21 @@ type WebSocketContextType = {
 
 export const WebsocketContext = createContext({} as WebSocketContextType);
 
-export const WebsocketProvider = ({
-	children,
-}: {
-	children: React.ReactNode;
-}) => {
-	console.log('websocket');
-	const user = getUser();
-	const url = `${import.meta.env.VITE_BURL}/pong?name=${user.username}`;
-	const socket = io(url);
+export const WebsocketProvider = ({ children }: { children: React.ReactNode }) => {
+	const axios = getAxios();
+	const socket = io(`${import.meta.env.VITE_BURL}/pong`, {
+		query: { name: axios.auth.username },
+		reconnection: true,
+		reconnectionDelayMax: 5000,
+		reconnectionDelay: 1000,
+	});
 
 	React.useEffect(() => {
 		socket.on('connect', () => {
-			console.log('connect');
+			console.log('connect Pong');
 		});
 		socket.on('disconnect', () => {
-			console.log('disconnect');
+			console.log('disconnect Pong');
 		});
 
 		return () => {
@@ -33,11 +32,7 @@ export const WebsocketProvider = ({
 		};
 	}, []);
 
-	return (
-		<WebsocketContext.Provider value={{ socket }}>
-			{children}
-		</WebsocketContext.Provider>
-	);
+	return <WebsocketContext.Provider value={{ socket }}>{children}</WebsocketContext.Provider>;
 };
 
 export function getSocket() {

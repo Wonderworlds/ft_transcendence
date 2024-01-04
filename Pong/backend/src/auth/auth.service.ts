@@ -1,18 +1,21 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/typeorm/entities/User';
 import { UsersService } from 'src/users/users.service';
-import { LogInUserDto, SecureUserDto, UserDto } from 'src/utils/dtos';
+import { LogInUserDto, SecureUserDto } from 'src/utils/dtos';
 import { Status } from 'src/utils/types';
 import * as bcrypt from 'bcrypt';
-import { debug } from 'src/utils/DEBUG';
+import { myDebug } from 'src/utils/DEBUG';
 import { JWTPayload } from './utils';
+import { OtpService } from 'src/2FA/otp.service';
+import { createMail, transporter } from 'src/2FA/nodemailer';
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UsersService,
-    private jwtService: JwtService,
-  ) {}
+    private readonly userService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly otpService: OtpService,
+    ) {}
 
   async createUser(userToLog: LogInUserDto): Promise<User> {
 		let found = await this.userService.findUserByUsername(userToLog.username);
@@ -31,12 +34,13 @@ export class AuthService {
       ...userToLog,
       pseudo: pseudo,
       status: Status.Offline,
-      ppImg: 'PP_default.png',
+      ppImg: 'pp_default.png',
     };
     return await this.userService.createUserDB(newUser);
   }
 
   async validateUser(userToLog: LogInUserDto, user?: User) : Promise<JWTPayload> {
+		myDebug('validateUser');
     if (!user) {
       user = await this.userService.findUserByUsername(userToLog.username);
     }
@@ -51,18 +55,44 @@ export class AuthService {
     if (passwordValid) {
       return {
         sub: user.id,
-        user: user.username,
+        user: user,
       };
     }
     throw new BadRequestException('Password incorrect');
   }
 
-  async login(user: JWTPayload) {
-		debug('login', user);
+  async login(payload: JWTPayload) {
+		myDebug('login');
+    const miniPayload = {sub: payload.sub, user: payload.user.username};
 		return {
 			success: true,
-      access_token: await this.jwtService.signAsync(user),
-			username: user.user
+      access_token: await this.jwtService.signAsync(miniPayload),
+			username: payload.user.username,
+      twoFA: payload.user.twoFA,
 		};
+  }
+
+  
+  async sendMailOtp(req: Request) {
+    const userDetails : JWTPayload = req['user'];
+    const user = await this.userService.findUserById(userDetails.sub)
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    const otp = this.otpService.generateOTP(6);
+    const res = await this.otpService.createOtpEntity({owner: user, code: otp});
+    console.info(res);
+    const mail = createMail(
+      {to: user.email,
+      text: `Use this code ${otp} to verify the email registered on your account`,
+    });
+    console.info(mail);
+    transporter.sendMail(mail, (error, info) => {
+      if (error)
+        return console.info(error);
+      else
+        console.info("Email envoye" + info.response);
+    });
+    return { success: true };
   }
 }

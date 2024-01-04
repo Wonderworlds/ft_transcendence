@@ -20,7 +20,7 @@ const MainPage: React.FC = () => {
 		);
 	};
 
-	return <>{user.loggedIn ? <Home /> : mainPageELement()}</>;
+	return <>{user.ready ? <Home /> : mainPageELement()}</>;
 };
 
 export default MainPage;

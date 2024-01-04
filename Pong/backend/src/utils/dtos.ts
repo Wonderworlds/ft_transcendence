@@ -4,19 +4,16 @@ import { IntersectionType, PickType } from "@nestjs/mapped-types";
 
 export class UserDto {
 	@IsString()
-	username?: string;
+	username: string;
 
 	@IsString()
-	pseudo?: string;
+	pseudo: string;
 
 	@IsString()
-	ppImg?: string;
+	ppImg: string;
 
 	@IsEnum(Status)
-	status?: Status;
-
-	@IsPhoneNumber()
-	phone?: string;
+	status: Status;
 
 	@IsPhoneNumber()
 	email?: string;
@@ -25,19 +22,22 @@ export class UserDto {
 	twoFA?: boolean;
 }
 
-export class SecurePasswordDto {
+export class UserDtoPassword {
 	@IsString()
 	@IsStrongPassword()
 	password: string;
 }
 
-export class UpdateUserDtoPseudo extends PickType(UserDto, ['pseudo'] as const) {}
-export class UpdateUserDtoPPImg extends PickType(UserDto, ['ppImg'] as const) {}
-export class UpdateUserDtoStatus extends PickType(UserDto, ['status'] as const) {}
+export class LimitedUserDto extends PickType(UserDto, ['pseudo', 'ppImg', 'status'] as const) {}
+export class UserDtoPseudo extends PickType(UserDto, ['pseudo'] as const) {}
+export class UserDtoPPImg extends PickType(UserDto, ['ppImg'] as const) {}
+export class UserDtoStatus extends PickType(UserDto, ['status'] as const) {}
+export class UserDtoTwoFA extends PickType(UserDto, ['twoFA'] as const) {}
+export class UserDtoEmail extends PickType(UserDto, ['email'] as const) {}
 export class UserDtoUsername extends PickType(UserDto, ['username'] as const) {}
 
-export class SecureUserDto extends IntersectionType(UserDto, SecurePasswordDto) {}
-export class LogInUserDto extends IntersectionType(UserDtoUsername, SecurePasswordDto) {}
+export class LogInUserDto extends IntersectionType(UserDtoUsername, UserDtoPassword) {}
+export class SecureUserDto extends IntersectionType(UserDto, UserDtoPassword) {}
 
 
 

@@ -25,15 +25,16 @@ export class PongGateway extends AGateway {
 
    override async handleConnection(user: ValidSocket): Promise<void> {
       user.name = user.handshake.query.name as string;
-      console.info(`User ${user.name} | Connected to PongGateway | wsID: ${user.id}`);
       if (this.websocketService.getUser(user.name))
       {
           console.info('user already exist');
+          return ;
           //reconnect
       }
       else
         this.websocketService.addUser(user);
-      if (this.websocketService.getUsersSize() >= 2)
+      console.info(`User ${user.name} | Connected to PongGateway | wsID: ${user.id}`);
+        if (this.websocketService.getUsersSize() >= 2)
       {
         const users = this.removeTwoUser();
         const id = uuidv4();

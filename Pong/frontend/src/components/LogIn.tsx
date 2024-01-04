@@ -1,27 +1,85 @@
 import React from 'react';
 import { getUser } from '../context/UserContext';
 import { getAxios } from '../context/AxiosContext';
-import { AxiosError } from 'axios';
 
 const LogIn: React.FC = () => {
 	const [username, setUsername] = React.useState<string>('');
 	const [password, setPassword] = React.useState<string>('');
+	const [code, setCode] = React.useState<string>('');
 	const [error, setError] = React.useState<string>('');
 	const user = getUser();
-	const axios = getAxios().client;
+	const axios = getAxios();
 
 	React.useEffect(() => {
-		axios.get('auth').then((res) => {});
+		axios.client.get('auth').then((res) => {});
 	}, []);
 
-	React.useEffect(() => {
-		if (error === 'User not found') {
-			signUp();
-		}
-	}, [error]);
+	const twoFAElement = () => {
+		return (
+			<>
+				<input
+					type="text"
+					name="Code"
+					placeholder="Code"
+					value={code}
+					onChange={(event) => {
+						setCode(event.target.value);
+					}}
+				/>
+				<button
+					className="logInButton"
+					onClick={() => {
+						Auth(2);
+					}}
+				>
+					<p className="logInText">Log In</p>
+				</button>
+			</>
+		);
+	};
 
+	const loginElement = () => {
+		return (
+			<>
+				<input
+					type="text"
+					name="Username"
+					placeholder="Username"
+					value={username}
+					onChange={(event) => {
+						setUsername(event.target.value);
+					}}
+				/>
+				<input
+					type="password"
+					name="password"
+					placeholder="Password"
+					value={password}
+					onChange={(event) => {
+						setPassword(event.target.value);
+					}}
+				/>
+				<button
+					className="logInButton"
+					onClick={() => {
+						Auth(1);
+					}}
+				>
+					<p className="logInText">Log In</p>
+				</button>
+				<button
+					className="SignInButton"
+					onClick={() => {
+						Auth(0);
+					}}
+				>
+					<p className="logInText">Sign In</p>
+				</button>
+			</>
+		);
+	};
 	async function signUp() {
-		return await axios
+		return await axios.client
 			.post('auth/signup', { username: username, password: password })
 			.then(() => {
 				setError('User created');
@@ -32,10 +90,23 @@ const LogIn: React.FC = () => {
 	}
 
 	async function logIn() {
-		axios
+		axios.client
 			.post('auth/login', { username: username, password: password })
 			.then((res) => {
-				setError(res.data.username);
+				axios.setAuth({ token: res.data.access_token, username: res.data.username });
+				user.setUsername(res.data.username);
+				if (!res.data.twoFA) user.setLoggedIn(true);
+			})
+			.catch((err: any) => {
+				setError(err.response?.data?.message);
+			});
+	}
+
+	async function twoFA() {
+		return await axios.client
+			.post('auth/twoFA', { username: username, code: code })
+			.then(() => {
+				user.setLoggedIn(true);
 			})
 			.catch((err: any) => {
 				setError(err.response?.data?.message);
@@ -44,47 +115,15 @@ const LogIn: React.FC = () => {
 
 	async function Auth(id: number) {
 		if (username === '' || password === '') return;
-		if (id) return await logIn();
-		else return await signUp();
+		if (id === 0) return await signUp();
+		else if (id === 1) return await logIn();
+		else if (code) return await twoFA();
 	}
 
 	return (
 		<div>
 			{error ? <p className="errorMsg">{error}</p> : <></>}
-			<input
-				type="text"
-				name="Username"
-				placeholder="Username"
-				value={username}
-				onChange={(event) => {
-					setUsername(event.target.value);
-				}}
-			/>
-			<input
-				type="password"
-				name="password"
-				placeholder="Password"
-				value={password}
-				onChange={(event) => {
-					setPassword(event.target.value);
-				}}
-			/>
-			<button
-				className="logInButton"
-				onClick={() => {
-					Auth(1);
-				}}
-			>
-				<p className="logInText">Log In</p>
-			</button>
-			<button
-				className="SignInButton"
-				onClick={() => {
-					Auth(0);
-				}}
-			>
-				<p className="logInText">Sign In</p>
-			</button>
+			{user.username ? twoFAElement() : loginElement()}
 		</div>
 	);
 };

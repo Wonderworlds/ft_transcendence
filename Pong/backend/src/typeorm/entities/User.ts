@@ -19,14 +19,11 @@ export class User {
 	@Column({ unique: true})
 	pseudo: string;
 
-	@Column()
+	@Column({default: 'pp_default.png'})
 	ppImg: string;
 
 	@Column({default: false})
 	twoFA: boolean;
-
-	@Column({nullable: true})
-	phone: string;
 
 	@Column({nullable: true})
 	email: string;
