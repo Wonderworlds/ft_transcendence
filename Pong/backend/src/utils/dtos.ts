@@ -1,16 +1,59 @@
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsNumberString, IsPhoneNumber, IsString, IsStrongPassword, Length } from "class-validator";
 import { Status } from "./types";
+import { IntersectionType, PickType } from "@nestjs/mapped-types";
 
-export type UserDto = {
+export class UserDto {
+	@IsString()
 	username: string;
+
+	@IsString()
 	pseudo: string;
+
+	@IsString()
 	ppImg: string;
-	twoFA?: boolean;
+
+	@IsEnum(Status)
 	status: Status;
+
+	@IsEmail()
+	email?: string;
+
+	@IsBoolean()
+	twoFA?: boolean;
 }
 
-export type MatchDto ={
+export class UserDtoPassword {
+	@IsString()
+	@IsStrongPassword()
+	password: string;
+}
+
+export class LimitedUserDto extends PickType(UserDto, ['pseudo', 'ppImg', 'status'] as const) {}
+export class UserDtoPseudo extends PickType(UserDto, ['pseudo'] as const) {}
+export class UserDtoPPImg extends PickType(UserDto, ['ppImg'] as const) {}
+export class UserDtoStatus extends PickType(UserDto, ['status'] as const) {}
+export class UserDtoTwoFA extends PickType(UserDto, ['twoFA'] as const) {}
+export class UserDtoEmail extends PickType(UserDto, ['email'] as const) {}
+export class UserDtoUsername extends PickType(UserDto, ['username'] as const) {}
+
+export class LogInUserDto extends IntersectionType(UserDtoUsername, UserDtoPassword) {}
+export class SecureUserDto extends IntersectionType(UserDto, UserDtoPassword) {}
+
+export class CodeDto {
+	@IsString()
+	password: string;
+}
+
+export class MatchDto {
+	@IsNumber()
 	scoreP1: number;
+
+	@IsNumber()
 	scoreP2: number;
+
+	@IsString()
 	P1: string;
+
+	@IsString()
 	P2: string;
 }

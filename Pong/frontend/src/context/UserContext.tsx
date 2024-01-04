@@ -1,7 +1,8 @@
 import React, { createContext, useContext } from 'react';
 import { Pages, Status } from '../utils/types';
-import { UserDto } from '../utils/dtos';
 import { getAxios } from './AxiosContext';
+import { AxiosError } from 'axios';
+import { UserDto } from '../utils/dtos';
 
 type UserContextType = {
 	username: string;
@@ -10,6 +11,8 @@ type UserContextType = {
 	setPseudo: React.Dispatch<React.SetStateAction<string>>;
 	ppImg: string;
 	setppImg: React.Dispatch<React.SetStateAction<string>>;
+	email: string;
+	setEmail: React.Dispatch<React.SetStateAction<string>>;
 	doubleAuth: boolean;
 	setDoubleAuth: React.Dispatch<React.SetStateAction<boolean>>;
 	status: Status;
@@ -18,44 +21,34 @@ type UserContextType = {
 	setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 	page: Pages;
 	setPage: React.Dispatch<React.SetStateAction<Pages>>;
-	getMatchHistory: () => void;
-	userAsDto: () => UserDto;
-	updateUser: (body: UserDto) => void;
-	createUser: (body: UserDto) => void;
+	ready: boolean;
 };
 
 export const UserContext = createContext({} as UserContextType);
 
-export const UserContextProvider = ({
-	children,
-}: {
-	children: React.ReactNode;
-}) => {
-	const client = getAxios().client;
+export const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
+	const axios = getAxios();
 	const [username, setUsername] = React.useState<string>('');
 	const [pseudo, setPseudo] = React.useState<string>('');
-	const [ppImg, setppImg] = React.useState<string>('pp_default.png');
+	const [email, setEmail] = React.useState<string>('');
+	const [ppImg, setppImg] = React.useState<string>('');
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
 	const [loggedIn, setLoggedIn] = React.useState<boolean>(false);
-	const [page, setPage] = React.useState<Pages>(Pages.Root);
-
-	function userAsDto() {
-		const userDto: UserDto = {
-			username: username,
-			pseudo: pseudo,
-			ppImg: ppImg,
-			twoFA: doubleAuth,
-			status: status,
-		};
-		return userDto;
-	}
+	const [page, setPage] = React.useState<Pages>(Pages.Home);
+	const [ready, setReady] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
-		if (username) {
-			client.put(`/users/${username}`, userAsDto());
+		if (axios.ready) {
+			axios.client
+				.get('users')
+				.then((res) => {
+					updateUser(res.data);
+					setReady(true);
+				})
+				.catch((err: AxiosError) => console.log(err));
 		}
-	}, [pseudo, ppImg, status, doubleAuth]);
+	}, [axios.ready]);
 
 	function updateUser(body: UserDto) {
 		if (username != body.username) setUsername(body.username);
@@ -63,35 +56,7 @@ export const UserContextProvider = ({
 		if (ppImg != body.ppImg) setppImg(body.ppImg);
 		if (status != body.status) setStatus(body.status);
 		if (body.twoFA && doubleAuth != body.twoFA) setDoubleAuth(body.twoFA);
-	}
-
-	async function createUser(body: UserDto) {
-		let found = true;
-		await client.get(`/users/${body.username}`).then((res) => {
-			console.log(res);
-			if (!res.data) found = false;
-			else updateUser(res.data);
-		});
-		if (!found) {
-			body.pseudo = body.username;
-			client
-				.post('/users', body)
-				.then((res) => {
-					console.log(res);
-				})
-				.catch(() => {
-					return;
-				});
-			updateUser(body);
-		}
-		setPage(Pages.Home);
-		setLoggedIn(true);
-	}
-
-	async function getMatchHistory() {
-		await client.get(`/users/${pseudo}/matchs`).then((res) => {
-			console.log(res);
-		});
+		if (body.email && email != body.email) setEmail(body.email);
 	}
 
 	return (
@@ -101,6 +66,8 @@ export const UserContextProvider = ({
 				setUsername,
 				pseudo,
 				setPseudo,
+				email,
+				setEmail,
 				ppImg,
 				setppImg,
 				doubleAuth,
@@ -109,12 +76,9 @@ export const UserContextProvider = ({
 				setStatus,
 				loggedIn,
 				setLoggedIn,
-				userAsDto,
-				updateUser,
-				createUser,
 				page,
 				setPage,
-				getMatchHistory,
+				ready,
 			}}
 		>
 			{children}

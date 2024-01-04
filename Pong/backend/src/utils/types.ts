@@ -1,4 +1,5 @@
 import { Socket } from "socket.io";
+import { UserDto } from "./dtos";
 
 export type ValidSocket = Socket & {
 	name: string;
@@ -14,6 +15,7 @@ export enum Status {
 	Online = 'Online',
 	Offline = 'Offline',
 	DnD = 'Do Not Disturb',
+	Busy = "Busy",
 }
 
 export enum eventGame {

@@ -3,6 +3,7 @@ import { Room } from "./Room";
 import { Match } from "./Match";
 import { Message } from "./Message";
 import { Status } from "src/utils/types";
+import { Otp } from "./Otp";
 
 @Entity({ name: 'users'})
 export class User {
@@ -11,16 +12,26 @@ export class User {
 	
 	@Column({ unique: true})
 	username: string;
+	
+	@Column()
+	password: string;
 
 	@Column({ unique: true})
 	pseudo: string;
 
-	@Column()
+	@Column({default: 'pp_default.png'})
 	ppImg: string;
 
 	@Column({default: false})
 	twoFA: boolean;
 
+	@Column({nullable: true})
+	email: string;
+
+	@OneToOne(() => Otp)
+	@JoinColumn()
+	otp: Otp;
+	
 	@Column({default: 0})
 	rank: Number;
 

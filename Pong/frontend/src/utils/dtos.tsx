@@ -5,6 +5,7 @@ export type UserDto = {
 	pseudo: string;
 	ppImg: string;
 	twoFA?: boolean;
+	email?: string;
 	status: Status;
 };
 

@@ -1,38 +1,133 @@
 import React from 'react';
 import { getUser } from '../context/UserContext';
+import { getAxios } from '../context/AxiosContext';
 
 const LogIn: React.FC = () => {
-	const [username, setusername] = React.useState('');
+	const [username, setUsername] = React.useState<string>('');
+	const [password, setPassword] = React.useState<string>('');
+	const [code, setCode] = React.useState<string>('');
+	const [error, setError] = React.useState<string>('');
 	const user = getUser();
-	// const to42Auth = () => {
-	// 	// 👇️ navigate to 42Auth
-	// 	window.location.replace(
-	// 		'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-cfd734c4063d40cb2633f45c599ec496546613e86ccc386934324d52e798e452&redirect_uri=http%3A%2F%2Flocalhost%3A8080&response_type=code'
-	// 	);
-	// };
+	const axios = getAxios();
 
-	async function tmpAuth() {
-		if (username === '') return;
-		const userDto = { ...user.userAsDto(), username: username };
-		user.createUser(userDto);
+	React.useEffect(() => {
+		axios.client.get('auth').then((res) => {});
+	}, []);
+
+	const twoFAElement = () => {
+		return (
+			<>
+				<input
+					type="text"
+					name="Code"
+					placeholder="Code"
+					value={code}
+					onChange={(event) => {
+						setCode(event.target.value);
+					}}
+				/>
+				<button
+					className="logInButton"
+					onClick={() => {
+						Auth(2);
+					}}
+				>
+					<p className="logInText">Log In</p>
+				</button>
+			</>
+		);
+	};
+
+	const loginElement = () => {
+		return (
+			<>
+				<input
+					type="text"
+					name="Username"
+					placeholder="Username"
+					value={username}
+					onChange={(event) => {
+						setUsername(event.target.value);
+					}}
+				/>
+				<input
+					type="password"
+					name="password"
+					placeholder="Password"
+					value={password}
+					onChange={(event) => {
+						setPassword(event.target.value);
+					}}
+				/>
+				<button
+					className="logInButton"
+					onClick={() => {
+						Auth(1);
+					}}
+				>
+					<p className="logInText">Log In</p>
+				</button>
+				<button
+					className="SignInButton"
+					onClick={() => {
+						Auth(0);
+					}}
+				>
+					<p className="logInText">Sign In</p>
+				</button>
+			</>
+		);
+	};
+	async function signUp() {
+		return await axios.client
+			.post('auth/signup', { username: username, password: password })
+			.then(() => {
+				setError('User created');
+			})
+			.catch((err: any) => {
+				setError(err.response?.data?.message);
+			});
 	}
 
-	const handleChange = (event: any) => {
-		setusername(event.target.value);
-	};
+	async function logIn() {
+		axios.client
+			.post('auth/login', { username: username, password: password })
+			.then((res) => {
+				console.log(res);
+				user.setUsername(res.data.username);
+				if (!res.data.twoFA) {
+					axios.setAuth({ token: res.data.access_token, username: res.data.username });
+					user.setLoggedIn(true);
+				}
+			})
+			.catch((err: any) => {
+				setError(err.response?.data?.message);
+			});
+	}
+
+	async function twoFA() {
+		return await axios.client
+			.post('auth/twoFA', { username: username, password: password, code: code })
+			.then((res) => {
+				axios.setAuth({ token: res.data.access_token, username: res.data.username });
+				user.setLoggedIn(true);
+			})
+			.catch((err: any) => {
+				setError(err.response?.data?.message);
+			});
+	}
+
+	async function Auth(id: number) {
+		if (username === '' || password === '') return;
+		if (id === 0) return await signUp();
+		else if (id === 1) return await logIn();
+		else if (code) return await twoFA();
+	}
 
 	return (
 		<div>
-			<input
-				type="text"
-				name="Username"
-				placeholder="Username"
-				value={username}
-				onChange={handleChange}
-			/>
-			<button className="logInButton" onClick={tmpAuth}>
-				<p className="logInText">Log In</p>
-			</button>
+			{error ? <p className="errorMsg">{error}</p> : <></>}
+			{user.username ? twoFAElement() : loginElement()}
 		</div>
 	);
 };

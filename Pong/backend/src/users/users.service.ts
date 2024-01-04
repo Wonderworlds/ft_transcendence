@@ -1,8 +1,21 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/typeorm/entities/Match';
 import { User } from 'src/typeorm/entities/User';
-import { UserDto, MatchDto } from 'src/utils/dtos';
+import { myDebug } from 'src/utils/DEBUG';
+import {
+  UserDto,
+  MatchDto,
+  SecureUserDto,
+  UserDtoEmail,
+  UserDtoPPImg,
+  UserDtoPseudo,
+  UserDtoStatus,
+  UserDtoTwoFA,
+  UserDtoUsername,
+  LimitedUserDto,
+  UserDtoPassword,
+} from 'src/utils/dtos';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -12,10 +25,11 @@ export class UsersService {
     @InjectRepository(Match) private matchRepository: Repository<Match>,
   ) {}
 
-  async createUserDB(user: UserDto) {
+  async createUserDB(user: SecureUserDto): Promise<User> {
     const newUser = this.userRepository.create({
       ...user,
     });
+    myDebug('createUserDB', newUser);
     return await this.userRepository.save(newUser);
   }
 
@@ -24,15 +38,42 @@ export class UsersService {
     return user;
   }
 
-  
   async findUserByUsername(username: string): Promise<User> | undefined {
     const user = await this.userRepository.findOneBy({ username: username });
     return user;
   }
 
-  async updateUser(username: string, user: UserDto) {
+  async findUserById(id: number): Promise<User> | undefined {
+    const user = await this.userRepository.findOneBy({ id: id });
+    return user;
+  }
+
+  async updateUserById(
+    id: number,
+    user:
+      | UserDtoEmail
+      | UserDtoTwoFA
+      | UserDtoPseudo
+      | UserDtoPPImg
+      | UserDtoStatus
+      | UserDtoPassword,
+  ) {
+    const res = await this.userRepository.update({ id }, { ...user });
+    return res;
+  }
+
+  async updateUserByUsername(
+    username: string,
+    user:
+      | UserDtoEmail
+      | UserDtoTwoFA
+      | UserDtoPseudo
+      | UserDtoPPImg
+      | UserDtoStatus
+      | UserDtoPassword,
+  ) {
     const res = await this.userRepository.update({ username }, { ...user });
-    console.info(res);
+    return res;
   }
 
   async getMatchHistory(pseudo: string): Promise<Array<Match>> | undefined {
@@ -48,16 +89,35 @@ export class UsersService {
 
   async createMatchDB(matchInfo: MatchDto) {
     const p1 = await this.findUserByPseudo(matchInfo.P1);
-	if (!p1)
-		return ;
+    if (!p1) return;
     const p2 = await this.findUserByPseudo(matchInfo.P2);
-    if (!p2)
-		return ;
-	const newMatch = this.matchRepository.create({
-		...matchInfo,
-		winner: matchInfo.scoreP1 > matchInfo.scoreP2 ? p1 : p2,
-		loser: matchInfo.scoreP1 > matchInfo.scoreP2 ? p2 : p1,
-	  });
+    if (!p2) return;
+    const newMatch = this.matchRepository.create({
+      ...matchInfo,
+      winner: matchInfo.scoreP1 > matchInfo.scoreP2 ? p1 : p2,
+      loser: matchInfo.scoreP1 > matchInfo.scoreP2 ? p2 : p1,
+    });
     return await this.matchRepository.save(newMatch);
+  }
+
+  userToDto(user: User): UserDto {
+    const newUser: UserDto = {
+      username: user.username,
+      pseudo: user.pseudo,
+      ppImg: user.ppImg,
+      status: user.status,
+      email: user.email,
+      twoFA: user.twoFA,
+    };
+    return newUser;
+  }
+
+  userToLimitedDto(user: User): LimitedUserDto {
+    const newUser: LimitedUserDto = {
+      pseudo: user.pseudo,
+      ppImg: user.ppImg,
+      status: user.status,
+    };
+    return newUser;
   }
 }

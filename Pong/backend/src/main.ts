@@ -1,6 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
+import * as session from 'express-session';
+import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const httpsOptions = {
@@ -14,6 +17,18 @@ async function bootstrap() {
   );
 
   app.enableCors();
+  app.useGlobalPipes(new ValidationPipe());
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: true,
+      }
+    }),
+    cookieParser(),
+  );
   await app.listen(3000);
 }
 bootstrap();

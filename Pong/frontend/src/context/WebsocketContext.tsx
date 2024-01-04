@@ -1,6 +1,5 @@
 import React, { createContext, useContext } from 'react';
 import { Socket, io } from 'socket.io-client';
-import { getUser } from './UserContext';
 
 // const urlName = `${import.meta.env.VITE_BURL}?name=${getUser().pseudo}`;
 type WebSocketContextType = {
@@ -9,19 +8,13 @@ type WebSocketContextType = {
 
 export const WebsocketContext = createContext({} as WebSocketContextType);
 
-export const WebsocketProvider = ({
-	children,
-}: {
-	children: React.ReactNode;
-}) => {
-	console.log('websocket');
-	const user = getUser();
-	const url = `${import.meta.env.VITE_BURL}/pong?name=${user.username}`;
-	const socket = io(url);
+export const WebsocketProvider = ({ children }: { children: React.ReactNode }) => {
+	const socket = io(import.meta.env.VITE_BURL);
 
 	React.useEffect(() => {
 		socket.on('connect', () => {
 			console.log('connect');
+			return;
 		});
 		socket.on('disconnect', () => {
 			console.log('disconnect');
@@ -33,11 +26,7 @@ export const WebsocketProvider = ({
 		};
 	}, []);
 
-	return (
-		<WebsocketContext.Provider value={{ socket }}>
-			{children}
-		</WebsocketContext.Provider>
-	);
+	return <WebsocketContext.Provider value={{ socket }}>{children}</WebsocketContext.Provider>;
 };
 
 export function getSocket() {
