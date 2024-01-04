@@ -28,8 +28,9 @@ export class User {
 	@Column({nullable: true})
 	email: string;
 
-	@OneToMany(() => Otp, (otp: Otp) => otp.owner)
-	otps: Otp[];
+	@OneToOne(() => Otp)
+	@JoinColumn()
+	otp: Otp;
 	
 	@Column({default: 0})
 	rank: Number;

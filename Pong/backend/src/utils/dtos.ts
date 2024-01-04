@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsNumber, IsPhoneNumber, IsString, IsStrongPassword } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsNumberString, IsPhoneNumber, IsString, IsStrongPassword, Length } from "class-validator";
 import { Status } from "./types";
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
 
@@ -15,7 +15,7 @@ export class UserDto {
 	@IsEnum(Status)
 	status: Status;
 
-	@IsPhoneNumber()
+	@IsEmail()
 	email?: string;
 
 	@IsBoolean()
@@ -39,7 +39,10 @@ export class UserDtoUsername extends PickType(UserDto, ['username'] as const) {}
 export class LogInUserDto extends IntersectionType(UserDtoUsername, UserDtoPassword) {}
 export class SecureUserDto extends IntersectionType(UserDto, UserDtoPassword) {}
 
-
+export class CodeDto {
+	@IsString()
+	password: string;
+}
 
 export class MatchDto {
 	@IsNumber()

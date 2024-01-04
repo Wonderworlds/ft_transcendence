@@ -10,9 +10,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LogInUserDto, UserDto } from 'src/utils/dtos';
+import { CodeDto, LogInUserDto, UserDto } from 'src/utils/dtos';
 import { LocalAuthGuard } from './local.auth.guard';
 import { SkipAuth } from './utils';
+import { myDebug } from 'src/utils/DEBUG';
 
 @Controller('auth')
 export class AuthController {
@@ -30,8 +31,12 @@ export class AuthController {
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  logIn(@Req() req: any) {
-    return this.authService.login(req.user);
+  async logIn(@Req() req: any) {
+    myDebug('login', req.user);
+    if (req.user.user.twoFA) {
+      await this.authService.sendMailOtp(req.user.user);
+      return { username: req.user.user.username };
+    } else return await this.authService.login(req.user);
   }
 
   @HttpCode(200)
@@ -58,9 +63,11 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Post('/email')
-  verifyEmail(@Req() request: any) {
-    console.info(request.user);
-    return this.authService.sendMailOtp(request);
+  @SkipAuth()
+  @UseGuards(LocalAuthGuard)
+  @Post('/twoFA')
+  verifyCode(@Req() request: any, @Body() body: any) {
+    myDebug('twoFA', request.user, body);
+    return this.authService.ValidateCodeOtp(request.user.user, body.code);
   }
 }

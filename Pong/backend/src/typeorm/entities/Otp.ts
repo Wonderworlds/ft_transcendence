@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./User";
 
 @Entity({ name: 'otp' })
@@ -6,8 +6,12 @@ export class Otp {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@OneToMany(() => User, (user: User) => user.otps)
+	@OneToOne(() => User)
+	@JoinColumn()
 	owner: User;
+
+	@Column()
+	ownerId: number;
 
 	@Column()
 	code: string;
@@ -15,10 +19,6 @@ export class Otp {
     @Column({default: new Date()})
 	createdAt: Date;
 
-	@UpdateDateColumn({default: new Date()})
-	updatedAt: Date;
-
 	@Column()
 	expiresAt: Date;
-
 }

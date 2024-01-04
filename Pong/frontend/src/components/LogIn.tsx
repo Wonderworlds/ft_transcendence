@@ -93,9 +93,12 @@ const LogIn: React.FC = () => {
 		axios.client
 			.post('auth/login', { username: username, password: password })
 			.then((res) => {
-				axios.setAuth({ token: res.data.access_token, username: res.data.username });
+				console.log(res);
 				user.setUsername(res.data.username);
-				if (!res.data.twoFA) user.setLoggedIn(true);
+				if (!res.data.twoFA) {
+					axios.setAuth({ token: res.data.access_token, username: res.data.username });
+					user.setLoggedIn(true);
+				}
 			})
 			.catch((err: any) => {
 				setError(err.response?.data?.message);
@@ -104,8 +107,9 @@ const LogIn: React.FC = () => {
 
 	async function twoFA() {
 		return await axios.client
-			.post('auth/twoFA', { username: username, code: code })
-			.then(() => {
+			.post('auth/twoFA', { username: username, password: password, code: code })
+			.then((res) => {
+				axios.setAuth({ token: res.data.access_token, username: res.data.username });
 				user.setLoggedIn(true);
 			})
 			.catch((err: any) => {
