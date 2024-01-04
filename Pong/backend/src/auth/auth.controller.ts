@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { LogInUserDto, UserDto } from 'src/utils/dtos';
 import { LocalAuthGuard } from './local.auth.guard';
 import { JwtAuthGuard } from './jwt.auth.guard';
-import { SkipAuth } from './constants';
+import { SkipAuth } from './utils';
 
 @Controller('auth')
 export class AuthController {

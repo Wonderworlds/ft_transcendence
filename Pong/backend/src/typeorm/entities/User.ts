@@ -3,6 +3,7 @@ import { Room } from "./Room";
 import { Match } from "./Match";
 import { Message } from "./Message";
 import { Status } from "src/utils/types";
+import { Otp } from "./Otp";
 
 @Entity({ name: 'users'})
 export class User {
@@ -24,6 +25,15 @@ export class User {
 	@Column({default: false})
 	twoFA: boolean;
 
+	@Column({nullable: true})
+	phone: string;
+
+	@Column({nullable: true})
+	email: string;
+
+	@OneToMany(() => Otp, (otp: Otp) => otp.owner)
+	otps: Otp[];
+	
 	@Column({default: 0})
 	rank: Number;
 

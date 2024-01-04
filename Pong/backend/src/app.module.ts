@@ -13,6 +13,8 @@ import { PongModule } from './pong/pong.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
+import { Otp } from './typeorm/entities/Otp';
+import { OtpModule } from './2FA/otp.module';
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { JwtAuthGuard } from './auth/jwt.auth.guard';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, Match, Message, Room],
+        entities: [User, Match, Message, Room, Otp],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -40,6 +42,7 @@ import { JwtAuthGuard } from './auth/jwt.auth.guard';
       },
     ]),
     AuthModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

@@ -1,19 +1,28 @@
-import { IsEnum, IsNumber, IsString, IsStrongPassword } from "class-validator";
+import { IsBoolean, IsEnum, IsNumber, IsPhoneNumber, IsString, IsStrongPassword } from "class-validator";
 import { Status } from "./types";
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
 
 export class UserDto {
 	@IsString()
-	username: string;
+	username?: string;
 
 	@IsString()
-	pseudo: string;
+	pseudo?: string;
 
 	@IsString()
-	ppImg: string;
+	ppImg?: string;
 
 	@IsEnum(Status)
-	status: Status;
+	status?: Status;
+
+	@IsPhoneNumber()
+	phone?: string;
+
+	@IsPhoneNumber()
+	email?: string;
+
+	@IsBoolean()
+	twoFA?: boolean;
 }
 
 export class SecurePasswordDto {

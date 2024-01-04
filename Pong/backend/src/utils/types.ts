@@ -21,5 +21,3 @@ export enum eventGame {
 	UP = 'UP',
 	DOWN = 'DOWN',
 }
-
-export type JWTPayload = {sub: Number, user: string};

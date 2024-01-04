@@ -3,9 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/typeorm/entities/User';
 import { UsersService } from 'src/users/users.service';
 import { LogInUserDto, SecureUserDto, UserDto } from 'src/utils/dtos';
-import { JWTPayload, Status } from 'src/utils/types';
+import { Status } from 'src/utils/types';
 import * as bcrypt from 'bcrypt';
 import { debug } from 'src/utils/DEBUG';
+import { JWTPayload } from './utils';
 @Injectable()
 export class AuthService {
   constructor(
@@ -59,7 +60,8 @@ export class AuthService {
   async login(user: JWTPayload) {
 		debug('login', user);
 		return {
-			access_token: await this.jwtService.signAsync(user),
+			success: true,
+      access_token: await this.jwtService.signAsync(user),
 			username: user.user
 		};
   }
