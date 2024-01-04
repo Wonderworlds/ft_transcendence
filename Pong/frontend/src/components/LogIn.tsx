@@ -1,6 +1,7 @@
 import React from 'react';
 import { getUser } from '../context/UserContext';
 import { getAxios } from '../context/AxiosContext';
+import { useNavigate } from 'react-router-dom';
 
 const LogIn: React.FC = () => {
 	const [username, setUsername] = React.useState<string>('');
@@ -9,10 +10,7 @@ const LogIn: React.FC = () => {
 	const [error, setError] = React.useState<string>('');
 	const user = getUser();
 	const axios = getAxios();
-
-	React.useEffect(() => {
-		axios.client.get('auth').then((res) => {});
-	}, []);
+	const navigate = useNavigate();
 
 	const twoFAElement = () => {
 		return (
@@ -97,7 +95,7 @@ const LogIn: React.FC = () => {
 				user.setUsername(res.data.username);
 				if (!res.data.twoFA) {
 					axios.setAuth({ token: res.data.access_token, username: res.data.username });
-					user.setLoggedIn(true);
+					navigate('/Home');
 				}
 			})
 			.catch((err: any) => {

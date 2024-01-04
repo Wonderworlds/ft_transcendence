@@ -1,26 +1,18 @@
 import React from 'react';
 import PongTitle from '../components/PongTitle.tsx';
 import LogIn from '../components/LogIn.tsx';
-import { getUser } from '../context/UserContext.tsx';
-import Home from './Home.tsx';
 
 const MainPage: React.FC = () => {
-	const user = getUser();
-
-	const mainPageELement = () => {
-		return (
-			<div className="mainPage">
-				<div className="divPongTitleMid">
-					<PongTitle />
-				</div>
-				<div className="divLogInButton">
-					<LogIn />
-				</div>
+	return (
+		<div className="mainPage">
+			<div className="divPongTitleMid">
+				<PongTitle />
 			</div>
-		);
-	};
-
-	return <>{user.ready ? <Home /> : mainPageELement()}</>;
+			<div className="divLogInButton">
+				<LogIn />
+			</div>
+		</div>
+	);
 };
 
 export default MainPage;

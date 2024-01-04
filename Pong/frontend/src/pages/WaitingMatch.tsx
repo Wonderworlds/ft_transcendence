@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import SearchingPlayer from '../components/SearchingPlayer.tsx';
 import Cancel from '../components/Cancel.tsx';
-import { Pages } from '../utils/types.tsx';
-import { getUser } from '../context/UserContext.tsx';
 import { getGameSocket } from '../context/GameSocketContext.tsx';
 import Pong from './Pong.tsx';
+import { Link } from 'react-router-dom';
 
 const WaitingMatch: React.FC = () => {
 	const socket = getGameSocket().socket;
-	const user = getUser();
 	const [room, setRoom] = useState<string>('');
 
 	useEffect(() => {
@@ -29,10 +27,11 @@ const WaitingMatch: React.FC = () => {
 					className="divCancel"
 					onClick={() => {
 						socket.disconnect();
-						user.setPage(Pages.Home);
 					}}
 				>
-					<Cancel />
+					<Link to={'/home'}>
+						<Cancel />
+					</Link>
 				</div>
 				<div className="divSearchingPlayer">
 					<SearchingPlayer />

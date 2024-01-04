@@ -4,13 +4,7 @@ import ActiveInfo from '../components/ActiveInfo.tsx';
 import NavBar from '../components/NavBar.tsx';
 import { TabOption } from '../utils/types.tsx';
 
-interface ProfileProps {
-	win: number;
-	loose: number;
-	rank: number;
-}
-
-const Profile: React.FC<ProfileProps> = ({ win, loose, rank }) => {
+const Profile: React.FC = () => {
 	const [tab, settab] = React.useState(TabOption.Null);
 
 	return (
@@ -20,11 +14,11 @@ const Profile: React.FC<ProfileProps> = ({ win, loose, rank }) => {
 			</div>
 			<div className="top">
 				<div className="divRatio">
-					<p className="win">Win: {win}</p>
-					<p className="loose">Loose: {loose}</p>
+					<p className="win">Win: 7</p>
+					<p className="loose">Loose: 7</p>
 				</div>
 				<div className="divRank">
-					<p className="rank">Rank: {rank}</p>
+					<p className="rank">Rank: Silver</p>
 				</div>
 			</div>
 			<div className="bottom">
