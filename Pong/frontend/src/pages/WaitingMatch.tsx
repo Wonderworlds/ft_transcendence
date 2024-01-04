@@ -3,11 +3,11 @@ import SearchingPlayer from '../components/SearchingPlayer.tsx';
 import Cancel from '../components/Cancel.tsx';
 import { Pages } from '../utils/types.tsx';
 import { getUser } from '../context/UserContext.tsx';
-import { getSocket } from '../context/WebsocketContext.tsx';
+import { getGameSocket } from '../context/GameSocketContext.tsx';
 import Pong from './Pong.tsx';
 
 const WaitingMatch: React.FC = () => {
-	const socket = getSocket().socket;
+	const socket = getGameSocket().socket;
 	const user = getUser();
 	const [room, setRoom] = useState<string>('');
 

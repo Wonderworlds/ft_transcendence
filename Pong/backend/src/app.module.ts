@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
 import { Otp } from './typeorm/entities/Otp';
 import { OtpModule } from './2FA/otp.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { OtpModule } from './2FA/otp.module';
     ]),
     AuthModule,
     OtpModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

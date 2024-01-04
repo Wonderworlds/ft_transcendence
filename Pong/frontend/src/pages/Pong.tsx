@@ -1,13 +1,13 @@
 import React from 'react';
-import { getSocket } from '../context/WebsocketContext.tsx';
 import { eventGame } from '../utils/types.tsx';
+import { getGameSocket } from '../context/GameSocketContext.tsx';
 
 interface roomProps {
 	room: string;
 }
 
 const Pong: React.FC<roomProps> = ({ room }) => {
-	const socket = getSocket().socket;
+	const socket = getGameSocket().socket;
 
 	React.useEffect(() => {
 		socket.on('updateGame', (res) => {

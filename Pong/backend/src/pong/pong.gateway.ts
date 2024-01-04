@@ -1,7 +1,5 @@
 import { Body, OnModuleInit, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { stringify } from 'querystring';
-import { Server, Socket } from 'socket.io';
 import { ValidSocket, eventGame } from 'src/utils/types';
 import { Pong } from './Pong';
 import { AGateway } from 'src/websocket/Agateway';

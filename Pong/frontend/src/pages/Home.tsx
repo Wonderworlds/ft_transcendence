@@ -7,7 +7,7 @@ import Profile from './Profile.tsx';
 import Parameters from './Parameters.tsx';
 import Chat from './Chat.tsx';
 import { getUser } from '../context/UserContext.tsx';
-import { WebsocketProvider } from '../context/WebsocketContext.tsx';
+import { GameSocketProvider } from '../context/GameSocketContext.tsx';
 
 const Home: React.FC = () => {
 	const user = getUser();
@@ -31,9 +31,9 @@ const Home: React.FC = () => {
 				return homeElement();
 			case Pages.WaitingMatch:
 				return (
-					<WebsocketProvider>
+					<GameSocketProvider>
 						<WaitingMatch />
-					</WebsocketProvider>
+					</GameSocketProvider>
 				);
 			case Pages.Profile:
 				return <Profile win={9} loose={1} rank={1} />;

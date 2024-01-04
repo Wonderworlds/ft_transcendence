@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -13,9 +12,7 @@ import {
 import { AuthService } from './auth.service';
 import { LogInUserDto, UserDto } from 'src/utils/dtos';
 import { LocalAuthGuard } from './local.auth.guard';
-import { JwtAuthGuard } from './jwt.auth.guard';
 import { SkipAuth } from './utils';
-import { myDebug } from 'src/utils/DEBUG';
 
 @Controller('auth')
 export class AuthController {
@@ -47,13 +44,13 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Get('user')
+  @Get('/user')
   getUser(@Req() req: any) {
     console.info(req.user);
     return req.user;
   }
 
-  @Post('user')
+  @Post('/user')
   PostUser(@Req() req: any, @Body() body: any) {
     console.info(req.user);
     console.info(body);
@@ -61,7 +58,7 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Post('email/verify')
+  @Post('/email')
   verifyEmail(@Req() request: any) {
     console.info(request.user);
     return this.authService.sendMailOtp(request);
