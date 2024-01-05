@@ -37,4 +37,8 @@ export enum TabOption {
 export enum eventGame {
 	UP = 'UP',
 	DOWN = 'DOWN',
+	ARROW_UP = 'ARROW_UP',
+	ARROW_DOWN = 'ARROW_DOWN',
+	W_KEY = 'W_KEY',
+	S_KEY = 'S_KEY',
 }
