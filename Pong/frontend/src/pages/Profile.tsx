@@ -4,7 +4,7 @@ import ChangeName from '../components/ChangeName.tsx';
 import PutPicture from '../components/PutPicture.tsx';
 import ButtonAcceptDisconnect from '../components/ButtonAcceptDisconnect.tsx';
 
-const Profile: React.FC = () => {
+const Settings: React.FC = () => {
 	return (
 		<div className="headerProfile">
 			<div className="divNav">
@@ -24,4 +24,4 @@ const Profile: React.FC = () => {
 	);
 };
 
-export default Profile;
+export default Settings;

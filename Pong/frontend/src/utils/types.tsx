@@ -22,8 +22,8 @@ export enum Pages {
 	Home = '/home',
 	WaitingMatch = '/game',
 	Pong = '/pong',
-	Profile = '/profile',
-	Parameter = '/settings',
+	Stats = '/stats',
+	Settings = '/settings',
 	Default = '/*',
 }
 

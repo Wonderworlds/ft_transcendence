@@ -39,7 +39,7 @@ const NavBar: React.FC = () => {
 					<div
 						className="navProfilePicture"
 						onClick={() => {
-							navigate(Pages.Profile);
+							navigate(Pages.Stats);
 						}}
 					>
 						<img src={user.ppImg} />
@@ -47,7 +47,7 @@ const NavBar: React.FC = () => {
 					<div
 						className="navPseudo"
 						onClick={() => {
-							navigate(Pages.Parameter);
+							navigate(Pages.Settings);
 						}}
 					>
 						<p>{user.pseudo}</p>

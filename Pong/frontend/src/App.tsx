@@ -4,8 +4,8 @@ import { UserContextProvider } from './context/UserContext.tsx';
 import { AxiosContextProvider } from './context/AxiosContext.tsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.tsx';
-import Parameters from './pages/Parameters.tsx';
-import Profile from './pages/Profile.tsx';
+import Stats from './pages/Stats.tsx';
+import Settings from './pages/Profile.tsx';
 import Default from './pages/Default.tsx';
 import Pong from './pages/Pong.tsx';
 import WaitingMatch from './pages/WaitingMatch.tsx';
@@ -21,8 +21,8 @@ const App = () => {
 						<Routes>
 							<Route path={Pages.Root} element={<MainPage />} />
 							<Route path={Pages.Home} element={<Home />} />
-							<Route path={Pages.Parameter} element={<Parameters />} />
-							<Route path={Pages.Profile} element={<Profile />} />
+							<Route path={Pages.Settings} element={<Settings />} />
+							<Route path={Pages.Stats} element={<Stats />} />
 							<Route
 								path={Pages.WaitingMatch}
 								element={
