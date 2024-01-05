@@ -1,20 +1,29 @@
 import React from 'react'
-import TitlePicture from '../components/TitlePicture.tsx';
-import ParameterPicture from '../components/ParameterPicture.tsx';
-import PutFile from '../components/PutFile.tsx';
+import { getUser } from '../context/UserContext';
+
 
 
 const PutPicture: React.FC = () => {
+	const user = getUser();
+
 	return (
-		<div className="divPutPicture">
-			<div className="elem1">
-				<TitlePicture/>
+		<div className="headerPutPicture">
+			<div className="divTitlePicture">
+				<p>picture</p>
 			</div>
-			<div className="elem2">
-				<ParameterPicture/>
+			<div className="divPicture">
+				<input
+					type="image"
+					id="image"
+					alt=""
+					src={user.ppImg}
+			/>
 			</div>
-			<div className="elem3">
-				<PutFile/>
+			<div className="divLoadPicture">
+				<input
+					type="file"
+					name="pp"
+					accept="image/png, image/jpeg"/>
 			</div>
 		</div>
 	);

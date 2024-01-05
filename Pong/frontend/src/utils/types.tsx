@@ -22,8 +22,8 @@ export enum Pages {
 	Home = 'Home',
 	WaitingMatch = 'WaitingMatch',
 	Profile = 'Profile',
-	Parameter = 'Parameter',
-	Chat = 'Chat',
+	Stats = 'Stats',
+	Game = 'Game',
 }
 
 export enum TabOption {

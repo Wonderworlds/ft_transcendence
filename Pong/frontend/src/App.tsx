@@ -4,12 +4,12 @@ import { UserContextProvider } from './context/UserContext.tsx';
 import { AxiosContextProvider } from './context/AxiosContext.tsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.tsx';
-import Parameters from './pages/Parameters.tsx';
-import Profile from './pages/Profile.tsx';
+import Stats from './pages/Stats.tsx';
 import Default from './pages/Default.tsx';
 import Pong from './pages/Pong.tsx';
 import WaitingMatch from './pages/WaitingMatch.tsx';
 import { GameSocketProvider } from './context/GameSocketContext.tsx';
+import Profile from './pages/Profile.tsx';
 
 const App = () => {
 	return (
@@ -20,8 +20,8 @@ const App = () => {
 						<Routes>
 							<Route path="/" element={<MainPage />} />
 							<Route path="/home" element={<Home />} />
-							<Route path="/profile" element={<Parameters />} />
-							<Route path="/stats" element={<Profile />} />
+							<Route path="/profile" element={<Profile />} />
+							<Route path="/stats" element={<Stats />} />
 							<Route
 								path="/game"
 								element={
