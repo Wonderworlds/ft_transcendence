@@ -1,5 +1,5 @@
 import React from 'react';
-import Profile from './Profile.tsx';
+import Profile from './Stats.tsx';
 
 const Leaderboard: React.FC = () => {
 	return (

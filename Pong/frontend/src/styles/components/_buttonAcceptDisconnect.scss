@@ -5,21 +5,76 @@
 	height: 100%;
 	flex-direction: row;
 
-	.elem1 {
-
-		display: flex;
-		width: 60%;
-		height: 100%;
-		
-
-	}
-
-	.elem2 {
+	.divAcceptButton {
 
 		display: flex;
 		width: 40%;
 		height: 100%;
 
+		justify-content: center;
+		align-items: center;
+
+		.acceptButton {
+
+			background-color: transparent;
+			display: flex;
+			width: 60%;
+			height: 100%;
+	
+			justify-content: center;
+			align-items: center;
+			
+			border: none;
+			cursor: pointer;
+	
+			.acceptText {
+	
+				font-weight: 600;
+				font-size: 2.5vw;
+				margin: auto;
+				text-align: center;
+				font-family: 'inter';
+				color: white;
+	
+			}
+	
+		}
+		
+
+	}
+
+	.divDisconnectButton {
+
+		display: flex;
+		width: 40%;
+		height: 100%;
+
+		padding-left: 20%;
+		justify-content: flex-start;
+		align-items: center;
+		
+		.disconnectButton {
+		
+			background-color: transparent;
+			display: flex;
+			width: 50%;
+			height: 40%;
+			border: none;
+			cursor: pointer;
+		
+			.disconnectText {
+		
+				font-weight: 600;
+				font-size: 2.5vw;
+				margin: auto;
+				text-align: center;
+				font-family: 'inter';
+				color: white;
+		
+			}
+		
+		}
+		
 	}
 
 }

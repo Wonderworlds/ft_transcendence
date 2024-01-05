@@ -1,15 +1,33 @@
 import React from 'react';
-import ButtonAccept from '../components/ButtonAccept.tsx';
-import ButtonDisconnect from '../components/ButtonDisconnect.tsx';
+import { getUser } from '../context/UserContext';
+import { Pages } from '../utils/types';
 
 const ButtonAcceptDisconnect: React.FC = () => {
+	const user = getUser();
+
 	return (
 		<div className="divButton">
-			<div className="elem1">
-				<ButtonAccept />
+			<div className="divAcceptButton">
+				<button className="acceptButton">
+					<div
+						onClick={() => {
+							user.setPage(Pages.Root);
+						}}
+					>
+						<p className="acceptText">Accept change</p>
+					</div>
+				</button>
 			</div>
-			<div className="elem2">
-				<ButtonDisconnect />
+			<div className="divDisconnectButton">
+				<button className="disconnectButton">
+					<div
+						onClick={() => {
+							user.setPage(Pages.Root);
+						}}
+					>
+						<p className="disconnectText">disconnect</p>
+					</div>
+				</button>
 			</div>
 		</div>
 	);

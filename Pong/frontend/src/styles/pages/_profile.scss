@@ -1,80 +1,52 @@
-.profile {	
-	
-	/* Panorama */
+.headerProfile {
+
+	/* panorama */
 	
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	left: 0%;
-	top: 0%;
+	left: 0px;
+	top: 0px;
 	
-	background-image: url(background.png);
+	background-image: url(background_3.png);
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
 
-	/* Items */
-
 	display: flex;
 	flex-direction: column;
+	
+}
+
+.divParametersTop {
+
+	display: flex;
+	width: 100%;
+	height: 25%;
+	justify-content: center;
+	align-items: center;
+
+		h1 {
+			color: #FFFFFF;
+			font-weight: 400;
+			font-size: 4vw;
+			font-family: 'Inter';
+		}
+	
+}
+
+.divParametersMiddle {
+
+	display: flex;
+	width: 100%;
+	height: 50%;
 
 }
 
-.top {
-	width: 100%;
-	height: 30%;
+.divParametersBottom {
+
 	display: flex;
-	margin-top: 2.5%;
-	
-	p {
-		font-family: 'Inter';
-		font-size: 4vh;
-	}
-
-	.divRatio {
-		width: 50%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-around;
-		align-items: center;
-		color: white;
-		padding-top: 2%;
-		padding-bottom: 2%;
-	}
-	
-	.divRank {
-		width: 50%;
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		color: white;
-	}
-}
-
-.bottom {
 	width: 100%;
-	height: 61.5%;
-	display: flex;
-	background-color: #1616169b ;
-
-	p {
-		font-family: 'Inter';
-		font-size: 2.5vh;
-	}
-
-	.divNavProfile {
-		width: 15%;
-		height: 100%;
-		display: flex;
-		border-style: none ridge none none;
-		overflow-x: scroll;
-	}
-
-	.divActiveInfo {
-		display: flex;
-		width: 85%;
-		height: 100%;
-	}
+	height: 25%;
+	
 }

@@ -5,27 +5,77 @@
 	width: 50%;
 	flex-direction: column;
 	
-	.elem1 {
+	.divTitleChangeName {
 		
 		display: flex;
+		justify-content: center;
+		align-items: end;
+		padding-bottom: 1%;
 		height: 25%;
 		width: 100%;
+
+		p {
+			color: #FFFFFF;
+			font-weight: 400;
+			font-size: 2.5vw;
+			font-family: 'Inter';
+		}
 	
 	}
 
-	.elem2 {
+	.divWhiteSpaceChangeName {
 	
 		display: flex;
-		height: 25%;
 		width: 100%;
+		height: 10%;
+		justify-content: center;
+		padding-top: 1%;
+
 	}
 
-	.elem3 {
+	.divDoubleAuthentification {
 
 		display: flex;
-		height: 25%;
+		height: 40%;
 		width: 100%;
 		flex-direction: row;
+
+		justify-content: center;
+		align-items: center;
+
+		.divTitle2FA {
+
+			display: flex;
+			height: 100%;
+			width: 60%;
+			justify-content: center;
+			align-items: center;
+
+			p {
+				color: #FFFFFF;
+				font-weight: 400;
+				font-size: 2.5vw;
+				font-family: 'Inter';
+			}
+
+		}
+
+		.divCheckBox2FA {
+
+			display: flex;
+			height: 100%;
+			width: 4%;
+			justify-content: center;
+			align-items: center;
+			padding-top: 1%;
+
+			input[type='checkbox'] {
+
+				height: 20px;
+				width: 20px;
+			}
+
+		}
 
 	}
 
