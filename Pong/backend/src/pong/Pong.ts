@@ -1,122 +1,123 @@
-import { ConnectedSocket, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "socket.io";
-import { ValidSocket, eventGame, Player } from "src/utils/types";
-import { WebsocketService } from "src/websocket/websocket.service";
+import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { ValidSocket, eventGame } from 'src/utils/types';
+import { WebsocketService } from 'src/websocket/websocket.service';
 
+export type UpdateGameDto = {
+  ball: Pos;
+  pLeft: Pos;
+  pRight: Pos;
+};
+type Pos = {
+  x: number;
+  y: number;
+}
+
+class Ball {
+  private position : Pos= {x: 50, y: 50};
+  private direction : Pos;
+  private readonly speed = 1;
+
+  constructor() {
+    this.setDirection(this.getRandomDirection());
+  }
+
+  public setDirection(newDir: Pos) {
+    this.direction = newDir;
+  }
+
+  public getPosition() {
+    return this.position;
+  }
+
+  private getRandomDirection() {
+    //logic pour random
+    return { x: 25, y: 25 };
+  }
+
+  public onCollision() {}
+}
+
+class Player {
+  private position : Pos;
+  private readonly speed = 2;
+
+  constructor(pos: Pos) { this.setPosition(pos) };
+
+  public getPosition() {
+    return this.position;
+  }
+
+  private setPosition (newPos: Pos) {
+	this.position = newPos;
+  }
+
+  public changePos(event: eventGame) {
+    console.info(event);
+    if (event === eventGame.UP) {
+		this.position.y -= this.speed;
+    } else {
+		this.position.y += this.speed;
+    }
+  }
+}
 export class Pong {
-	id: string;
-	
-	protected server: Server;
-	private ball: {posx: number, posy: number};
+  id: string;
 
-	p1: Player;
-	p2: Player;
+  protected server: Server;
+  private ball = new Ball();
 
-	constructor (
-		p1: ValidSocket,
-		p2: ValidSocket,
-		server: Server,
-		protected webservice: WebsocketService,
-		id: string,
-	) {
-		this.id = id;
-		this.server = server;
+  p1: Player = new Player({x: 2, y: 50});
+  p2: Player = new Player({x: 98, y: 50});
+  constructor(
+    p1: ValidSocket,
+    server: Server,
+    protected webservice: WebsocketService,
+    id: string,
+  ) {
+    this.id = id;
+    this.server = server;
 
-		p1.join(this.id);
-		p2.join(this.id);
+    this.loop();
+  }
 
-		this.server.to(this.id).emit('ready', {room: id});
+  // faire une fonction qui retourne la position du joueur en fonction de son id
 
-		this.webservice.addUser(p1);
-		this.webservice.addUser(p2);
+  hrtimeMs(): number {
+    let time = process.hrtime();
+    return time[0] * 1000 + time[1] / 1000000;
+  }
 
-		this.p1 = {
-			ValidSocket: p1,
-			posx: 0,
-			posy: 0,
-			score: 0,
-		};
+  getStateOfGame() {
+	const stateOfGame: UpdateGameDto = {
+		ball: this.ball.getPosition(),
+		pLeft: this.p1.getPosition(),
+		pRight: this.p2.getPosition(),
+	  };
+	  return (stateOfGame);
+  }
 
-		this.p2 = {
-			ValidSocket: p2,
-			posx: 0,
-			posy: 0,
-			score: 0,
-		};
+  loop = () => {
+    setTimeout(this.loop, 1000 / 24);
+    this.server.to(this.id).emit('updateGame', this.getStateOfGame());
+  };
 
-		this.ball = {
-			posx: 400,
-			posy: 300,
-		};
+  private UpdatePaddlePos(paddle: Player, input: eventGame) {}
 
-		setInterval(() => {
-			this.UpdateBallPos();
-		} , 1000 / 60);
-	}
-
-	// faire une fonction qui retourne la position du joueur en fonction de son id
-	public getPlayerPos(id: string) {
-	if (id === this.p1.ValidSocket.id) {
-		return this.p1.posy;
-	}
-	return this.p2.posy;
-	}
-
-	private UpdateBallPos() {
-		this.ball.posx += 10;
-		this.ball.posy += 10;
-
-		if (this.ball.posx > 800 || this.ball.posx < 0) {
-			this.ball.posx = 0;
-		}
-
-		if (this.ball.posy > 600 || this.ball.posy < 0) {
-			this.ball.posy = 0;
-		}
-
-
-		this.server.to(this.id).emit('updateBall', this.ball);
-	}
-
-	
-	private UpdatePaddlePos(paddle: Player, input: eventGame) {
-		switch (input) {
-			case eventGame.ARROW_UP:
-				paddle.posy -= 10;
-				break;
-			case eventGame.ARROW_DOWN:
-				paddle.posy += 10;
-				break;
-			default:
-				break;
-		}
-		this.broadcastToPlayerPos();
-		paddle.ValidSocket.emit('updatePaddle', paddle.posy);
-		this.broadcastToPlayer({client: paddle.ValidSocket.name, msg: paddle.posy});
-	}
-
-	public onInput(@ConnectedSocket() client: ValidSocket, input: eventGame)
-	{
-		this.broadcastToPlayer({client: client.name, msg: input});
-		if (client.id === this.p1.ValidSocket.id) {
-			this.UpdatePaddlePos(this.p1, input);
-		} else {
-			this.UpdatePaddlePos(this.p2, input);
-		}
-
-		this.UpdateBallPos();
-	}
-
-	public broadcastToPlayerPos() {
-		const pos = {
-			p1: this.p1.posy,
-			p2: this.p2.posy,
-		};
-
-		this.server.to(this.id).emit('updatePos', pos);
-	}
-
-	private broadcastToPlayer(msg: any) {
-		this.server.to(this.id).emit('updateGame', msg);
-	}
+  public onInput(@ConnectedSocket() client: ValidSocket, input: eventGame) {
+	console.log(this.getStateOfGame());
+    switch (input) {
+      case eventGame.ARROW_UP:
+        return this.p2.changePos(eventGame.UP);
+      case eventGame.ARROW_DOWN:
+        return this.p2.changePos(eventGame.DOWN);
+      case eventGame.W_KEY:
+        return this.p1.changePos(eventGame.UP);
+      case eventGame.S_KEY:
+        return this.p1.changePos(eventGame.DOWN);
+      default:
+        console.info('the fuck');
+        return;
+    }
+  }
 }

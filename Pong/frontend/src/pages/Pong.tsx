@@ -1,145 +1,97 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getSocket } from '../context/WebsocketContext.tsx';
 import { eventGame } from '../utils/types.tsx';
 
-interface roomProps {
-  room: string;
-}
+export type Position = {
+	x: number;
+	y: number;
+};
 
-const Pong: React.FC<roomProps> = ({ room }) => {
-  const socket = getSocket().socket;
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [playerPositions, setPlayerPositions] = useState<{ p1: number; p2: number }>({ p1: 0, p2: 0 });
-  const [ballPosition, setBallPosition] = useState<{ x: number; y: number }>({ x: 400, y: 300 });  
+export type UpdateGameDto = {
+	ball: Position;
+	pLeft: Position;
+	pRight: Position;
+};
 
-  useEffect(() => {
-    socket.on('updateGame', (res) => {
-      console.log(res);
-    });
+const Pong: React.FC = () => {
+	const socketContext = getSocket();
+	const socket = socketContext.socket;
+	const [pLeft, setPLeft] = useState<Position>({ x: 2, y: 50 });
+	const [pRight, setPRight] = useState<Position>({ x: 98, y: 50 });
+	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
 
-	socket.on('updatePos', (position) => {
-		  console.log('Positions reçues du serveur :', position);
-		  setPlayerPositions(position);
-	});
+	useEffect(() => {
+		socket.on('updateGame', (res: UpdateGameDto) => {
+			console.log(res);
+			if (res) {
+				setPLeft(res.pLeft);
+				setPRight(res.pRight);
+				setBall(res.ball);
+			}
+		});
+		socket.emit('start', { room: socketContext.room });
 
-	socket.on('updateBall', (position) => {
-		 console.log('Positions reçues du serveur :', position);
-		 setBallPosition(position);
-	});
+		return () => {
+			socket.off('updateGame');
+		};
+	}, []);
 
-    return () => {
-      socket.off('updateGame');
-    };
-  }, []);
+	const handleKeyDown = (e: KeyboardEvent) => {
+		switch (e.key) {
+			case 'ArrowUp':
+				sendInput(eventGame.ARROW_UP);
+				break;
+			case 'ArrowDown':
+				sendInput(eventGame.ARROW_DOWN);
+				break;
+			case 'w':
+				sendInput(eventGame.W_KEY);
+				break;
+			case 's':
+				sendInput(eventGame.S_KEY);
+				break;
+			default:
+				break;
+		}
+	};
 
-  function sendInput(input: eventGame) {
-    socket.emit('input', { room: room, event: input });
-  }
+	function sendInput(input: eventGame) {
+		socket.emit('input', { room: socketContext.room, input: input });
+	}
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case 'ArrowUp':
-          sendInput(eventGame.ARROW_UP);
-          break;
-        case 'ArrowDown':
-          sendInput(eventGame.ARROW_DOWN);
-          break;
-        default:
-          break;
-      }
-    };
+	useEffect(() => {
+		window.addEventListener('keydown', handleKeyDown, false);
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, []);
 
-    window.addEventListener('keydown', handleKeyDown, false);
+	useEffect(() => {}, [pLeft, pRight, ball]);
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [room, sendInput]);
+	const PongDivStyle = {};
+	const PleftStyle = { width: '1.2%', height: '12%', left: `${pLeft.x}%`, top: `${pLeft.y}%` };
+	const PrightStyle = {
+		width: '1.2%',
+		height: '12%',
+		left: `${pRight.x - 1.2}%`,
+		top: `${pRight.y}%`,
+	};
+	const BallStyle = { width: '20px', height: '20px', left: `${ball.x}%`, top: `${ball.y}%` };
 
-  useEffect(() => {
-	const canvas = canvasRef.current;
-	if (!canvas) return;
-
-	const ctx = canvas.getContext('2d');
-	if (!ctx) return;
-
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-	ctx.fillStyle = 'black';
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-	ctx.fillStyle = 'white';
-	ctx.fillRect(10, playerPositions.p1, 10, 100);
-
-	ctx.fillStyle = 'white';
-	ctx.fillRect(780, playerPositions.p2, 10, 100);
-
-	ctx.fillStyle = 'white';
-	ctx.fillRect(ballPosition.x, ballPosition.y, 10, 10);
-
-  }, [playerPositions]);
-
-  return (
-    <div className="PONG TITLE">
-      <h1>PONG GAME</h1>
-	        <p>Position du joueur 1 : {playerPositions.p1}</p>
-      <p>Position du joueur 2 : {playerPositions.p2}</p>
-      <canvas ref={canvasRef} width={800} height={600} style={{ border: '1px solid #000' }} />
-    </div>
-  );
+	return (
+		<div className="PONG_TITLE">
+			<h1>PONG GAME</h1>
+			<p>Position du joueur 1 : {pLeft.y}</p>
+			<p>Position du joueur 2 : {pRight.y}</p>
+			<div className="GameArea">
+				<div className="PongDiv" style={PongDivStyle}>
+					<div className="Pleft" style={PleftStyle}></div>
+					<div className="Pright" style={PrightStyle}></div>
+					<div className="Ball" style={BallStyle}></div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default Pong;
-
-//import React from 'react';
-//import { getSocket } from '../context/WebsocketContext.tsx';
-//import { eventGame } from '../utils/types.tsx';
-//
-//interface roomProps {
-//	room: string;
-//}
-//
-//const Pong: React.FC<roomProps> = ({ room }) => {
-//	const socket = getSocket().socket;
-//
-//	React.useEffect(() => {
-//		socket.on('updateGame', (res) => {
-//			console.log(res);
-//		});
-//		return () => {
-//			socket.off('updateGame');
-//		};
-//	}, []);
-//
-//	function sendInput(input: eventGame) {
-//		socket.emit('input', { room: room, event: input });
-//	}
-//
-//	window.addEventListener('keydown', (e) => {
-//		switch (e.key) {
-//			case 'ArrowUp':
-//				sendInput(eventGame.ARROW_UP);
-//				break;
-//			case 'ArrowDown':
-//				sendInput(eventGame.ARROW_DOWN);
-//				break;
-//			case 'w':
-//				sendInput(eventGame.W_KEY);
-//				break;
-//			case 's':
-//				sendInput(eventGame.S_KEY);
-//				break;
-//			default:
-//				break;
-//		}
-//	}, false);
-//
-//	return (
-//		<div className="PONG TITLE">
-//			<h1>PONG GAME</h1>
-//		</div>
-//	);
-//};
-//
-//export default Pong;

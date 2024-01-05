@@ -25,11 +25,3 @@ export enum eventGame {
 	S_KEY = 'S_KEY',
 }
 
-export class Player {
-	ValidSocket: ValidSocket;
-	posx: number;
-	posy: number;
-	score: number;
-}
-	
-

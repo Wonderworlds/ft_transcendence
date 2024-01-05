@@ -1,22 +1,18 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
-import { getUser } from './UserContext';
 
 // const urlName = `${import.meta.env.VITE_BURL}?name=${getUser().pseudo}`;
 type WebSocketContextType = {
 	socket: Socket;
+	room: string;
+	setRoom: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const WebsocketContext = createContext({} as WebSocketContextType);
 
-export const WebsocketProvider = ({
-	children,
-}: {
-	children: React.ReactNode;
-}) => {
-	console.log('websocket');
-	const user = getUser();
-	const url = `${import.meta.env.VITE_BURL}/pong?name=${user.username}`;
+export const WebsocketProvider = ({ children }: { children: React.ReactNode }) => {
+	const [room, setRoom] = useState<string>('');
+	const url = `${import.meta.env.VITE_BURL}/pong?name=Diego`;
 	const socket = io(url);
 
 	React.useEffect(() => {
@@ -27,14 +23,18 @@ export const WebsocketProvider = ({
 			console.log('disconnect');
 		});
 
+		socket.on('ready', (res) => {
+			setRoom(res.room);
+		});
 		return () => {
 			socket.off('connect');
+			socket.off('ready');
 			socket.off('disconnect');
 		};
 	}, []);
 
 	return (
-		<WebsocketContext.Provider value={{ socket }}>
+		<WebsocketContext.Provider value={{ socket, room, setRoom }}>
 			{children}
 		</WebsocketContext.Provider>
 	);

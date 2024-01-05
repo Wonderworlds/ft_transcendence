@@ -1,26 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import SearchingPlayer from '../components/SearchingPlayer.tsx';
 import Cancel from '../components/Cancel.tsx';
-import { Pages } from '../utils/types.tsx';
-import { getUser } from '../context/UserContext.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
 import Pong from './Pong.tsx';
 
 const WaitingMatch: React.FC = () => {
-	const socket = getSocket().socket;
-	const user = getUser();
-	const [room, setRoom] = useState<string>('');
-
-	useEffect(() => {
-		socket.on('ready', (res: { room: string }) => {
-			console.log(res);
-			setRoom(res.room);
-		});
-
-		return () => {
-			socket.off('ready');
-		};
-	}, []);
+	const socket = getSocket();
 
 	const waitingMatchElement = () => {
 		return (
@@ -28,8 +13,7 @@ const WaitingMatch: React.FC = () => {
 				<div
 					className="divCancel"
 					onClick={() => {
-						socket.disconnect();
-						user.setPage(Pages.Home);
+						socket.socket.disconnect();
 					}}
 				>
 					<Cancel />
@@ -42,10 +26,10 @@ const WaitingMatch: React.FC = () => {
 	};
 
 	const pongElement = () => {
-		return <div className="Pong">{<Pong room={room} />}</div>;
+		return <div className="Pong">{<Pong />}</div>;
 	};
 
-	return <>{room ? pongElement() : waitingMatchElement()}</>;
+	return <>{socket.room ? pongElement() : waitingMatchElement()}</>;
 };
 
 export default WaitingMatch;
