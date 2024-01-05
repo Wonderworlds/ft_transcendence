@@ -18,12 +18,13 @@ export type User = {
 };
 
 export enum Pages {
-	Root = 'root',
-	Home = 'Home',
-	WaitingMatch = 'WaitingMatch',
-	Profile = 'Profile',
-	Parameter = 'Parameter',
-	Chat = 'Chat',
+	Root = '/',
+	Home = '/home',
+	WaitingMatch = '/game',
+	Pong = '/pong',
+	Profile = '/profile',
+	Parameter = '/settings',
+	Default = '/*',
 }
 
 export enum TabOption {

@@ -10,31 +10,32 @@ import Default from './pages/Default.tsx';
 import Pong from './pages/Pong.tsx';
 import WaitingMatch from './pages/WaitingMatch.tsx';
 import { GameSocketProvider } from './context/GameSocketContext.tsx';
+import { Pages } from './utils/types.tsx';
 
 const App = () => {
 	return (
 		<div className="App">
 			<AxiosContextProvider>
-				<UserContextProvider>
-					<BrowserRouter>
+				<BrowserRouter>
+					<UserContextProvider>
 						<Routes>
-							<Route path="/" element={<MainPage />} />
-							<Route path="/home" element={<Home />} />
-							<Route path="/profile" element={<Parameters />} />
-							<Route path="/stats" element={<Profile />} />
+							<Route path={Pages.Root} element={<MainPage />} />
+							<Route path={Pages.Home} element={<Home />} />
+							<Route path={Pages.Parameter} element={<Parameters />} />
+							<Route path={Pages.Profile} element={<Profile />} />
 							<Route
-								path="/game"
+								path={Pages.WaitingMatch}
 								element={
 									<GameSocketProvider>
 										<WaitingMatch />
 									</GameSocketProvider>
 								}
 							/>
-							<Route path="/pong" element={<Pong room={''} />} />
-							<Route path="/*" element={<Default />} />
+							<Route path={Pages.Pong} element={<Pong room={''} />} />
+							<Route path={Pages.Default} element={<Default />} />
 						</Routes>
-					</BrowserRouter>
-				</UserContextProvider>
+					</UserContextProvider>
+				</BrowserRouter>
 			</AxiosContextProvider>
 		</div>
 	);

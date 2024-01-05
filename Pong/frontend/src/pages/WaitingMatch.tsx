@@ -4,6 +4,7 @@ import Cancel from '../components/Cancel.tsx';
 import { getGameSocket } from '../context/GameSocketContext.tsx';
 import Pong from './Pong.tsx';
 import { Link } from 'react-router-dom';
+import { Pages } from '../utils/types.tsx';
 
 const WaitingMatch: React.FC = () => {
 	const socket = getGameSocket().socket;
@@ -29,7 +30,7 @@ const WaitingMatch: React.FC = () => {
 						socket.disconnect();
 					}}
 				>
-					<Link to={'/home'}>
+					<Link to={Pages.Home}>
 						<Cancel />
 					</Link>
 				</div>

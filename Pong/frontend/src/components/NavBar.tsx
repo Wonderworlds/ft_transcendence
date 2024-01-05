@@ -4,6 +4,7 @@ import Chat from './Chat.tsx';
 import React from 'react';
 import { getUser } from '../context/UserContext.tsx';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Pages } from '../utils/types.tsx';
 
 const NavBar: React.FC = () => {
 	const user = getUser();
@@ -14,7 +15,7 @@ const NavBar: React.FC = () => {
 		return location.pathname.toLowerCase() == '/home' ? (
 			<div></div>
 		) : (
-			<Link to={'/game'}>
+			<Link to={Pages.WaitingMatch}>
 				<div className="navPlay">
 					<Play />
 				</div>
@@ -28,7 +29,7 @@ const NavBar: React.FC = () => {
 				<div
 					className="navPongTitle"
 					onClick={() => {
-						navigate('/home');
+						navigate(Pages.Home);
 					}}
 				>
 					<PongTitle />
@@ -38,7 +39,7 @@ const NavBar: React.FC = () => {
 					<div
 						className="navProfilePicture"
 						onClick={() => {
-							navigate('/stats');
+							navigate(Pages.Profile);
 						}}
 					>
 						<img src={user.ppImg} />
@@ -46,7 +47,7 @@ const NavBar: React.FC = () => {
 					<div
 						className="navPseudo"
 						onClick={() => {
-							navigate('/profile');
+							navigate(Pages.Parameter);
 						}}
 					>
 						<p>{user.pseudo}</p>

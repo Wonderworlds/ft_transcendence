@@ -1,8 +1,9 @@
 import React, { createContext, useContext } from 'react';
-import { Status } from '../utils/types';
+import { Pages, Status } from '../utils/types';
 import { getAxios } from './AxiosContext';
 import { AxiosError } from 'axios';
 import { UserDto } from '../utils/dtos';
+import { useNavigate } from 'react-router-dom';
 
 type UserContextType = {
 	username: string;
@@ -17,21 +18,19 @@ type UserContextType = {
 	setDoubleAuth: React.Dispatch<React.SetStateAction<boolean>>;
 	status: Status;
 	setStatus: React.Dispatch<React.SetStateAction<Status>>;
-	loggedIn: boolean;
-	setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const UserContext = createContext({} as UserContextType);
 
 export const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
 	const axios = getAxios();
+	const navigate = useNavigate();
 	const [username, setUsername] = React.useState<string>('');
 	const [pseudo, setPseudo] = React.useState<string>('');
 	const [email, setEmail] = React.useState<string>('');
 	const [ppImg, setppImg] = React.useState<string>('');
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
-	const [loggedIn, setLoggedIn] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
 		if (axios.ready) {
@@ -39,7 +38,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				.get('users')
 				.then((res) => {
 					updateUser(res.data);
-					setLoggedIn(true);
+					navigate(Pages.Home);
 				})
 				.catch((err: AxiosError) => console.log(err));
 		}
@@ -70,8 +69,6 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				setDoubleAuth,
 				status,
 				setStatus,
-				loggedIn,
-				setLoggedIn,
 			}}
 		>
 			{children}
