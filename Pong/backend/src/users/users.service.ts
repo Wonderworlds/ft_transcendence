@@ -1,21 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/typeorm/entities/Match';
 import { User } from 'src/typeorm/entities/User';
 import { myDebug } from 'src/utils/DEBUG';
-import {
-  UserDto,
-  MatchDto,
-  SecureUserDto,
-  UserDtoEmail,
-  UserDtoPPImg,
-  UserDtoPseudo,
-  UserDtoStatus,
-  UserDtoTwoFA,
-  UserDtoUsername,
-  LimitedUserDto,
-  UserDtoPassword,
-} from 'src/utils/dtos';
+import { LimitedUserDto, MatchDto, SecureUserDto, UserDto, UserDtoEmail, UserDtoPPImg, UserDtoPassword, UserDtoPseudo, UserDtoStatus, UserDtoTwoFA } from 'src/utils/Dtos';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -74,6 +62,14 @@ export class UsersService {
   ) {
     const res = await this.userRepository.update({ username }, { ...user });
     return res;
+  }
+
+  async getPPImg(id: number, @Res() res) {
+    const user = await this.findUserById(id);
+    if (!user)
+      throw new BadRequestException("Img not Found");
+    return user.ppImg;
+
   }
 
   async getMatchHistory(pseudo: string): Promise<Array<Match>> | undefined {

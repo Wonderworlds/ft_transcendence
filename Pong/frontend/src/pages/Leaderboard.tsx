@@ -1,12 +1,7 @@
 import React from 'react';
-import Profile from './Stats.tsx';
 
 const Leaderboard: React.FC = () => {
-	return (
-		<div>
-			<Profile win={9} loose={1} rank={1} />
-		</div>
-	);
+	return <div></div>;
 };
 
 export default Leaderboard;

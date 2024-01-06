@@ -1,8 +1,3 @@
-export enum Status {
-	Online = 'Online',
-	Offline = 'Offline',
-	DnD = 'Do Not Disturb',
-}
 
 export type Match = {
 	me: User;
@@ -11,6 +6,11 @@ export type Match = {
 	adversaryScore: number;
 };
 
+export type Pos = {
+	x: number;
+	y: number;
+  };
+
 export type User = {
 	pseudo: string;
 	ppImg: string;
@@ -18,12 +18,13 @@ export type User = {
 };
 
 export enum Pages {
-	Root = 'root',
-	Home = 'Home',
-	WaitingMatch = 'WaitingMatch',
-	Profile = 'Profile',
-	Stats = 'Stats',
-	Game = 'Game',
+	Root = '/',
+	Home = '/home',
+	WaitingMatch = '/game',
+	Pong = '/pong',
+	Stats = '/stats',
+	Settings = '/settings',
+	Default = '/*',
 }
 
 export enum TabOption {
@@ -34,7 +35,20 @@ export enum TabOption {
 	Leaderboard = 'leaderboard',
 }
 
+export enum Status {
+	Online = 'Online',
+	Offline = 'Offline',
+	DnD = 'Do Not Disturb',
+	Busy = 'Busy',
+  }
+  
+  
 export enum eventGame {
 	UP = 'UP',
 	DOWN = 'DOWN',
-}
+	ARROW_UP = 'ARROW_UP',
+	ARROW_DOWN = 'ARROW_DOWN',
+	W_KEY = 'W_KEY',
+	S_KEY = 'S_KEY',
+	SPACE_KEY = 'SPACE_KEY',
+  }

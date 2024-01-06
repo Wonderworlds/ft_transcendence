@@ -1,40 +1,41 @@
-import './styles/pages/index.scss';
-import MainPage from './pages/MainPage.tsx';
-import { UserContextProvider } from './context/UserContext.tsx';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AxiosContextProvider } from './context/AxiosContext.tsx';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home.tsx';
-import Stats from './pages/Stats.tsx';
+import { UserContextProvider } from './context/UserContext.tsx';
+import { WebsocketProvider } from './context/WebsocketContext.tsx';
 import Default from './pages/Default.tsx';
+import Home from './pages/Home.tsx';
+import MainPage from './pages/MainPage.tsx';
 import Pong from './pages/Pong.tsx';
+import Settings from './pages/Profile.tsx';
+import Stats from './pages/Stats.tsx';
 import WaitingMatch from './pages/WaitingMatch.tsx';
-import { GameSocketProvider } from './context/GameSocketContext.tsx';
-import Profile from './pages/Profile.tsx';
+import './styles/pages/index.scss';
+import { Pages } from './utils/types.tsx';
 
 const App = () => {
 	return (
 		<div className="App">
 			<AxiosContextProvider>
-				<UserContextProvider>
-					<BrowserRouter>
+				<BrowserRouter>
+					<UserContextProvider>
 						<Routes>
-							<Route path="/" element={<MainPage />} />
-							<Route path="/home" element={<Home />} />
-							<Route path="/profile" element={<Profile />} />
-							<Route path="/stats" element={<Stats />} />
+							<Route path={Pages.Root} element={<MainPage />} />
+							<Route path={Pages.Home} element={<Home />} />
+							<Route path={Pages.Settings} element={<Settings />} />
+							<Route path={Pages.Stats} element={<Stats />} />
 							<Route
-								path="/game"
+								path={Pages.WaitingMatch}
 								element={
-									<GameSocketProvider>
+									<WebsocketProvider>
 										<WaitingMatch />
-									</GameSocketProvider>
+									</WebsocketProvider>
 								}
 							/>
-							<Route path="/pong" element={<Pong room={''} />} />
-							<Route path="/*" element={<Default />} />
+							<Route path={Pages.Pong} element={<Pong />} />
+							<Route path={Pages.Default} element={<Default />} />
 						</Routes>
-					</BrowserRouter>
-				</UserContextProvider>
+					</UserContextProvider>
+				</BrowserRouter>
 			</AxiosContextProvider>
 		</div>
 	);

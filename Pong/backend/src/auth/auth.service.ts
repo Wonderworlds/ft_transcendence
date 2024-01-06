@@ -5,15 +5,15 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { createMail, transporter } from 'src/2FA/nodemailer';
+import { OtpService } from 'src/2FA/otp.service';
 import { User } from 'src/typeorm/entities/User';
 import { UsersService } from 'src/users/users.service';
-import { LogInUserDto, SecureUserDto } from 'src/utils/dtos';
-import { Status } from 'src/utils/types';
-import * as bcrypt from 'bcrypt';
 import { myDebug } from 'src/utils/DEBUG';
 import { JWTPayload } from './utils';
-import { OtpService } from 'src/2FA/otp.service';
-import { createMail, transporter } from 'src/2FA/nodemailer';
+import { LogInUserDto, SecureUserDto } from 'src/utils/Dtos';
+import { Status } from 'src/utils/types';
 @Injectable()
 export class AuthService {
   constructor(

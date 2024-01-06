@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Room } from "./Room";
 import { Match } from "./Match";
 import { Message } from "./Message";
-import { Status } from "src/utils/types";
 import { Otp } from "./Otp";
+import { Room } from "./Room";
+import { Status } from "src/utils/types";
 
 @Entity({ name: 'users'})
 export class User {

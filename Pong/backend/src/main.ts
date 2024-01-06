@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import * as fs from 'fs';
-import * as session from 'express-session';
-import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
+import * as fs from 'fs';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const httpsOptions = {
@@ -16,7 +16,11 @@ async function bootstrap() {
     { httpsOptions },
   );
 
-  app.enableCors();
+  app.enableCors({
+    origin: true,
+    methods: 'GET,PUT,POST,',
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe());
   app.use(
     session({

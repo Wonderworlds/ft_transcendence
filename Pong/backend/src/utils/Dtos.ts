@@ -1,6 +1,20 @@
-import { IsBoolean, IsEmail, IsEnum, IsNumber, IsNumberString, IsPhoneNumber, IsString, IsStrongPassword, Length } from "class-validator";
-import { Status } from "./types";
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsStrongPassword } from "class-validator";
+import { Pos, Status, eventGame } from "./types";
+
+export class AuthDto  {
+	@IsString()
+	access_token: string;
+	@IsString()
+	username: string;
+	@IsBoolean()
+	twoFA: boolean;
+}
+
+export class TwoFADto {
+	@IsString()
+	code: string;
+}
 
 export class UserDto {
 	@IsString()
@@ -57,3 +71,23 @@ export class MatchDto {
 	@IsString()
 	P2: string;
 }
+
+export class roomDto {
+	@IsString()
+	room: string;
+}
+
+export class inputDto {
+	@IsEnum(eventGame)
+	input: eventGame;
+}
+
+export class inputRoomDto extends IntersectionType(roomDto, inputDto) {};
+
+export class UpdateGameDto {
+  ball: Pos;
+  pLeft: Pos;
+  pRight: Pos;
+  scorePLeft: number;
+  scorePRight: number;
+};

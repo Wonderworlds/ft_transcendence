@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
+import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ValidSocket } from 'src/utils/types';
 
