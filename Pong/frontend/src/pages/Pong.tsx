@@ -19,10 +19,12 @@ const Pong: React.FC = () => {
 	const [pLeft, setPLeft] = useState<Position>({ x: 2, y: 50 });
 	const [pRight, setPRight] = useState<Position>({ x: 98, y: 50 });
 	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
+	const pressedKeys = new Set<string>();
+
 
 	useEffect(() => {
 		socket.on('updateGame', (res: UpdateGameDto) => {
-			console.log(res);
+			//console.log(res);
 			if (res) {
 				setPLeft(res.pLeft);
 				setPRight(res.pRight);
@@ -37,31 +39,39 @@ const Pong: React.FC = () => {
 	}, []);
 
 	const handleKeyDown = (e: KeyboardEvent) => {
-		switch (e.key) {
-			case 'ArrowUp':
-				sendInput(eventGame.ARROW_UP);
-				break;
-			case 'ArrowDown':
-				sendInput(eventGame.ARROW_DOWN);
-				break;
-			case 'w':
-				sendInput(eventGame.W_KEY);
-				break;
-			case 's':
-				sendInput(eventGame.S_KEY);
-				break;
-			default:
-				break;
+		pressedKeys.add(e.key);
+		handleKeyPress();
+	}
+
+	const handleKeyUp = (e: KeyboardEvent) => {
+		pressedKeys.delete(e.key);
+		handleKeyPress();
+	}
+
+	const handleKeyPress = () => {
+		if (pressedKeys.has('ArrowUp')) {
+			sendInput(eventGame.ARROW_UP);
 		}
-	};
+		if (pressedKeys.has('ArrowDown')) {
+			sendInput(eventGame.ARROW_DOWN);
+		}
+		if (pressedKeys.has('s')) {
+			sendInput(eventGame.S_KEY);
+		}
+		if (pressedKeys.has('w')) {
+			sendInput(eventGame.W_KEY);
+		}
+	}
 
 	function sendInput(input: eventGame) {
 		socket.emit('input', { room: socketContext.room, input: input });
 	}
 
 	useEffect(() => {
+		window.addEventListener('keyup', handleKeyUp, false);
 		window.addEventListener('keydown', handleKeyDown, false);
 		return () => {
+			window.removeEventListener('keyup', handleKeyUp);
 			window.removeEventListener('keydown', handleKeyDown);
 		};
 	}, []);
@@ -76,7 +86,7 @@ const Pong: React.FC = () => {
 		left: `${pRight.x - 1.2}%`,
 		top: `${pRight.y}%`,
 	};
-	const BallStyle = { width: '20px', height: '20px', left: `${ball.x}%`, top: `${ball.y}%` };
+	const BallStyle = { width: '15px', height: '15px', left: `${ball.x}%`, top: `${ball.y}%` };
 
 	return (
 		<div className="PONG_TITLE">

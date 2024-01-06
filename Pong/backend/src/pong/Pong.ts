@@ -16,7 +16,7 @@ type Pos = {
 class Ball {
   private position : Pos= {x: 50, y: 50};
   private direction : Pos;
-  private readonly speed = 1;
+  private readonly speed = 1.5 ;
 
   constructor() {
     this.setDirection(this.getRandomDirection());
@@ -26,13 +26,52 @@ class Ball {
     this.direction = newDir;
   }
 
+  public move(p1: Player, p2: Player) {
+	  //check collision with players
+	  if (this.position.x <= p1.getPosition().x && 
+		  this.position.y >= p1.getPosition().y &&
+		  this.position.y <= p1.getPosition().y + 12
+		 ) {
+			this.direction.x = 1;
+	  } 
+
+	  else if (this.position.x >= p2.getPosition().x - 2 &&
+		  this.position.y >= p2.getPosition().y &&
+		  this.position.y <= p2.getPosition().y + 12
+		  ) {
+			this.direction.x = -1;
+		}
+
+	  //check collision with walls 
+	  if (this.position.x + 2 < 0) {
+		this.position = {x: 50, y: 50};
+		this.direction = this.getRandomDirection();
+		p2.addScore();
+	  } else if (this.position.x > 100) {
+		this.position = {x: 50, y: 50};
+		this.direction = this.getRandomDirection();
+		p1.addScore();
+	  }
+
+	  if (this.position.y <= 0) {
+		this.direction.y = 1;
+	  } else if (this.position.y + 2 >= 100) {
+		this.direction.y = -1;
+	  }
+
+	  this.position.x += this.direction.x * this.speed;
+	  this.position.y += this.direction.y * this.speed;
+
+  }
+
   public getPosition() {
     return this.position;
   }
 
   private getRandomDirection() {
-    //logic pour random
-    return { x: 25, y: 25 };
+	const x = Math.random() < 0.5 ? -1 : 1;
+	const y = Math.random() < 0.5 ? -1 : 1;
+	return {x, y};
   }
 
   public onCollision() {}
@@ -40,7 +79,9 @@ class Ball {
 
 class Player {
   private position : Pos;
-  private readonly speed = 2;
+  private readonly speed = 5;
+  private maxY = 88;
+  private score = 0;
 
   constructor(pos: Pos) { this.setPosition(pos) };
 
@@ -48,19 +89,36 @@ class Player {
     return this.position;
   }
 
+  public getScore() {
+	  return this.score;
+  }
+
+  public addScore() {
+	  this.score++;
+  }
+
   private setPosition (newPos: Pos) {
 	this.position = newPos;
   }
 
   public changePos(event: eventGame) {
-    console.info(event);
-    if (event === eventGame.UP) {
-		this.position.y -= this.speed;
-    } else {
-		this.position.y += this.speed;
+    //console.info(event);
+    if (event === eventGame.UP && this.position.y > 0) {
+		if (this.position.y - this.speed > 0) {
+			this.position.y -= this.speed;
+		} else {
+		    this.position.y = 0;
+		}
+    } else if (event === eventGame.DOWN && this.position.y < this.maxY) {
+		if (this.position.y + this.speed < this.maxY) {
+		    this.position.y += this.speed;
+		} else {
+			this.position.y = this.maxY;
+		}
     }
   }
 }
+
 export class Pong {
   id: string;
 
@@ -81,8 +139,6 @@ export class Pong {
     this.loop();
   }
 
-  // faire une fonction qui retourne la position du joueur en fonction de son id
-
   hrtimeMs(): number {
     let time = process.hrtime();
     return time[0] * 1000 + time[1] / 1000000;
@@ -99,25 +155,30 @@ export class Pong {
 
   loop = () => {
     setTimeout(this.loop, 1000 / 24);
+	this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
   };
 
   private UpdatePaddlePos(paddle: Player, input: eventGame) {}
 
   public onInput(@ConnectedSocket() client: ValidSocket, input: eventGame) {
-	console.log(this.getStateOfGame());
+	//console.log(this.getStateOfGame());
     switch (input) {
       case eventGame.ARROW_UP:
-        return this.p2.changePos(eventGame.UP);
+        this.p2.changePos(eventGame.UP);
+		break;
       case eventGame.ARROW_DOWN:
-        return this.p2.changePos(eventGame.DOWN);
+        this.p2.changePos(eventGame.DOWN);
+		break;
       case eventGame.W_KEY:
-        return this.p1.changePos(eventGame.UP);
+        this.p1.changePos(eventGame.UP);
+		break;
       case eventGame.S_KEY:
-        return this.p1.changePos(eventGame.DOWN);
+        this.p1.changePos(eventGame.DOWN);
+		break;
       default:
         console.info('the fuck');
-        return;
+		break;
     }
   }
 }
