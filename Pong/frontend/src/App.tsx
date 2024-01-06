@@ -1,15 +1,15 @@
-import './styles/pages/index.scss';
-import MainPage from './pages/MainPage.tsx';
-import { UserContextProvider } from './context/UserContext.tsx';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AxiosContextProvider } from './context/AxiosContext.tsx';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home.tsx';
-import Stats from './pages/Stats.tsx';
-import Settings from './pages/Profile.tsx';
-import Default from './pages/Default.tsx';
-import Pong from './pages/Pong.tsx';
-import WaitingMatch from './pages/WaitingMatch.tsx';
 import { GameSocketProvider } from './context/GameSocketContext.tsx';
+import { UserContextProvider } from './context/UserContext.tsx';
+import Default from './pages/Default.tsx';
+import Home from './pages/Home.tsx';
+import MainPage from './pages/MainPage.tsx';
+import Pong from './pages/Pong.tsx';
+import Settings from './pages/Profile.tsx';
+import Stats from './pages/Stats.tsx';
+import WaitingMatch from './pages/WaitingMatch.tsx';
+import './styles/pages/index.scss';
 import { Pages } from './utils/types.tsx';
 
 const App = () => {

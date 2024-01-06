@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { Status } from 'backend/shared/src/types';
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserDto } from '../utils/dtos';
 import { Pages } from '../utils/types';
@@ -39,7 +39,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 	React.useEffect(() => {
 		if (axios.ready) {
 			axios.client
-				.get('users')
+				.get('me')
 				.then((res) => {
 					updateUser(res.data);
 					navigate(Pages.Home);
@@ -48,18 +48,24 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 		}
 	}, [axios.ready]);
 
+	React.useEffect(() => {
+		if (ppSrc) {
+			const url = `${import.meta.env.VITE_BURL}/public/${ppSrc}`;
+			console.log(url);
+			setppImg(url);
+		}
+	}, [ppSrc]);
+
 	function updateUser(body: UserDto) {
 		console.log('updateUser');
 		if (username != body.username) setUsername(body.username);
 		if (pseudo != body.pseudo) setPseudo(body.pseudo);
-		if (ppImg != body.ppImg) setppImg(body.ppImg);
+		if (ppSrc != body.ppImg) setPPSrc(body.ppImg);
 		if (status != body.status) setStatus(body.status);
 		if (body.twoFA && doubleAuth != body.twoFA) setDoubleAuth(body.twoFA);
 		if (body.email && email != body.email) setEmail(body.email);
 	}
-	useEffect(() => {
-		console.log(process.cwd());
-	}, [ppImg]);
+
 	return (
 		<UserContext.Provider
 			value={{

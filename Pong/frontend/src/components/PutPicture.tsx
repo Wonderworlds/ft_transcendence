@@ -13,14 +13,17 @@ const PutPicture: React.FC = () => {
 		const formData = new FormData();
 		formData.append('image', file);
 		client
-			.post('/users/uploadAvatar', formData, {
+			.post('/me/uploadAvatar', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data',
 				},
 			})
-			.then((res) => {
+			.then((res: any) => {
 				console.log(res);
-				user.setppImg(`../backend/shared/img/${res.data.filename}`);
+				user.setPPSrc(res.data.src);
+			})
+			.catch((err) => {
+				console.log(err);
 			});
 	}
 

@@ -9,12 +9,12 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
+import { AuthDto, LogInUserDto, TwoFADto } from 'shared/src/Dtos';
+import { Success } from 'shared/src/types';
+import { myDebug } from 'src/utils/DEBUG';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local.auth.guard';
 import { SkipAuth } from './utils';
-import { myDebug } from 'src/utils/DEBUG';
-import { AuthDto, LogInUserDto, TwoFADto } from 'shared/src/Dtos';
-import { Success } from 'shared/src/types';
 
 @Controller('auth')
 export class AuthController {
@@ -38,6 +38,7 @@ export class AuthController {
   async logIn(
     @Req() req: any,
   ): Promise<AuthDto | { username: string } | HttpException> {
+		console.log(process.cwd());
     myDebug('login', req.user);
     if (req.user.user.twoFA) {
       await this.authService.sendMailOtp(req.user.user);

@@ -1,24 +1,30 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
+import { OtpModule } from './2FA/otp.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './typeorm/entities/User';
-import { UsersModule } from './users/users.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/jwt.auth.guard';
+import { GatewayModule } from './gateway/gateway.module';
+import { PongModule } from './pong/pong.module';
 import { Match } from './typeorm/entities/Match';
 import { Message } from './typeorm/entities/Message';
-import { Room } from './typeorm/entities/Room';
-import { PongModule } from './pong/pong.module';
-import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './auth/jwt.auth.guard';
 import { Otp } from './typeorm/entities/Otp';
-import { OtpModule } from './2FA/otp.module';
-import { GatewayModule } from './gateway/gateway.module';
+import { Room } from './typeorm/entities/Room';
+import { User } from './typeorm/entities/User';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '../public'),
+      serveRoot: '/public/' //last slash was important
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
