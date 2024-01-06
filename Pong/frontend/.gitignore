@@ -1,5 +1,6 @@
 # compiled output
 /dist
+yarn.lock
 /node_modules
 
 # Logs
