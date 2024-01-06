@@ -1,10 +1,10 @@
-import { Body, OnModuleInit, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { ValidSocket, eventGame } from 'src/utils/types';
-import { Pong } from './Pong';
+import { Body } from '@nestjs/common';
+import { ConnectedSocket, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { ValidSocket, eventGame } from 'shared/src/types';
 import { AGateway } from 'src/websocket/Agateway';
 import { WebsocketService } from 'src/websocket/websocket.service';
 import { v4 as uuidv4 } from 'uuid';
+import { Pong } from './Pong';
 
 @WebSocketGateway({
 	cors: {

@@ -3,17 +3,18 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
   Post,
   Req,
-  Request,
   Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CodeDto, LogInUserDto, UserDto } from 'src/utils/dtos';
 import { LocalAuthGuard } from './local.auth.guard';
 import { SkipAuth } from './utils';
 import { myDebug } from 'src/utils/DEBUG';
+import { AuthDto, LogInUserDto, TwoFADto } from 'shared/src/Dtos';
+import { Success } from 'shared/src/types';
 
 @Controller('auth')
 export class AuthController {
@@ -22,16 +23,21 @@ export class AuthController {
   @HttpCode(200)
   @SkipAuth()
   @Post('/signup')
-  signUp(@Body() secureUser: LogInUserDto) {
+  async signUp(
+    @Body() secureUser: LogInUserDto,
+  ): Promise<Success | HttpException> {
     secureUser.username = secureUser.username.toLowerCase();
-    return this.authService.createUser(secureUser);
+    await this.authService.createUser(secureUser);
+    return { success: true };
   }
 
   @HttpCode(200)
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async logIn(@Req() req: any) {
+  async logIn(
+    @Req() req: any,
+  ): Promise<AuthDto | { username: string } | HttpException> {
     myDebug('login', req.user);
     if (req.user.user.twoFA) {
       await this.authService.sendMailOtp(req.user.user);
@@ -41,9 +47,7 @@ export class AuthController {
 
   @HttpCode(200)
   @Get()
-  isLoggedIn(
-    @Session() session: Record<string, any>,
-  ): Promise<UserDto> | undefined {
+  isLoggedIn(@Session() session: Record<string, any>) {
     console.info(session);
     return;
   }
@@ -55,18 +59,14 @@ export class AuthController {
     return req.user;
   }
 
-  @Post('/user')
-  PostUser(@Req() req: any, @Body() body: any) {
-    console.info(req.user);
-    console.info(body);
-    return body;
-  }
-
   @HttpCode(200)
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
   @Post('/twoFA')
-  verifyCode(@Req() request: any, @Body() body: any) {
+  verifyCode(
+    @Req() request: any,
+    @Body() body: TwoFADto,
+  ): Promise<AuthDto | HttpException> {
     myDebug('twoFA', request.user, body);
     return this.authService.ValidateCodeOtp(request.user.user, body.code);
   }

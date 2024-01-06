@@ -1,9 +1,10 @@
-import React, { createContext, useContext } from 'react';
-import { Pages, Status } from '../utils/types';
-import { getAxios } from './AxiosContext';
 import { AxiosError } from 'axios';
-import { UserDto } from '../utils/dtos';
+import { Status } from 'backend/shared/src/types';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserDto } from '../utils/dtos';
+import { Pages } from '../utils/types';
+import { getAxios } from './AxiosContext';
 
 type UserContextType = {
 	username: string;
@@ -12,6 +13,8 @@ type UserContextType = {
 	setPseudo: React.Dispatch<React.SetStateAction<string>>;
 	ppImg: string;
 	setppImg: React.Dispatch<React.SetStateAction<string>>;
+	ppSrc: string;
+	setPPSrc: React.Dispatch<React.SetStateAction<string>>;
 	email: string;
 	setEmail: React.Dispatch<React.SetStateAction<string>>;
 	doubleAuth: boolean;
@@ -29,6 +32,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 	const [pseudo, setPseudo] = React.useState<string>('');
 	const [email, setEmail] = React.useState<string>('');
 	const [ppImg, setppImg] = React.useState<string>('');
+	const [ppSrc, setPPSrc] = React.useState<string>('');
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
 
@@ -53,7 +57,9 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 		if (body.twoFA && doubleAuth != body.twoFA) setDoubleAuth(body.twoFA);
 		if (body.email && email != body.email) setEmail(body.email);
 	}
-
+	useEffect(() => {
+		console.log(process.cwd());
+	}, [ppImg]);
 	return (
 		<UserContext.Provider
 			value={{
@@ -64,7 +70,9 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				email,
 				setEmail,
 				ppImg,
+				ppSrc,
 				setppImg,
+				setPPSrc,
 				doubleAuth,
 				setDoubleAuth,
 				status,

@@ -1,6 +1,6 @@
 import React from 'react';
-import { getUser } from '../context/UserContext';
 import { getAxios } from '../context/AxiosContext';
+import { getUser } from '../context/UserContext';
 
 const LogIn: React.FC = () => {
 	const [username, setUsername] = React.useState<string>('');

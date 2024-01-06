@@ -1,21 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LimitedUserDto, MatchDto, SecureUserDto, UserDto, UserDtoEmail, UserDtoPPImg, UserDtoPassword, UserDtoPseudo, UserDtoStatus, UserDtoTwoFA } from 'shared/src/Dtos';
 import { Match } from 'src/typeorm/entities/Match';
 import { User } from 'src/typeorm/entities/User';
 import { myDebug } from 'src/utils/DEBUG';
-import {
-  UserDto,
-  MatchDto,
-  SecureUserDto,
-  UserDtoEmail,
-  UserDtoPPImg,
-  UserDtoPseudo,
-  UserDtoStatus,
-  UserDtoTwoFA,
-  UserDtoUsername,
-  LimitedUserDto,
-  UserDtoPassword,
-} from 'src/utils/dtos';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -75,6 +63,7 @@ export class UsersService {
     const res = await this.userRepository.update({ username }, { ...user });
     return res;
   }
+
 
   async getMatchHistory(pseudo: string): Promise<Array<Match>> | undefined {
     const user = await this.userRepository.findOne({

@@ -1,25 +1,35 @@
 import React, { useState } from 'react';
+import { getAxios } from '../context/AxiosContext';
 import { getUser } from '../context/UserContext';
-import axios from 'axios';
 
 const PutPicture: React.FC = () => {
 	const user = getUser();
-	const [file, setFile] = useState<any>();
+	const client = getAxios().client;
+	const [file, setFile] = useState<File | null>(null);
 
 	function handleSubmit(event: any) {
 		event.preventDefault();
+		if (!file) return;
 		const formData = new FormData();
-		formData.append('file', file);
-		formData.append('fileName', file.name);
-		const config = {
-			headers: {
-				'content-type': 'multipart/form-data',
-			},
-		};
-		axios.post('https://localhost:3000/images', formData, config).then((response) => {
-			console.log(response.data);
-		});
+		formData.append('image', file);
+		client
+			.post('/users/uploadAvatar', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			})
+			.then((res) => {
+				console.log(res);
+				user.setppImg(`../backend/shared/img/${res.data.filename}`);
+			});
 	}
+
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files) {
+			setFile(event.target.files[0]);
+		}
+	};
+
 	return (
 		<div className="headerPutPicture">
 			<div className="divTitlePicture">
@@ -29,15 +39,8 @@ const PutPicture: React.FC = () => {
 				<input type="image" id="image" alt="" src={user.ppImg} />
 			</div>
 			<div className="divLoadPicture">
-				<form onSubmit={handleSubmit} encType="multipart/form-data" action="/upload">
-					<input
-						type="file"
-						name="pp"
-						accept="image/png, image/jpeg"
-						onChange={(event: any) => {
-							setFile(event.target.files[0]);
-						}}
-					/>
+				<form onSubmit={handleSubmit}>
+					<input type="file" onChange={handleChange} />
 					<button type="submit">Upload</button>
 				</form>
 			</div>

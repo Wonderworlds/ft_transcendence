@@ -1,7 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./User";
-import { roomProtection } from "src/utils/types";
+import { roomProtection } from "shared/src/types";
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Message } from "./Message";
+import { User } from "./User";
 
 @Entity({ name: 'room' })
 export class Room {

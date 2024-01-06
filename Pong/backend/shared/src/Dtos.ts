@@ -1,6 +1,16 @@
-import { IsBoolean, IsEmail, IsEnum, IsNumber, IsNumberString, IsPhoneNumber, IsString, IsStrongPassword, Length } from "class-validator";
-import { Status } from "./types";
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsStrongPassword } from "class-validator";
+import { Status } from "./types";
+
+export type AuthDto = {
+	access_token: string;
+	username: string;
+	twoFA: boolean;
+}
+
+export type TwoFADto = {
+	code: string;
+}
 
 export class UserDto {
 	@IsString()

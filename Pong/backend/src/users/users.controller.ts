@@ -3,30 +3,33 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
+  HttpException,
   Param,
   Post,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
-  UsePipes,
+  UseInterceptors
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import {
-  UserDto,
+  LimitedUserDto,
   MatchDto,
-  SecureUserDto,
+  UserDto,
   UserDtoEmail,
   UserDtoPPImg,
+  UserDtoPassword,
   UserDtoPseudo,
   UserDtoStatus,
   UserDtoTwoFA,
-  UserDtoUsername,
-  LimitedUserDto,
-  UserDtoPassword,
-} from 'src/utils/dtos';
+} from 'shared/src/Dtos';
+import { Success } from 'shared/src/types';
 import { myDebug } from 'src/utils/DEBUG';
-import { validate } from 'class-validator';
+import { FileSizeGuard } from './fileSize.guard';
+import { editFileName, imageFileFilter } from './multerOptions';
+import { UsersService } from './users.service';
 
 @Controller({ path: 'users' })
 export class UsersController {
@@ -47,64 +50,78 @@ export class UsersController {
   }
 
   @Get()
-  async getUser(@Req() req: any) {
+  async getUser(@Req() req: any): Promise<UserDto | HttpException> {
     myDebug('getUser', req.user);
     const user = await this.userService.findUserById(req.user.userId);
+    if (!user) return new BadRequestException('User Not Found');
     return this.userService.userToDto(user);
   }
 
   @Put('/email')
-  async UpdateUserEmail(
-    @Body() body: UserDtoEmail,
-    @Req() req: any,
-  ) {
+  async UpdateUserEmail(@Body() body: UserDtoEmail, @Req() req: any) : Promise<Success | HttpException> {
     myDebug('UpdateUserEmail', req.user, body);
-    return this.userService.updateUserById(req.user.userId, body);
+    const res = await this.userService.updateUserById(req.user.userId, body);
+    if (res.affected) return { success: true };
+    return { success: false };
   }
 
   @Put('/twoFA')
-  async UpdateUserTwoFa(
-    @Body() body: UserDtoTwoFA,
-    @Req() req: any,
-  ) {
+  async UpdateUserTwoFa(@Body() body: UserDtoTwoFA, @Req() req: any): Promise<Success | HttpException> {
     myDebug('UpdateUserTwoFa', req.user, body);
-    return this.userService.updateUserById(req.user.userId, body);
+    const res = await this.userService.updateUserById(req.user.userId, body);
+    if (res.affected) return { success: true };
+    return { success: false };
   }
 
   @Put('/pseudo')
-  async UpdateUserPseudo(
-    @Body() body: UserDtoPseudo,
-    @Req() req: any,
-  ) {
+  async UpdateUserPseudo(@Body() body: UserDtoPseudo, @Req() req: any): Promise<Success | HttpException> {
     myDebug('UpdateUserPseudo', req.user, body);
-    return this.userService.updateUserById(req.user.userId, body);
+    const res = await this.userService.updateUserById(req.user.userId, body);
+    if (res.affected) return { success: true };
+    return { success: false };
   }
 
   @Put('/password')
-  async UpdateUserPassword(
-    @Body() body: UserDtoPassword,
-    @Req() req: any,
-  ) {
+  async UpdateUserPassword(@Body() body: UserDtoPassword, @Req() req: any): Promise<Success | HttpException> {
     myDebug('UpdateUserPassword', req.user, body);
-    return this.userService.updateUserById(req.user.userId, body);
+    const res = await this.userService.updateUserById(req.user.userId, body);
+    if (res.affected) return { success: true };
+    return { success: false };
   }
 
   @Put('/ppImg')
-  async UpdateUserPPImg(
-    @Body() body: UserDtoPPImg,
-    @Req() req: any,
-  ) {
+  async UpdateUserPPImg(@Body() body: UserDtoPPImg, @Req() req: any): Promise<Success | HttpException> {
     myDebug('UpdateUserPPImg', req.user, body);
-    return this.userService.updateUserById(req.user.userId, body);
+    const res = await this.userService.updateUserById(req.user.userId, body);
+    if (res.affected) return { success: true };
+    return { success: false };
   }
 
+  @UseGuards(FileSizeGuard)
+	@UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './shared/img/',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+      )
+	@Post('/uploadAvatar')
+  async uploadedFile(@UploadedFile() file) {
+      const response = {
+        originalname: file.originalname,
+        filename: file.filename,
+      };
+      return response;
+  }
+  
   @Put('/status')
-  async UpdateUserStatus(
-    @Body() body: UserDtoStatus,
-    @Req() req: any,
-  ) {
+  async UpdateUserStatus(@Body() body: UserDtoStatus, @Req() req: any): Promise<Success | HttpException> {
     myDebug('UpdateUserStatus', req.user, body);
-    return this.userService.updateUserById(req.user.userId, body);
+    const res = await this.userService.updateUserById(req.user.userId, body);
+    if (res.affected) return { success: true };
+    return { success: false };
   }
 
   @Get(':pseudo/matchs')

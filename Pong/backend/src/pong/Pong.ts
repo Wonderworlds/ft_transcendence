@@ -1,6 +1,6 @@
-import { ConnectedSocket, WebSocketServer } from "@nestjs/websockets";
+import { ConnectedSocket } from "@nestjs/websockets";
+import { ValidSocket, eventGame } from "shared/src/types";
 import { Server } from "socket.io";
-import { ValidSocket, eventGame } from "src/utils/types";
 import { WebsocketService } from "src/websocket/websocket.service";
 
 export class Pong {

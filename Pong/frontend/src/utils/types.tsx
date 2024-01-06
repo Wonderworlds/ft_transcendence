@@ -1,8 +1,4 @@
-export enum Status {
-	Online = 'Online',
-	Offline = 'Offline',
-	DnD = 'Do Not Disturb',
-}
+import { Status } from 'backend/shared/src/types';
 
 export type Match = {
 	me: User;
