@@ -1,2 +1,5 @@
 .env
 postgresql/
+Pong/node_modules/
+Pong/.yarnclean
+Pong/yarn.lock

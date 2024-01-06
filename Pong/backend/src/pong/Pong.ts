@@ -1,4 +1,4 @@
-import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ValidSocket, eventGame } from 'src/utils/types';
 import { WebsocketService } from 'src/websocket/websocket.service';
@@ -16,7 +16,7 @@ type Pos = {
 class Ball {
   private position : Pos= {x: 50, y: 50};
   private direction : Pos;
-  private readonly speed = 1.5 ;
+  private readonly speed = 0.5 ;
 
   constructor() {
     this.setDirection(this.getRandomDirection());
@@ -58,7 +58,7 @@ class Ball {
 	  } else if (this.position.y + 2 >= 100) {
 		this.direction.y = -1;
 	  }
-
+    this.setDirection(this.normalize(this.direction));
 	  this.position.x += this.direction.x * this.speed;
 	  this.position.y += this.direction.y * this.speed;
 
@@ -72,6 +72,11 @@ class Ball {
 	const x = Math.random() < 0.5 ? -1 : 1;
 	const y = Math.random() < 0.5 ? -1 : 1;
 	return {x, y};
+  }
+
+  private normalize(dir: Pos) : Pos {
+    const norme = Math.sqrt((dir.x * dir.x) + (dir.y * dir.y));
+    return ({x: dir.x / norme, y: dir.y / norme});
   }
 
   public onCollision() {}
@@ -154,7 +159,7 @@ export class Pong {
   }
 
   loop = () => {
-    setTimeout(this.loop, 1000 / 24);
+    setTimeout(this.loop, 1000 / 48);
 	this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
   };
