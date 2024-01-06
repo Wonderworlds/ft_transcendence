@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AxiosContextProvider } from './context/AxiosContext.tsx';
-import { GameSocketProvider } from './context/GameSocketContext.tsx';
 import { UserContextProvider } from './context/UserContext.tsx';
+import { WebsocketProvider } from './context/WebsocketContext.tsx';
 import Default from './pages/Default.tsx';
 import Home from './pages/Home.tsx';
 import MainPage from './pages/MainPage.tsx';
@@ -26,12 +26,12 @@ const App = () => {
 							<Route
 								path={Pages.WaitingMatch}
 								element={
-									<GameSocketProvider>
+									<WebsocketProvider>
 										<WaitingMatch />
-									</GameSocketProvider>
+									</WebsocketProvider>
 								}
 							/>
-							<Route path={Pages.Pong} element={<Pong room={''} />} />
+							<Route path={Pages.Pong} element={<Pong />} />
 							<Route path={Pages.Default} element={<Default />} />
 						</Routes>
 					</UserContextProvider>

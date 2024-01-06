@@ -9,12 +9,12 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { AuthDto, LogInUserDto, TwoFADto } from 'shared/src/Dtos';
-import { Success } from 'shared/src/types';
 import { myDebug } from 'src/utils/DEBUG';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local.auth.guard';
 import { SkipAuth } from './utils';
+import { LogInUserDto, AuthDto, TwoFADto } from 'src/utils/Dtos';
+import { Success } from 'src/utils/types';
 
 @Controller('auth')
 export class AuthController {

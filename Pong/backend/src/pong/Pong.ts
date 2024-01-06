@@ -1,40 +1,197 @@
-import { ConnectedSocket } from "@nestjs/websockets";
-import { ValidSocket, eventGame } from "shared/src/types";
-import { Server } from "socket.io";
-import { WebsocketService } from "src/websocket/websocket.service";
+import { ConnectedSocket } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { UpdateGameDto } from 'src/utils/Dtos';
+import { Pos, ValidSocket, eventGame } from 'src/utils/types';
+import { WebsocketService } from 'src/websocket/websocket.service';
+
+class Ball {
+  private position: Pos = { x: 50, y: 50 };
+  private direction: Pos;
+  private readonly speed = 0.8;
+
+  constructor() {
+    this.setDirection(this.getRandomDirection());
+  }
+
+  public setDirection(newDir: Pos) {
+    this.direction = newDir;
+  }
+
+  private dist(a: number, b: number) {
+    return (Math.abs(b - a));
+  }
+  public move(p1: Player, p2: Player) {
+    //check collision with walls
+    if (this.position.x + 2 < 2) {
+      this.position = { x: 50, y: 50 };
+      this.direction = this.getRandomDirection();
+      return p2.addScore();
+    } else if (this.position.x > 99) {
+      this.position = { x: 50, y: 50 };
+      this.direction = this.getRandomDirection();
+      return p1.addScore();
+    }
+    
+    //check collision with players
+    const pos1 = p1.getPosition();
+    const pos2 = p2.getPosition();
+    if (
+      this.position.x <= pos1.x + 0.9 &&
+      this.dist(this.position.x, pos1.x + 0.9) < 1 &&
+      this.position.y >= pos1.y &&
+      this.position.y <= pos1.y + 12
+    ) {
+      this.direction.x = 1;
+    } else if (
+      this.position.x >= pos2.x - 2 &&
+      this.dist(this.position.x, pos2.x - 2) < 1 &&
+      this.position.y >= pos2.y &&
+      this.position.y <= pos2.y + 12
+    ) {
+      this.direction.x = -1;
+    }
+
+
+    if (this.position.y <= 0) {
+      this.direction.y = 1;
+    } else if (this.position.y + 2 >= 100) {
+      this.direction.y = -1;
+    }
+    this.setDirection(this.normalize(this.direction));
+    this.position.x += this.direction.x * this.speed;
+    this.position.y += this.direction.y * this.speed;
+  }
+
+  public getPosition() {
+    return this.position;
+  }
+
+  private getRandomDirection() {
+    let x = Math.random() * 2 - 1;
+    let y = Math.random() * 2 - 1;
+    while (Math.abs(x) < 0.2) {
+      x = Math.random() * 2 - 1;
+    }
+    while (Math.abs(y) < 0.2) {
+      y = Math.random() * 2 - 1;
+    }
+    return { x, y };
+  }
+
+  private normalize(dir: Pos): Pos {
+    const norme = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+    return { x: dir.x / norme, y: dir.y / norme };
+  }
+
+  public onCollision() {}
+}
+
+class Player {
+  private position: Pos;
+  private readonly speed = 2;
+  private maxY = 88;
+  private score = 0;
+
+  constructor(pos: Pos) {
+    this.setPosition(pos);
+  }
+
+  public getPosition() {
+    return this.position;
+  }
+
+  public getScore() {
+    return this.score;
+  }
+
+  public addScore() {
+    this.score++;
+  }
+
+  private setPosition(newPos: Pos) {
+    this.position = newPos;
+  }
+
+  public changePos(event: eventGame) {
+    //console.info(event);
+    if (event === eventGame.UP && this.position.y > 0) {
+      if (this.position.y - this.speed > 0) {
+        this.position.y -= this.speed;
+      } else {
+        this.position.y = 0;
+      }
+    } else if (event === eventGame.DOWN && this.position.y < this.maxY) {
+      if (this.position.y + this.speed < this.maxY) {
+        this.position.y += this.speed;
+      } else {
+        this.position.y = this.maxY;
+      }
+    }
+  }
+}
 
 export class Pong {
-	id: string;
-	
-	protected server: Server;
+  id: string;
 
-	p1: ValidSocket;
-	p2: ValidSocket;
+  protected server: Server;
+  private ball = new Ball();
 
-	constructor (
-		p1: ValidSocket,
-		p2: ValidSocket,
-		server: Server,
-		protected webservice: WebsocketService,
-		id: string,
-	) {
-		this.id = id;
-		console.log(p1.name, p2.name);
-		this.server = server;
-		p1.join(this.id);
-		p2.join(this.id);
-		this.server.to(this.id).emit('ready', {room: id});
-		this.webservice.addUser(p1);
-		this.webservice.addUser(p2);
-	}
+  p1: Player = new Player({ x: 2, y: 50 });
+  p2: Player = new Player({ x: 98, y: 50 });
+  constructor(
+    p1: ValidSocket,
+    server: Server,
+    protected webservice: WebsocketService,
+    id: string,
+  ) {
+    this.id = id;
+    this.server = server;
 
-	public onInput(@ConnectedSocket() client: ValidSocket, input: eventGame)
-	{
-		console.info(`${client.name} | ${input}`);
-		this.broadcastToPlayer({msg: input});
-	}
+    this.loop();
+  }
 
-	private broadcastToPlayer(msg: any) {
-		this.server.to(this.id).emit('updateGame', msg);
-	}
+  hrtimeMs(): number {
+    let time = process.hrtime();
+    return time[0] * 1000 + time[1] / 1000000;
+  }
+
+  getStateOfGame() {
+    const stateOfGame: UpdateGameDto = {
+      ball: this.ball.getPosition(),
+      pLeft: this.p1.getPosition(),
+      pRight: this.p2.getPosition(),
+      scorePLeft: this.p1.getScore(),
+      scorePRight: this.p2.getScore(),
+    };
+    return stateOfGame;
+  }
+
+  loop = () => {
+    setTimeout(this.loop, 1000 / 60);
+    this.ball.move(this.p1, this.p2);
+    this.server.to(this.id).emit('updateGame', this.getStateOfGame());
+  };
+
+  private UpdatePaddlePos(paddle: Player, input: eventGame) {}
+
+  public onInput(@ConnectedSocket() client: ValidSocket, input: eventGame) {
+    //console.log(this.getStateOfGame());
+    switch (input) {
+      case eventGame.ARROW_UP:
+        this.p2.changePos(eventGame.UP);
+        break;
+      case eventGame.ARROW_DOWN:
+        this.p2.changePos(eventGame.DOWN);
+        break;
+      case eventGame.W_KEY:
+        this.p1.changePos(eventGame.UP);
+        break;
+      case eventGame.S_KEY:
+        this.p1.changePos(eventGame.DOWN);
+        break;
+      default:
+        console.info('the fuck');
+        break;
+    }
+  }
 }

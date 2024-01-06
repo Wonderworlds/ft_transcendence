@@ -1,5 +1,6 @@
 .env
 postgresql/
 node_modules/
-yarn.lock
-*/.yarnclean
+*/*/yarn.lock
+*/yarn.lock
+*/*/.yarnclean

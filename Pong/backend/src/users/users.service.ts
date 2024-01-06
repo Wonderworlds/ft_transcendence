@@ -1,11 +1,9 @@
 import { BadRequestException, Injectable, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { join } from 'path';
-import { of } from 'rxjs';
-import { LimitedUserDto, MatchDto, SecureUserDto, UserDto, UserDtoEmail, UserDtoPPImg, UserDtoPassword, UserDtoPseudo, UserDtoStatus, UserDtoTwoFA } from 'shared/src/Dtos';
 import { Match } from 'src/typeorm/entities/Match';
 import { User } from 'src/typeorm/entities/User';
 import { myDebug } from 'src/utils/DEBUG';
+import { LimitedUserDto, MatchDto, SecureUserDto, UserDto, UserDtoEmail, UserDtoPPImg, UserDtoPassword, UserDtoPseudo, UserDtoStatus, UserDtoTwoFA } from 'src/utils/Dtos';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -70,7 +68,7 @@ export class UsersService {
     const user = await this.findUserById(id);
     if (!user)
       throw new BadRequestException("Img not Found");
-    return of(res.sendFile(join(process.cwd(), 'shared/', user.ppImg)));
+    return user.ppImg;
 
   }
 

@@ -3,7 +3,6 @@
 /node_modules
 /secrets
 yarn.lock
-/public
 # Logs
 logs
 *.log

@@ -1,9 +1,8 @@
 import { AxiosError } from 'axios';
-import { Status } from 'backend/shared/src/types';
 import React, { createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserDto } from '../utils/dtos';
-import { Pages } from '../utils/types';
+import { Pages, Status } from '../utils/types';
 import { getAxios } from './AxiosContext';
 
 type UserContextType = {
@@ -50,7 +49,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 
 	React.useEffect(() => {
 		if (ppSrc) {
-			const url = `${import.meta.env.VITE_BURL}/public/${ppSrc}`;
+			const url = `${import.meta.env.VITE_BURL}/${ppSrc}`;
 			console.log(url);
 			setppImg(url);
 		}

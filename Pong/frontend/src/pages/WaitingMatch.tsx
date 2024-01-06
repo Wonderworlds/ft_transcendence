@@ -1,25 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import SearchingPlayer from '../components/SearchingPlayer.tsx';
+import React from 'react';
 import Cancel from '../components/Cancel.tsx';
-import { getGameSocket } from '../context/GameSocketContext.tsx';
+import SearchingPlayer from '../components/SearchingPlayer.tsx';
+import { getSocket } from '../context/WebsocketContext.tsx';
 import Pong from './Pong.tsx';
-import { Link } from 'react-router-dom';
-import { Pages } from '../utils/types.tsx';
 
 const WaitingMatch: React.FC = () => {
-	const socket = getGameSocket().socket;
-	const [room, setRoom] = useState<string>('');
-
-	useEffect(() => {
-		socket.on('ready', (res: { room: string }) => {
-			console.log(res);
-			setRoom(res.room);
-		});
-
-		return () => {
-			socket.off('ready');
-		};
-	}, []);
+	const socket = getSocket();
 
 	const waitingMatchElement = () => {
 		return (
@@ -27,12 +13,10 @@ const WaitingMatch: React.FC = () => {
 				<div
 					className="divCancel"
 					onClick={() => {
-						socket.disconnect();
+						socket.socket.disconnect();
 					}}
 				>
-					<Link to={Pages.Home}>
-						<Cancel />
-					</Link>
+					<Cancel />
 				</div>
 				<div className="divSearchingPlayer">
 					<SearchingPlayer />
@@ -42,10 +26,10 @@ const WaitingMatch: React.FC = () => {
 	};
 
 	const pongElement = () => {
-		return <div className="Pong">{<Pong room={room} />}</div>;
+		return <div className="Pong">{<Pong />}</div>;
 	};
 
-	return <>{room ? pongElement() : waitingMatchElement()}</>;
+	return <>{socket.room ? pongElement() : waitingMatchElement()}</>;
 };
 
 export default WaitingMatch;

@@ -1,4 +1,3 @@
-import { Status } from 'backend/shared/src/types';
 
 export type Match = {
 	me: User;
@@ -6,6 +5,11 @@ export type Match = {
 	myScore: number;
 	adversaryScore: number;
 };
+
+export type Pos = {
+	x: number;
+	y: number;
+  };
 
 export type User = {
 	pseudo: string;
@@ -31,7 +35,20 @@ export enum TabOption {
 	Leaderboard = 'leaderboard',
 }
 
+export enum Status {
+	Online = 'Online',
+	Offline = 'Offline',
+	DnD = 'Do Not Disturb',
+	Busy = 'Busy',
+  }
+  
+  
 export enum eventGame {
 	UP = 'UP',
 	DOWN = 'DOWN',
-}
+	ARROW_UP = 'ARROW_UP',
+	ARROW_DOWN = 'ARROW_DOWN',
+	W_KEY = 'W_KEY',
+	S_KEY = 'S_KEY',
+	SPACE_KEY = 'SPACE_KEY',
+  }

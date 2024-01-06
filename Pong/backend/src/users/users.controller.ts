@@ -5,11 +5,8 @@ import {
   Param,
   Post
 } from '@nestjs/common';
-import {
-  LimitedUserDto,
-  MatchDto
-} from 'shared/src/Dtos';
 import { UsersService } from './users.service';
+import { MatchDto, LimitedUserDto } from 'src/utils/Dtos';
 
 @Controller({ path: 'users' })
 export class UsersController {

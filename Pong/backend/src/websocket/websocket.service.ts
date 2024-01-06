@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
-import { ValidSocket } from 'shared/src/types';
 import { Server } from 'socket.io';
+import { ValidSocket } from 'src/utils/types';
 
 @Injectable()
 export class WebsocketService {

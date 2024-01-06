@@ -13,17 +13,9 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import {
-  UserDto,
-  UserDtoEmail,
-  UserDtoPPImg,
-  UserDtoPassword,
-  UserDtoPseudo,
-  UserDtoStatus,
-  UserDtoTwoFA
-} from 'shared/src/Dtos';
-import { Success } from 'shared/src/types';
 import { myDebug } from 'src/utils/DEBUG';
+import { UserDto, UserDtoEmail, UserDtoPPImg, UserDtoPassword, UserDtoPseudo, UserDtoStatus, UserDtoTwoFA } from 'src/utils/Dtos';
+import { Success } from 'src/utils/types';
 import { FileSizeGuard } from './fileSize.guard';
 import { editFileName, imageFileFilter } from './multerOptions';
 import { UsersService } from './users.service';
