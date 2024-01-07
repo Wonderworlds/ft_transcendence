@@ -5,7 +5,7 @@ const GameDisplayTop: React.FC = () => {
 		<div className="headerGameDisplayTop">
 			<div className="divNameFirstPLayer">
 				<div className="divPictureFirstPLayer">
-					<input type="image" id="image" alt="" src="../../pp_default.png" className="pp1"/>
+					<input type="image" id="image" alt="" src="../../pp_1.png" className="pp1"/>
 				</div>
 				<div className="divPutNameFirstPlayer">
 					<h1>First</h1>
@@ -19,7 +19,7 @@ const GameDisplayTop: React.FC = () => {
 					<h1>Second</h1>
 				</div>
 				<div className="divPictureSecondPLayer">
-					<input type="image" id="image" alt="" src="../../pp_default.png" className="pp2"/>
+					<input type="image" id="image" alt="" src="../../pp_1.png" className="pp2"/>
 				</div>
 			</div>
 		</div>
