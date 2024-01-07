@@ -7,7 +7,7 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
+  WebSocketServer
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { jwtConstants } from 'src/auth/utils';
@@ -33,6 +33,7 @@ export abstract class AGateway
   }
 
   async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
+    
     user.name = user.handshake.query.name as string;
     const validUser = await this.validateJWT(
       user.handshake.query['Authorization'] as string,
@@ -41,12 +42,21 @@ export abstract class AGateway
       user.disconnect();
       return;
     }
+    const oldUser = this.websocketService.getUser(user.name);
+    if (oldUser?.connected) {
+      this.websocketService.addUser(user);
+      oldUser.disconnect();
+    } else
+    this.websocketService.addUser(user);
     this.userService.updateUserById(validUser.userId, {
-      status: Status.Online,
-    });
+        status: Status.Online,
+      });
   }
 
   async handleDisconnect(@ConnectedSocket() user: ValidSocket) {
+    const oldUser = this.websocketService.getUser(user.name);
+    if (user !== oldUser)
+      return console.info(`User ${user.name} | Forced Disconnect`);
     console.info(`User ${user.name} | Disconnected`);
     setTimeout(() => {
       this.websocketService.removeUser(user);
@@ -56,30 +66,25 @@ export abstract class AGateway
     });
   }
 
-  @SubscribeMessage('handshake')
-  async handleHandshake(@ConnectedSocket() user: ValidSocket) {
-    console.info("handshake");
-    if (this.websocketService.getUser(user.name)) {
-      console.info(
-        `User ${user.name} | ReConnected to PongGateway | wsID: ${user.id}`,
-      );
-      this.server.to(user.id).emit('reconnect', {msg: "reconnected"});
-    } else {
-      console.info(
-        `User ${user.name} | Connected to PongGateway | wsID: ${user.id}`,
-      );
-    }
-    this.websocketService.addUser(user);
-  }
-
   private async validateJWT(token: string): Promise<UserJwt> {
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
-      return payload;
+      return { userId: payload.sub, username: payload.user as string };
     } catch {
       return undefined;
     }
+  }
+
+  
+  @SubscribeMessage('handshake')
+  async handleHandshake(@ConnectedSocket() client: ValidSocket) {
+      console.info(
+        `User ${client.name} | Connected to PongGateway | wsID: ${client.id}`,
+      );
+      const user = await this.userService.findUserByUsername(client.name);
+      const userDto = this.userService.userToDto(user);
+      this.server.to(client.id).emit('reconnect', {user: userDto});
   }
 }

@@ -21,6 +21,12 @@ export class UsersService {
     return await this.userRepository.save(newUser);
   }
 
+  async getMe(id: number) {
+    const user = await this.findUserById(id);
+    if (!user) return new BadRequestException('User Not Found');
+    return this.userToDto(user);
+  }
+
   async findUserByPseudo(pseudo: string): Promise<User> | undefined {
     const user = await this.userRepository.findOneBy({ pseudo: pseudo });
     return user;

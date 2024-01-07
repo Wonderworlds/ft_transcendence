@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import React from 'react';
-import { createContext, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
 type AxiosContextType = {
 	client: AxiosInstance;
@@ -26,9 +25,16 @@ export const AxiosContextProvider = ({ children }: { children: React.ReactNode }
 		if (auth.token) {
 			axios.defaults.headers.common['Authorization'] = `Bearer ${auth.token}`;
 			setReady(true);
+			sessionStorage.setItem('username', auth.username);
+			sessionStorage.setItem('JWTtoken', auth.token);
 		} else setReady(false);
 	}, [auth]);
 
+	React.useEffect(() => {
+		const username = sessionStorage.getItem('username');
+		const token = sessionStorage.getItem('JWTtoken');
+		if (username && token) setAuth({ token: token, username: username });
+	}, []);
 	return (
 		<axiosContext.Provider value={{ client, auth, setAuth, ready }}>
 			{children}

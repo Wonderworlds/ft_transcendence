@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import React, { createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserDto } from '../utils/dtos';
-import { Pages, Status } from '../utils/types';
+import { Status } from '../utils/types';
 import { getAxios } from './AxiosContext';
 
 type UserContextType = {
@@ -18,9 +18,9 @@ type UserContextType = {
 	setEmail: React.Dispatch<React.SetStateAction<string>>;
 	doubleAuth: boolean;
 	setDoubleAuth: React.Dispatch<React.SetStateAction<boolean>>;
-	setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
 	status: Status;
 	setStatus: React.Dispatch<React.SetStateAction<Status>>;
+	updateUser(body: UserDto): void;
 };
 
 export const UserContext = createContext({} as UserContextType);
@@ -35,7 +35,6 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 	const [ppSrc, setPPSrc] = React.useState<string>('');
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
-	const [refresh, setRefresh] = React.useState<boolean>(false);
 	const pathToImng = import.meta.env.VITE_BURL;
 
 	React.useEffect(() => {
@@ -44,7 +43,6 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				.get('me')
 				.then((res) => {
 					updateUser(res.data);
-					navigate(Pages.Home);
 				})
 				.catch((err: AxiosError) => console.log(err));
 		}
@@ -81,7 +79,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				setDoubleAuth,
 				status,
 				setStatus,
-				setRefresh,
+				updateUser,
 			}}
 		>
 			{children}

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAxios } from '../context/AxiosContext';
 import { getUser } from '../context/UserContext';
+import { Pages } from '../utils/types';
 
 const LogIn: React.FC = () => {
 	const [username, setUsername] = React.useState<string>('');
@@ -8,7 +10,12 @@ const LogIn: React.FC = () => {
 	const [code, setCode] = React.useState<string>('');
 	const [error, setError] = React.useState<string>('');
 	const user = getUser();
+	const navigate = useNavigate();
 	const axios = getAxios();
+
+	React.useEffect(() => {
+		sessionStorage.clear();
+	}, []);
 
 	const twoFAElement = () => {
 		return (
@@ -93,6 +100,7 @@ const LogIn: React.FC = () => {
 				user.setUsername(res.data.username);
 				if (!res.data.twoFA) {
 					axios.setAuth({ token: res.data.access_token, username: res.data.username });
+					navigate(Pages.Home);
 				}
 			})
 			.catch((err: any) => {
@@ -105,6 +113,7 @@ const LogIn: React.FC = () => {
 			.post('auth/twoFA', { username: username, password: password, code: code })
 			.then((res) => {
 				axios.setAuth({ token: res.data.access_token, username: res.data.username });
+				navigate(Pages.Home);
 			})
 			.catch((err: any) => {
 				setError(err.response?.data?.message);

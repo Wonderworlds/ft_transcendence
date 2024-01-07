@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -26,10 +25,7 @@ export class UserController {
 
   @Get()
   async getUser(@Req() req: any): Promise<UserDto | HttpException> {
-    myDebug('getUser', req.user);
-    const user = await this.userService.findUserById(req.user.userId);
-    if (!user) return new BadRequestException('User Not Found');
-    return this.userService.userToDto(user);
+    return this.userService.getMe(req.user.userId);
   }
 
   @Put('/email')
