@@ -22,6 +22,7 @@ import { UsersModule } from './users/users.module';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', './public'),
+      serveRoot: '/public/',
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({

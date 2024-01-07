@@ -80,6 +80,7 @@ export class UserController {
       )
 	@Post('/uploadAvatar')
   async uploadedFile(@Req() req: any, @UploadedFile() file) {
+    console.log(req);
     await this.userService.updateUserById(req.user.userId, {ppImg: file.filename});
     return {src: file.filename};
     }

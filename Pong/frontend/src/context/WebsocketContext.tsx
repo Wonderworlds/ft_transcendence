@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 import { UserDto } from '../utils/dtos';
 import { getAxios } from './AxiosContext';
@@ -16,10 +15,9 @@ export const WebsocketContext = createContext({} as WebSocketContextType);
 export const WebsocketProvider = ({ children }: { children: React.ReactNode }) => {
 	const axios = getAxios();
 	const user = getUser();
-	const navigate = useNavigate();
 	const [room, setRoom] = useState<string>('');
 	const url = `${import.meta.env.VITE_BURL}`;
-	const [socket, setSocket] = useState<Socket>(io(url));
+	const [socket, setSocket] = useState<Socket>();
 
 	React.useEffect(() => {
 		if (socket) {
@@ -29,11 +27,10 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 			});
 			socket.on('reconnect', (response: { user: UserDto }) => {
 				console.log(response);
+				user.setUser(response.user);
 			});
 			socket.on('disconnect', () => {
 				console.log('disconnect');
-				// navigate(Pages.Root);
-				// window.location.reload();
 			});
 		}
 		return () => {
@@ -41,7 +38,6 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 				socket.off('connect');
 				socket.off('disconnect');
 				socket.off('disconnect');
-				socket.off('session');
 			}
 		};
 	}, [socket]);
@@ -60,7 +56,7 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 	}, [axios.ready]);
 
 	return (
-		<WebsocketContext.Provider value={{ socket, room, setRoom }}>
+		<WebsocketContext.Provider value={{ socket: socket!, room, setRoom }}>
 			{children}
 		</WebsocketContext.Provider>
 	);

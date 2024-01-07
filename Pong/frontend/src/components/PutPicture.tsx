@@ -10,6 +10,10 @@ const PutPicture: React.FC = () => {
 	function handleSubmit(event: any) {
 		event.preventDefault();
 		if (!file) return;
+		if (file.size > 1000000) {
+			alert('Error: File is too big');
+			return;
+		}
 		const formData = new FormData();
 		formData.append('image', file);
 		client
@@ -23,7 +27,7 @@ const PutPicture: React.FC = () => {
 				setFile(null);
 			})
 			.catch((err) => {
-				console.log(err);
+				alert('Error: ' + err.response.data?.message);
 			});
 	}
 
@@ -43,7 +47,12 @@ const PutPicture: React.FC = () => {
 			</div>
 			<div className="divLoadPicture">
 				<form onSubmit={handleSubmit}>
-					<input type="file" onChange={handleChange} />
+					<input
+						type="file"
+						onChange={handleChange}
+						accept="image/*, .jpg, .jpeg, .png, .gif"
+						name={file?.name}
+					/>
 					<button type="submit">Upload</button>
 				</form>
 			</div>

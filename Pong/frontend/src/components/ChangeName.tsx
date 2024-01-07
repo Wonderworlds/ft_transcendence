@@ -1,23 +1,55 @@
+import { AxiosResponse } from 'axios';
 import React from 'react';
-import DoubleAuthentification from '../components/DoubleAuthentification.tsx';
+import { getAxios } from '../context/AxiosContext.tsx';
 import { getUser } from '../context/UserContext.tsx';
 
 interface ChangeNameProps {}
 
 const ChangeName: React.FC<ChangeNameProps> = () => {
 	const user = getUser();
-	const [username, setusername] = React.useState('');
+	const client = getAxios().client;
+	const [pseudo, setPseudo] = React.useState<string>(user.pseudo);
+	const [email, setEmail] = React.useState<string>(user.email);
+	const [cb, setCB] = React.useState<boolean>(user.doubleAuth);
 
-	async function changeProfile() {
-		if (username === '') return;
-		user.setPseudo(username);
-		user.setDoubleAuth(true);
-		user.setppImg('pp_1.png');
-	}
+	const handleSubmit = () => {
+		client
+			.put('/me/pseudo', { pseudo: pseudo })
+			.then((res: AxiosResponse) => {
+				console.log(res.data);
+				if (res.data?.success) user.setPseudo(pseudo);
+			})
+			.catch((err) => {
+				alert('Error: ' + err.response.data?.message);
+			});
+	};
 
-	const handleChange = (event: any) => {
-		setusername(event.target.value);
-	}
+	React.useEffect(() => {
+		return () => {
+			if (cb !== user.doubleAuth) {
+				client
+					.put('/me/twoFA', { twoFA: cb })
+					.then((res: AxiosResponse) => {
+						if (res.data?.success) user.setDoubleAuth(cb);
+					})
+					.catch((err) => {
+						alert('Error: ' + err.response.data?.message);
+					});
+			}
+		};
+	}, [cb]);
+
+	const handleSubmit2FA = () => {
+		client
+			.put('/me/email', { email: email })
+			.then((res: AxiosResponse) => {
+				if (res.data?.success) user.setEmail(email);
+			})
+			.catch((err) => {
+				alert('Error: ' + err.response.data?.message);
+			});
+	};
+
 	return (
 		<div className="divChangeName">
 			<div className="divTitleChangeName">
@@ -26,11 +58,12 @@ const ChangeName: React.FC<ChangeNameProps> = () => {
 			<div className="divWhiteSpaceChangeName">
 				<input
 					type="text"
-					name="Username"
-					placeholder="Username"
-					value={username}
-					onChange={handleChange}
+					name="pseudo"
+					placeholder="pseudo"
+					value={pseudo}
+					onChange={(event) => setPseudo(event.target.value)}
 				/>
+				<button onClick={handleSubmit}>Submit</button>
 			</div>
 			<div className="divDoubleAuthentification">
 				<div className="divTitle2FA">
@@ -40,9 +73,23 @@ const ChangeName: React.FC<ChangeNameProps> = () => {
 					<input
 						type="checkbox"
 						name="2FA"
-						value="on"
-						onChange={handleChange}
+						onChange={(event) => {
+							setCB(event.target.checked);
+						}}
+						checked={cb}
 					/>
+					{cb ? (
+						<div>
+							<input
+								type="text"
+								name="email"
+								placeholder="email@mail.com"
+								value={email}
+								onChange={(event) => setEmail(event.target.value)}
+							/>
+							<button onClick={handleSubmit2FA}>Submit</button>
+						</div>
+					) : null}
 				</div>
 			</div>
 		</div>

@@ -22,9 +22,7 @@ const WaitingMatch: React.FC = () => {
 
 	React.useEffect(() => {
 		return () => {
-			window.onpopstate = () => {
-				socket.socket.emit('cancelSearch');
-			};
+			socket.socket.emit('cancelSearch');
 		};
 	}, []);
 

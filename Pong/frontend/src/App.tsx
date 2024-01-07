@@ -6,7 +6,7 @@ import Default from './pages/Default.tsx';
 import Home from './pages/Home.tsx';
 import MainPage from './pages/MainPage.tsx';
 import Pong from './pages/Pong.tsx';
-import Settings from './pages/Profile.tsx';
+import Settings from './pages/Settings.tsx';
 import Stats from './pages/Stats.tsx';
 import WaitingMatch from './pages/WaitingMatch.tsx';
 import './styles/pages/index.scss';

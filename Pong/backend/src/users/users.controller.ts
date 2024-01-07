@@ -1,12 +1,13 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Param,
   Post
 } from '@nestjs/common';
+import { LimitedUserDto, MatchDto } from 'src/utils/Dtos';
 import { UsersService } from './users.service';
-import { MatchDto, LimitedUserDto } from 'src/utils/Dtos';
 
 @Controller({ path: 'users' })
 export class UsersController {
@@ -23,6 +24,7 @@ export class UsersController {
     @Param('pseudo') pseudo: string,
   ): Promise<LimitedUserDto> {
     const user = await this.userService.findUserByPseudo(pseudo);
+    if (!user) throw new BadRequestException('User not found');
     return this.userService.userToLimitedDto(user);
   }
 

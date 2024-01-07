@@ -85,7 +85,7 @@ const LogIn: React.FC = () => {
 		return await axios.client
 			.post('auth/signup', { username: username, password: password })
 			.then(() => {
-				setError('User created');
+				alert('User created');
 			})
 			.catch((err: any) => {
 				setError(err.response?.data?.message);
@@ -101,6 +101,8 @@ const LogIn: React.FC = () => {
 				if (!res.data.twoFA) {
 					axios.setAuth({ token: res.data.access_token, username: res.data.username });
 					navigate(Pages.Home);
+				} else {
+					alert('2FA enabled: Enter code received by email at ' + res.data.email);
 				}
 			})
 			.catch((err: any) => {

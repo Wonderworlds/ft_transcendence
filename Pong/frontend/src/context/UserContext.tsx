@@ -1,9 +1,6 @@
-import { AxiosError } from 'axios';
 import React, { createContext, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { UserDto } from '../utils/dtos';
 import { Status } from '../utils/types';
-import { getAxios } from './AxiosContext';
 
 type UserContextType = {
 	username: string;
@@ -20,40 +17,45 @@ type UserContextType = {
 	setDoubleAuth: React.Dispatch<React.SetStateAction<boolean>>;
 	status: Status;
 	setStatus: React.Dispatch<React.SetStateAction<Status>>;
-	updateUser(body: UserDto): void;
+	user: UserDto;
+	setUser: React.Dispatch<React.SetStateAction<UserDto>>;
 };
 
 export const UserContext = createContext({} as UserContextType);
 
 export const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
-	const axios = getAxios();
-	const navigate = useNavigate();
 	const [username, setUsername] = React.useState<string>('');
 	const [pseudo, setPseudo] = React.useState<string>('');
 	const [email, setEmail] = React.useState<string>('');
 	const [ppImg, setppImg] = React.useState<string>('');
 	const [ppSrc, setPPSrc] = React.useState<string>('');
+	const [user, setUser] = React.useState<UserDto>({} as UserDto);
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
 	const pathToImng = import.meta.env.VITE_BURL;
 
-	React.useEffect(() => {
-		if (axios.ready) {
-			axios.client
-				.get('me')
-				.then((res) => {
-					updateUser(res.data);
-				})
-				.catch((err: AxiosError) => console.log(err));
-		}
-	}, [axios.ready]);
+	// React.useEffect(() => {
+	// 	if (axios.ready) {
+	// 		axios.client
+	// 			.get('me')
+	// 			.then((res) => {
+	// 				updateUser(res.data);
+	// 			})
+	// 			.catch((err: AxiosError) => console.log(err));
+	// 	}
+	// }, [axios.ready]);
 
 	React.useEffect(() => {
-		if (ppSrc) setppImg(`${pathToImng}/${ppSrc}`);
+		if (user) {
+			updateUser(user);
+		}
+	}, [user]);
+
+	React.useEffect(() => {
+		if (ppSrc) setppImg(`${pathToImng}/public/${ppSrc}`);
 	}, [ppSrc]);
 
 	function updateUser(body: UserDto) {
-		console.log('updateUser');
 		if (username != body.username) setUsername(body.username);
 		if (pseudo != body.pseudo) setPseudo(body.pseudo);
 		if (ppSrc != body.ppImg) setPPSrc(body.ppImg);
@@ -79,7 +81,8 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				setDoubleAuth,
 				status,
 				setStatus,
-				updateUser,
+				user,
+				setUser,
 			}}
 		>
 			{children}

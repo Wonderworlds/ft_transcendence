@@ -33,17 +33,13 @@ prune:
 	docker system prune --force
 
 clean: stop down
-	-sudo rm -rf ${vol_db}/*
-
-
-clean: stop down
 	-docker rm -f $$(docker ps -a -q)
 	-docker volume rm $$(docker volume ls -q)
-	-docker system prune --force --all
 	-docker volume prune --force
 	-docker network prune --force
 
 fclean: clean
+	-docker system prune --force --all
 	-sudo rm -rf ${vol_db} front/node_modules back/node_modules
 stop:
 	-docker stop $$(docker ps -qa)
