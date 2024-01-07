@@ -26,7 +26,7 @@ export class WebsocketService {
 			this.users.set(newUser.name, newUser);
 	}
 
-	public removeUser(@ConnectedSocket() user: ValidSocket) {
+	public removeUser(user: ValidSocket) {
 		this.users.delete(user.name);
 	}
 

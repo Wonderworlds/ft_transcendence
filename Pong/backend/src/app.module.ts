@@ -10,7 +10,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
-import { GatewayModule } from './gateway/gateway.module';
 import { PongModule } from './pong/pong.module';
 import { Match } from './typeorm/entities/Match';
 import { Message } from './typeorm/entities/Message';
@@ -49,7 +48,6 @@ import { UsersModule } from './users/users.module';
     ]),
     AuthModule,
     OtpModule,
-    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

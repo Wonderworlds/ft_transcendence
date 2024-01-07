@@ -19,8 +19,8 @@ const PutPicture: React.FC = () => {
 				},
 			})
 			.then((res: any) => {
-				console.log(res);
 				user.setPPSrc(res.data.src);
+				setFile(null);
 			})
 			.catch((err) => {
 				console.log(err);

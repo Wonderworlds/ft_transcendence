@@ -18,22 +18,17 @@ const App = () => {
 			<AxiosContextProvider>
 				<BrowserRouter>
 					<UserContextProvider>
-						<Routes>
-							<Route path={Pages.Root} element={<MainPage />} />
-							<Route path={Pages.Home} element={<Home />} />
-							<Route path={Pages.Settings} element={<Settings />} />
-							<Route path={Pages.Stats} element={<Stats />} />
-							<Route
-								path={Pages.WaitingMatch}
-								element={
-									<WebsocketProvider>
-										<WaitingMatch />
-									</WebsocketProvider>
-								}
-							/>
-							<Route path={Pages.Pong} element={<Pong />} />
-							<Route path={Pages.Default} element={<Default />} />
-						</Routes>
+						<WebsocketProvider>
+							<Routes>
+								<Route path={Pages.Root} element={<MainPage />} />
+								<Route path={Pages.Home} element={<Home />} />
+								<Route path={Pages.Settings} element={<Settings />} />
+								<Route path={Pages.Stats} element={<Stats />} />
+								<Route path={Pages.WaitingMatch} element={<WaitingMatch />} />
+								<Route path={Pages.Pong} element={<Pong />} />
+								<Route path={Pages.Default} element={<Default />} />
+							</Routes>
+						</WebsocketProvider>
 					</UserContextProvider>
 				</BrowserRouter>
 			</AxiosContextProvider>

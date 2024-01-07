@@ -7,6 +7,18 @@ import Pong from './Pong.tsx';
 const WaitingMatch: React.FC = () => {
 	const socket = getSocket();
 
+	React.useEffect(() => {
+		console.log(socket);
+		socket.socket.on('ready', (res: any) => {
+			console.log('ready', { room: res.room });
+			socket.setRoom(res.room);
+		});
+		socket.socket.emit('searchGame');
+		return () => {
+			socket.socket.off('ready');
+		};
+	}, []);
+
 	const waitingMatchElement = () => {
 		return (
 			<div className="waitingMatch">

@@ -18,6 +18,7 @@ type UserContextType = {
 	setEmail: React.Dispatch<React.SetStateAction<string>>;
 	doubleAuth: boolean;
 	setDoubleAuth: React.Dispatch<React.SetStateAction<boolean>>;
+	setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
 	status: Status;
 	setStatus: React.Dispatch<React.SetStateAction<Status>>;
 };
@@ -34,6 +35,8 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 	const [ppSrc, setPPSrc] = React.useState<string>('');
 	const [status, setStatus] = React.useState<Status>(Status.Offline);
 	const [doubleAuth, setDoubleAuth] = React.useState<boolean>(false);
+	const [refresh, setRefresh] = React.useState<boolean>(false);
+	const pathToImng = import.meta.env.VITE_BURL;
 
 	React.useEffect(() => {
 		if (axios.ready) {
@@ -48,11 +51,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 	}, [axios.ready]);
 
 	React.useEffect(() => {
-		if (ppSrc) {
-			const url = `${import.meta.env.VITE_BURL}/${ppSrc}`;
-			console.log(url);
-			setppImg(url);
-		}
+		if (ppSrc) setppImg(`${pathToImng}/${ppSrc}`);
 	}, [ppSrc]);
 
 	function updateUser(body: UserDto) {
@@ -82,6 +81,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				setDoubleAuth,
 				status,
 				setStatus,
+				setRefresh,
 			}}
 		>
 			{children}

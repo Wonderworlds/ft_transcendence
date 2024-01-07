@@ -4,29 +4,27 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
-import { AGateway } from 'src/websocket/Agateway';
-import { WebsocketService } from 'src/websocket/websocket.service';
-import { v4 as uuidv4 } from 'uuid';
-import { Pong } from './Pong';
 import { inputRoomDto, roomDto } from 'src/utils/Dtos';
 import { ValidSocket } from 'src/utils/types';
+import { AGateway } from 'src/websocket/Agateway';
+import { WebsocketService } from 'src/websocket/websocket.service';
+import { Pong } from './Pong';
 
 @WebSocketGateway({
   cors: {
     origin: [process.env.FRONT_URL],
   },
-  namespace: '/pong',
 })
 export class PongGateway extends AGateway {
   protected listGame: Map<string, Pong> = new Map<string, Pong>();
 
-  override async handleConnection(user: ValidSocket): Promise<void> {
-    user.name = user.handshake.query.name as string;
-    console.info(
-      `User ${user.name} | Connected to PongGateway | wsID: ${user.id}`,
-    );
-    const id = uuidv4();
-    this.server.to(user.id).emit('ready', { room: id });
+  @SubscribeMessage('searchGame')
+  subscribeSearch(
+    @ConnectedSocket() client: ValidSocket
+  ) {
+    console.info("searchGame");
+    // const id = uuidv4();
+    // this.server.to(client.id).emit('ready', { room: id });
   }
 
   @SubscribeMessage('input')
