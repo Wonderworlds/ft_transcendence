@@ -1,0 +1,87 @@
+.divChangeName {
+	display: flex;
+	height: 100%;
+	width: 50%;
+	flex-direction: column;
+	margin-top: 2%;
+	p {
+		color: #d7a20f;
+		font-weight: 400;
+		font-size: clamp(16px, 4vw, 40px);
+		font-family: zendots;
+	}
+
+	.divWhiteSpaceChangeName {
+		display: flex;
+		width: 90%;
+		height: 10%;
+		justify-content: left;
+		margin-top: 5%;
+
+		> input {
+			width: 70%;
+			height: 100%;
+			border-radius: 1rem;
+			border: none;
+			background: #ffffff31;
+			padding-left: 2%;
+			color: #ffffff;
+			font-weight: 400;
+			font-size: clamp(16px, 2vw, 25px);
+			font-family: 'Inter';
+			text-align: center;
+		}
+		> button {
+			margin-left: 10%;
+		}
+	}
+	.divEmail {
+		display: flex;
+		width: 90%;
+		height: 10%;
+		justify-content: left;
+		margin-top: 5%;
+
+		> input {
+			width: 70%;
+			height: 100%;
+			border-radius: 1rem;
+			border: none;
+			background: #ffffff31;
+			padding-left: 2%;
+			color: #ffffff;
+			font-weight: 400;
+			font-size: clamp(16px, 2vw, 25px);
+			font-family: 'Inter';
+			text-align: center;
+		}
+		> button {
+			margin-left: 10%;
+		}
+	}
+
+	.divDoubleAuthentification {
+		display: flex;
+		height: 40%;
+		justify-content: left;
+		align-items: center;
+		> button {
+
+			margin-left: 10%;
+		}
+	}
+
+	.divCheckBox2FA {
+		display: flex;
+		height: 100%;
+		width: 4%;
+		justify-content: center;
+		align-items: center;
+		padding-top: 1%;
+
+		input[type='checkbox'] {
+			height: 20px;
+			width: 20px;
+		}
+	}
+}

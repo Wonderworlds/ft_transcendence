@@ -89,6 +89,7 @@ export class AuthService {
       text: `Use this code ${otp} to verify the email registered on your account`,
     });
     console.info(mail);
+    return ;
     transporter.sendMail(mail, (error, info) => {
       if (error) return console.info(error);
       else console.info('Email envoye ' + info.response);

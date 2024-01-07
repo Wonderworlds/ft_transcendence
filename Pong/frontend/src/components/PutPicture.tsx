@@ -40,20 +40,26 @@ const PutPicture: React.FC = () => {
 	return (
 		<div className="headerPutPicture">
 			<div className="divTitlePicture">
-				<p>picture</p>
+				<p>Profile Picture</p>
 			</div>
 			<div className="divPicture">
-				<input type="image" id="image" alt="" src={user.ppImg} />
+				<img alt="" src={user.ppImg} />
 			</div>
 			<div className="divLoadPicture">
-				<form onSubmit={handleSubmit}>
-					<input
-						type="file"
-						onChange={handleChange}
-						accept="image/*, .jpg, .jpeg, .png, .gif"
-						name={file?.name}
-					/>
-					<button type="submit">Upload</button>
+				<form onSubmit={handleSubmit} className="file">
+					<label id="submitButton">
+						<input
+							type="file"
+							onChange={handleChange}
+							accept="image/*, .jpg, .jpeg, .png, .gif"
+							name={file?.name}
+							className="inputFile"
+						/>
+						{file ? file.name : 'Choose a file'}
+					</label>
+					<button id="submitButton" type="submit">
+						Upload
+					</button>
 				</form>
 			</div>
 		</div>

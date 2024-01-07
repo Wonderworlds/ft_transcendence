@@ -5,7 +5,7 @@ import { getUser } from '../context/UserContext.tsx';
 
 interface ChangeNameProps {}
 
-const ChangeName: React.FC<ChangeNameProps> = () => {
+const UpdateUser: React.FC<ChangeNameProps> = () => {
 	const user = getUser();
 	const client = getAxios().client;
 	const [pseudo, setPseudo] = React.useState<string>(user.pseudo);
@@ -25,18 +25,16 @@ const ChangeName: React.FC<ChangeNameProps> = () => {
 	};
 
 	React.useEffect(() => {
-		return () => {
-			if (cb !== user.doubleAuth) {
-				client
-					.put('/me/twoFA', { twoFA: cb })
-					.then((res: AxiosResponse) => {
-						if (res.data?.success) user.setDoubleAuth(cb);
-					})
-					.catch((err) => {
-						alert('Error: ' + err.response.data?.message);
-					});
-			}
-		};
+		if (cb !== user.doubleAuth) {
+			client
+				.put('/me/twoFA', { twoFA: cb })
+				.then((res: AxiosResponse) => {
+					if (res.data?.success) user.setDoubleAuth(cb);
+				})
+				.catch((err) => {
+					alert('Error: ' + err.response.data?.message);
+				});
+		}
 	}, [cb]);
 
 	const handleSubmit2FA = () => {
@@ -52,9 +50,7 @@ const ChangeName: React.FC<ChangeNameProps> = () => {
 
 	return (
 		<div className="divChangeName">
-			<div className="divTitleChangeName">
-				<p>change name</p>
-			</div>
+			<p>Change Pseudo</p>
 			<div className="divWhiteSpaceChangeName">
 				<input
 					type="text"
@@ -63,37 +59,37 @@ const ChangeName: React.FC<ChangeNameProps> = () => {
 					value={pseudo}
 					onChange={(event) => setPseudo(event.target.value)}
 				/>
-				<button onClick={handleSubmit}>Submit</button>
+				<button id="submitButton" onClick={handleSubmit}>
+					Submit
+				</button>
 			</div>
 			<div className="divDoubleAuthentification">
-				<div className="divTitle2FA">
-					<p>DoubleAuthentification</p>
-				</div>
-				<div className="divCheckBox2FA">
-					<input
-						type="checkbox"
-						name="2FA"
-						onChange={(event) => {
-							setCB(event.target.checked);
-						}}
-						checked={cb}
-					/>
-					{cb ? (
-						<div>
-							<input
-								type="text"
-								name="email"
-								placeholder="email@mail.com"
-								value={email}
-								onChange={(event) => setEmail(event.target.value)}
-							/>
-							<button onClick={handleSubmit2FA}>Submit</button>
-						</div>
-					) : null}
-				</div>
+				{cb ? <p>2FA Email &#x2705;</p> : <p>2FA Email &#x274C;</p>}
+				<button
+					id="submitButton"
+					name="2FA"
+					onClick={() => {
+						setCB((prev) => !prev);
+					}}
+				>
+					{cb ? 'Enabled' : 'Disabled'}
+				</button>
+			</div>
+			<p>Change Email</p>
+			<div className="divEmail">
+				<input
+					type="text"
+					name="email"
+					placeholder="email@mail.com"
+					value={email}
+					onChange={(event) => setEmail(event.target.value)}
+				/>
+				<button id="submitButton" onClick={handleSubmit2FA}>
+					Submit
+				</button>
 			</div>
 		</div>
 	);
 };
 
-export default ChangeName;
+export default UpdateUser;
