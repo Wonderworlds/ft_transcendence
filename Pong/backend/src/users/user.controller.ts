@@ -1,9 +1,10 @@
 import {
-  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
+  Param,
   Post,
   Put,
   Req,
@@ -26,10 +27,7 @@ export class UserController {
 
   @Get()
   async getUser(@Req() req: any): Promise<UserDto | HttpException> {
-    myDebug('getUser', req.user);
-    const user = await this.userService.findUserById(req.user.userId);
-    if (!user) return new BadRequestException('User Not Found');
-    return this.userService.userToDto(user);
+    return this.userService.getMe(req.user.userId);
   }
 
   @Put('/email')
@@ -96,4 +94,54 @@ export class UserController {
     if (res.affected) return { success: true };
     return { success: false };
   }
+
+  @Get('/friends')
+  async getFriends(@Req() req: any) {
+    myDebug('getFriends', req.user);
+    return await this.userService.getFriends(req.user.userId);
+  }
+
+  @Post('/friends/:pseudo/accept') // final step Add friends
+  async addFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('addFriend', req.user, params);
+    return await this.userService.addFriend(req.user.userId, params.pseudo);
+  }
+  
+  @Post('/friends/:pseudo/decline') // final step Add friends
+  async declineFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('declineFriend', req.user, params);
+    return await this.userService.declineFriend(req.user.userId, params.pseudo);
+  }
+  
+  @Post('/friends/:pseudo') // friend demand
+  async sendFriendDemand(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('sendFriendDemand', req.user, params);
+    return await this.userService.sendFriendDemand(req.user.userId, params.pseudo);
+  }
+  
+  @Delete('/friends/:pseudo')
+  async deleteFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('deleteFriend', req.user, params);
+    return await this.userService.deleteFriend(req.user.userId, params.pseudo);
+  }
+
+  @Post('/block/:pseudo')
+  async blockUser(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('blockUser', req.user, params);
+    return await this.userService.blockUser(req.user.userId, params.pseudo);
+  }
+
+  @Delete('/block/:pseudo')
+  async unblockUser(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('unblockUser', req.user, params);
+    return await this.userService.unblockUser(req.user.userId, params.pseudo);
+  }
+
+  @Get('/block')
+  async getBlockList(@Req() req: any) {
+    myDebug('getBlockList', req.user);
+    return await this.userService.getBlockList(req.user.userId);
+  }
 }
+
+

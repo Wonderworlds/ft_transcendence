@@ -1,0 +1,105 @@
+.headerProfile {
+	/* panorama */
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	top: 0px;
+
+	background-image: url(background_3.png);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.divParameters {
+	display: flex;
+	flex-direction: column;
+	width: 1100px;
+	height: 800px;
+	position: relative;
+	z-index: 2;
+	margin: auto;
+	padding: 2rem;
+	background: #ffffff31;
+	border-radius: 2rem;
+	box-shadow: 0 15px 35px rgba(93, 50, 93, 0.562), 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+.divParametersTop {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 10%;
+	h1 {
+		color: #d7a20f;
+		font-weight: 400;
+		font-size: 4vw;
+		font-family: zendots;
+	}
+}
+
+.divParametersMiddle {
+	display: flex;
+	height: 50%;
+}
+
+.divParametersBottom {
+	--color: #780606;
+	--hover: #4d0241;
+	display: flex;
+	margin: 6%;
+	justify-content: left;
+	width: 100%;
+	height: 25%;
+	
+	> button {
+		border: 5px solid;
+		font-family: zendots;
+		line-height: 1.2;
+		margin: 0.5em;
+		padding: 0.5em 1em;
+		color: #fff;
+		transition: 0.25s;
+		font-size: 3vh;
+		border-color: var(--color);
+		font-weight: 500;
+
+		&:hover,
+		&:focus {
+			border-color: var(--hover);
+			color: #fff;
+		}
+	}
+	> button:hover,
+	> button:focus {
+		animation: pulse 1s;
+		box-shadow: 0 0 0 2em transparent;
+	}
+
+	@keyframes pulse {
+		0% {
+			box-shadow: 0 0 0 0 var(--hover);
+		}
+	}
+}
+
+#submitButton {
+	padding: 8px 12px;
+	background-color: transparent;
+	font-family: zenDots;
+	border: 1px solid #fff;
+	border-radius: 4px;
+	font-size: clamp(12px, 2vw, 20px);
+	color: #fff;
+	inset: auto 5% 5% auto;
+	cursor: pointer;
+	transition: 0.2s;
+	z-index: 1001;
+}
+#submitButton:hover {
+	text-shadow: 0 0 8px #fff, 0 0 16px #fff, 0 0 24px #fff;
+}

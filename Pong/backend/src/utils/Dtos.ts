@@ -1,5 +1,5 @@
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
-import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsStrongPassword } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsStrongPassword, Length } from "class-validator";
 import { Pos, Status, eventGame } from "./types";
 
 export class AuthDto  {
@@ -20,6 +20,7 @@ export class UserDto {
 	@IsString()
 	username: string;
 
+	@Length(3, 20)
 	@IsString()
 	pseudo: string;
 

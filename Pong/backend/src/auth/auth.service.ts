@@ -11,9 +11,9 @@ import { OtpService } from 'src/2FA/otp.service';
 import { User } from 'src/typeorm/entities/User';
 import { UsersService } from 'src/users/users.service';
 import { myDebug } from 'src/utils/DEBUG';
-import { JWTPayload } from './utils';
 import { LogInUserDto, SecureUserDto } from 'src/utils/Dtos';
 import { Status } from 'src/utils/types';
+import { JWTPayload } from './utils';
 @Injectable()
 export class AuthService {
   constructor(
@@ -52,8 +52,6 @@ export class AuthService {
       user = await this.userService.findUserByUsername(userToLog.username);
     }
     if (!user) throw new BadRequestException('User not found');
-    if (user.status === Status.Online)
-      throw new BadRequestException('User already loggedIn');
     const passwordValid = await bcrypt.compare(
       userToLog.password,
       user.password,
@@ -68,7 +66,6 @@ export class AuthService {
   }
 
   async login(payload: JWTPayload) {
-    myDebug('login');
     const miniPayload = { sub: payload.sub, user: payload.user.username };
     return {
       success: true,
@@ -87,12 +84,12 @@ export class AuthService {
       code: hashcode,
       ownerId: user.id,
     });
-    console.info(res);
     const mail = createMail({
       to: user.email,
       text: `Use this code ${otp} to verify the email registered on your account`,
     });
     console.info(mail);
+    return ;
     transporter.sendMail(mail, (error, info) => {
       if (error) return console.info(error);
       else console.info('Email envoye ' + info.response);

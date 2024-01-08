@@ -10,12 +10,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
-import { GatewayModule } from './gateway/gateway.module';
 import { PongModule } from './pong/pong.module';
 import { Match } from './typeorm/entities/Match';
-import { Message } from './typeorm/entities/Message';
 import { Otp } from './typeorm/entities/Otp';
-import { Room } from './typeorm/entities/Room';
 import { User } from './typeorm/entities/User';
 import { UsersModule } from './users/users.module';
 
@@ -23,6 +20,7 @@ import { UsersModule } from './users/users.module';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', './public'),
+      serveRoot: '/public/',
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
@@ -34,7 +32,7 @@ import { UsersModule } from './users/users.module';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, Match, Message, Room, Otp],
+        entities: [User, Match, Otp],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -49,7 +47,6 @@ import { UsersModule } from './users/users.module';
     ]),
     AuthModule,
     OtpModule,
-    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

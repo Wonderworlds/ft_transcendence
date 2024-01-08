@@ -50,3 +50,7 @@ export type inputRoomDto = {
 	input: eventGame;
 	room: string;
 };
+
+export type Success = {
+	success: boolean;
+};

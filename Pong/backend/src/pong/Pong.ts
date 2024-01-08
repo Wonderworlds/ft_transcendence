@@ -2,7 +2,6 @@ import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateGameDto } from 'src/utils/Dtos';
 import { Pos, ValidSocket, eventGame } from 'src/utils/types';
-import { WebsocketService } from 'src/websocket/websocket.service';
 
 class Ball {
   private position: Pos = { x: 50, y: 50 };
@@ -141,18 +140,12 @@ export class Pong {
   constructor(
     p1: ValidSocket,
     server: Server,
-    protected webservice: WebsocketService,
     id: string,
   ) {
     this.id = id;
     this.server = server;
 
     this.loop();
-  }
-
-  hrtimeMs(): number {
-    let time = process.hrtime();
-    return time[0] * 1000 + time[1] / 1000000;
   }
 
   getStateOfGame() {

@@ -67,11 +67,10 @@ const Pong: React.FC = () => {
 	window.requestAnimationFrame(gameLoop);
 
 	function gameLoop() {
-	if (pressedKeys.size != 0)
-	{
-		handleKeyPress();
-	}
-    window.requestAnimationFrame(gameLoop);
+		if (pressedKeys.size != 0) {
+			handleKeyPress();
+		}
+		window.requestAnimationFrame(gameLoop);
 	}
 
 	useEffect(() => {
@@ -97,18 +96,18 @@ const Pong: React.FC = () => {
 
 	return (
 		<div className="pong">
-		<div className="PONG_TITLE">
-			<h1>PONG GAME</h1>
-			<p>Position du joueur 1 : {pLeft.y}</p>
-			<p>Position du joueur 2 : {pRight.y}</p>
-			<div className="GameArea">
-				<div className="PongDiv" style={PongDivStyle}>
-					<div className="Pleft" style={PleftStyle}></div>
-					<div className="Pright" style={PrightStyle}></div>
-					<div className="Ball" style={BallStyle}></div>
+			<div className="PONG_TITLE">
+				<h1>PONG GAME</h1>
+				<p>Position du joueur 1 : {pLeft.y}</p>
+				<p>Position du joueur 2 : {pRight.y}</p>
+				<div className="GameArea">
+					<div className="PongDiv" style={PongDivStyle}>
+						<div className="Pleft" style={PleftStyle}></div>
+						<div className="Pright" style={PrightStyle}></div>
+						<div className="Ball" style={BallStyle}></div>
+					</div>
 				</div>
 			</div>
-		</div>
 		</div>
 	);
 };

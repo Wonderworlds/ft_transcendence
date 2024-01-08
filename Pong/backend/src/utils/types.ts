@@ -35,3 +35,8 @@ export type Pos = {
   x: number;
   y: number;
 };
+
+export type UserJwt = {
+  userId: number;
+  username: string;
+}
