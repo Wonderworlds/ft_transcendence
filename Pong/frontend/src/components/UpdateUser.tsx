@@ -13,11 +13,12 @@ const UpdateUser: React.FC<ChangeNameProps> = () => {
 	const [cb, setCB] = React.useState<boolean>(user.doubleAuth);
 
 	const handleSubmit = () => {
+		if (pseudo === '' || pseudo === user.pseudo) return;
 		client
 			.put('/me/pseudo', { pseudo: pseudo })
 			.then((res: AxiosResponse) => {
-				console.log(res.data);
 				if (res.data?.success) user.setPseudo(pseudo);
+				alert('pseudo changed to ' + pseudo);
 			})
 			.catch((err) => {
 				alert('Error: ' + err.response.data?.message);
@@ -42,6 +43,7 @@ const UpdateUser: React.FC<ChangeNameProps> = () => {
 			.put('/me/email', { email: email })
 			.then((res: AxiosResponse) => {
 				if (res.data?.success) user.setEmail(email);
+				alert('email changed to ' + email);
 			})
 			.catch((err) => {
 				alert('Error: ' + err.response.data?.message);
@@ -69,6 +71,10 @@ const UpdateUser: React.FC<ChangeNameProps> = () => {
 					id="submitButton"
 					name="2FA"
 					onClick={() => {
+						if (user.email === '') {
+							alert('You need to set an email first');
+							return;
+						}
 						setCB((prev) => !prev);
 					}}
 				>
