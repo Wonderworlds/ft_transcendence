@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
+  Param,
   Post,
   Put,
   Req,
@@ -80,7 +82,6 @@ export class UserController {
       )
 	@Post('/uploadAvatar')
   async uploadedFile(@Req() req: any, @UploadedFile() file) {
-    console.log(req);
     await this.userService.updateUserById(req.user.userId, {ppImg: file.filename});
     return {src: file.filename};
     }
@@ -93,4 +94,30 @@ export class UserController {
     if (res.affected) return { success: true };
     return { success: false };
   }
+
+  @Get('/friends')
+  async getFriends(@Req() req: any) {
+    myDebug('getFriends', req.user);
+    return await this.userService.getFriends(req.user.userId);
+  }
+
+  @Post('/friends/:pseudo') // final step Add friends
+  async addFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('addFriend', req.user, params);
+    return await this.userService.addFriend(req.user.userId, params.pseudo);
+  }
+  
+  @Put('/friends/:pseudo') // friend demand
+  async sendFriendDemand(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('sendFriendDemand', req.user, params);
+    return await this.userService.sendFriendDemand(req.user.userId, params.pseudo);
+  }
+  
+  @Delete('/friends/:pseudo')
+  async deleteFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('deleteFriend', req.user, params);
+    return await this.userService.deleteFriend(req.user.userId, params.pseudo);
+  }
 }
+
+

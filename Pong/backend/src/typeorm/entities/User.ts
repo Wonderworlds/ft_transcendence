@@ -1,9 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Match } from "./Match";
-import { Message } from "./Message";
-import { Otp } from "./Otp";
-import { Room } from "./Room";
 import { Status } from "src/utils/types";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Match } from "./Match";
+import { Otp } from "./Otp";
 
 @Entity({ name: 'users'})
 export class User {
@@ -37,28 +35,27 @@ export class User {
 
 	@Column({default: Status.Online})
 	status: Status;
-
-	@ManyToMany(() => User, (user: User) => user.friends)
-	friends: Promise<User>[];
-
-	@ManyToMany(() => User, (user: User) => user.blockedBy)
-	blocked: Promise<User>[];
 	
-	@ManyToMany(() => User, (user: User) => user.blocked)
-	blockedBy: Promise<User>[];
+	@ManyToMany(() => User, {onDelete: 'CASCADE'})
+	@JoinTable({ joinColumn: { name: 'users_id_1' } })
+	friends: User[];
 
-	@OneToMany(() => Message, (msg: Message) => msg.sender)
-	msgs: Room[];
+	@ManyToMany(() => User, {onDelete: 'CASCADE'})
+	@JoinTable({ joinColumn: { name: 'users_id_1' } })
+	friendsPending: User[];
 
-	@OneToMany(() => Room, (room: Room) => room.owner)
-	owners: Room[];
+	@ManyToMany(() => User, {onDelete: 'CASCADE'})
+	@JoinTable({ joinColumn: { name: 'users_id_1' } })
+	friendsDemands: User[];
 
-	@ManyToMany(() => Room, (room: Room) => room.admins)
-	admins: Promise<Room>[];
+	@ManyToMany(() => User, {onDelete: 'CASCADE'})
+	@JoinTable({ joinColumn: { name: 'users_id_1' } })
+	blocked: User[];
 
-	@ManyToMany(() => Room, (room: Room) => room.users)
-	rooms: Promise<Room>[];
-
+	@ManyToMany(() => User, {onDelete: 'CASCADE'})
+	@JoinTable({ joinColumn: { name: 'users_id_1' } })
+	blockedBy: User[];
+	
 	@OneToMany(() => Match, (match: Match) => match.winner)
 	wins: Match[]
 
