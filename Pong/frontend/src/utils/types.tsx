@@ -17,6 +17,11 @@ export type User = {
 	status: Status;
 };
 
+export type Msg = {
+	pseudo: string;
+	text: string;
+}
+
 export enum Pages {
 	Root = '/',
 	Home = '/home',
