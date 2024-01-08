@@ -100,6 +100,19 @@ export class UserController {
     myDebug('getFriends', req.user);
     return await this.userService.getFriends(req.user.userId);
   }
+  
+  @Get('/friends/pending')
+  async getFriendsPending(@Req() req: any) {
+    myDebug('getFriendsPending', req.user);
+    return await this.userService.getFriendsPending(req.user.userId);
+  }
+
+  
+  @Get('/friends/demands')
+  async getFriendsDemands(@Req() req: any) {
+    myDebug('getFriendsDemands', req.user);
+    return await this.userService.getFriendsDemands(req.user.userId);
+  }
 
   @Post('/friends/:pseudo/accept') // final step Add friends
   async addFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
