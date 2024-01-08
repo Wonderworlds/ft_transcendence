@@ -101,13 +101,19 @@ export class UserController {
     return await this.userService.getFriends(req.user.userId);
   }
 
-  @Post('/friends/:pseudo') // final step Add friends
+  @Post('/friends/:pseudo/accept') // final step Add friends
   async addFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
     myDebug('addFriend', req.user, params);
     return await this.userService.addFriend(req.user.userId, params.pseudo);
   }
   
-  @Put('/friends/:pseudo') // friend demand
+  @Post('/friends/:pseudo/decline') // final step Add friends
+  async declineFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('declineFriend', req.user, params);
+    return await this.userService.declineFriend(req.user.userId, params.pseudo);
+  }
+  
+  @Post('/friends/:pseudo') // friend demand
   async sendFriendDemand(@Req() req: any, @Param() params: UserDtoPseudo) {
     myDebug('sendFriendDemand', req.user, params);
     return await this.userService.sendFriendDemand(req.user.userId, params.pseudo);
@@ -117,6 +123,24 @@ export class UserController {
   async deleteFriend(@Req() req: any, @Param() params: UserDtoPseudo) {
     myDebug('deleteFriend', req.user, params);
     return await this.userService.deleteFriend(req.user.userId, params.pseudo);
+  }
+
+  @Post('/block/:pseudo')
+  async blockUser(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('blockUser', req.user, params);
+    return await this.userService.blockUser(req.user.userId, params.pseudo);
+  }
+
+  @Delete('/block/:pseudo')
+  async unblockUser(@Req() req: any, @Param() params: UserDtoPseudo) {
+    myDebug('unblockUser', req.user, params);
+    return await this.userService.unblockUser(req.user.userId, params.pseudo);
+  }
+
+  @Get('/block')
+  async getBlockList(@Req() req: any) {
+    myDebug('getBlockList', req.user);
+    return await this.userService.getBlockList(req.user.userId);
   }
 }
 

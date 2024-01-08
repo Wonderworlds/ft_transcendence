@@ -149,6 +149,22 @@ export class UsersService {
       return friendsDto;
   }
 
+  
+  async getBlockList(id: number): Promise<Array<LimitedUserDto>> {
+    console.info(id);
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: ['blocked'],
+    });
+    if (!user) throw new BadRequestException('User Not Found');
+      const blocked: User[] = user.blocked;
+      const friendsDto: Array<LimitedUserDto> = [];
+      for (const friend of blocked) {
+        friendsDto.push(this.userToLimitedDto(friend));
+      }
+      return friendsDto;
+  }
+
   async findOneUser(where: UserDtoPseudo | {id: number} | UserDtoUsername, relations: string[]): Promise<User | undefined> {
     const user = await this.userRepository.findOne({
       where: where,
@@ -172,7 +188,7 @@ export class UsersService {
     const user = await this.findOneUser({id: id}, ['friends', 'friendsDemands']);
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({pseudo: pseudo}, ['friends', 'friendsPending']);
-    if (!friend) throw new BadRequestException('User Not Found');
+    if (!friend) throw new BadRequestException('Target Not Found');
     if (friend === user) throw new BadRequestException('You can\'t add yourself');
     if (!this.isUserInArray(friend, user.friendsDemands)) throw new BadRequestException('You don\'t have a friend demand from this user');
     const friends: User[] = user.friends;
@@ -184,11 +200,21 @@ export class UsersService {
     return (res && res1 &&  this.cleanFriends(friend, user)) ?  { success: true } :  { success: false };
   }
 
+  async declineFriend(id: number, pseudo: string): Promise<Success> {
+    const user = await this.findOneUser({id: id}, ['friendsDemands']);
+    if (!user) throw new BadRequestException('User Not Found');
+    const friend = await this.findOneUser({pseudo: pseudo}, ['friendsPending']);
+    if (!friend) throw new BadRequestException('Target Not Found');
+    if (friend === user) throw new BadRequestException('You can\'t add yourself');
+    if (!this.isUserInArray(friend, user.friendsDemands)) throw new BadRequestException('You don\'t have a friend demand from this user');
+    return (this.cleanFriends(friend, user));
+  }
+
   async sendFriendDemand(id: number, pseudo: string): Promise<Success> {
     const user = await this.findOneUser({id: id}, ['friendsPending']);
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({pseudo: pseudo}, ['friendsDemands']);
-    if (!friend) throw new BadRequestException('User Not Found');
+    if (!friend) throw new BadRequestException('Target Not Found');
     if (friend ===user) throw new BadRequestException('You can\'t add yourself');
     const friendsPending: User[] = user.friendsPending;
     friendsPending.push(friend);
@@ -203,7 +229,7 @@ export class UsersService {
     const user = await this.findOneUser({id: id}, ['friends']);
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({pseudo: pseudo}, ['friends']);
-    if (!friend) throw new BadRequestException('User Not Found');
+    if (!friend) throw new BadRequestException('Target Not Found');
     if (friend === user) throw new BadRequestException('You can\'t delete yourself');
     if (!this.isUserInArray(friend, user.friends)) throw new BadRequestException('This user is not your friend');
     const friends: User[] = user.friends;
@@ -222,6 +248,37 @@ export class UsersService {
     const friendsDemands: User[] = demand.friendsDemands;
     friendsDemands.splice(friendsDemands.indexOf(pending), 1);
     const res1 = await this.userRepository.save(demand);
+    return ( res && res1) ?  { success: true } :  { success: false };
+  }
+
+  async blockUser(id: number, pseudo: string): Promise<Success> {
+    const user = await this.findOneUser({id: id}, ['blocked']);
+    if (!user) throw new BadRequestException('User Not Found');
+    const friend = await this.findOneUser({pseudo: pseudo}, ['blockedBy']);
+    if (!friend) throw new BadRequestException('Target Not Found');
+    if (friend === user) throw new BadRequestException('You can\'t block yourself');
+    if (this.isUserInArray(friend, user.blocked)) throw new BadRequestException('This user is already blocked');
+    const blocked: User[] = user.blocked;
+    blocked.push(friend);
+    const res = await this.userRepository.save(user);
+    const blockedBy: User[] = friend.blockedBy;
+    blockedBy.push(user);
+    const res1 = await this.userRepository.save(friend);
+    return ( res && res1) ?  { success: true } :  { success: false };
+  }
+
+  async unblockUser(id: number, pseudo: string): Promise<Success> {
+    const user = await this.findOneUser({id: id}, ['blocked']);
+    if (!user) throw new BadRequestException('User Not Found');
+    const friend = await this.findOneUser({pseudo: pseudo}, ['blockedBy']);
+    if (!friend) throw new BadRequestException('Target Not Found');
+    if (!this.isUserInArray(friend, user.blocked)) throw new BadRequestException('This user is not blocked');
+    const blocked: User[] = user.blocked;
+    blocked.splice(blocked.indexOf(friend), 1);
+    const res = await this.userRepository.save(user);
+    const blockedBy: User[] = friend.blockedBy;
+    blockedBy.splice(blockedBy.indexOf(user), 1);
+    const res1 = await this.userRepository.save(friend);
     return ( res && res1) ?  { success: true } :  { success: false };
   }
 
