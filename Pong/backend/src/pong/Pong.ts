@@ -17,7 +17,7 @@ class Ball {
   }
 
   private dist(a: number, b: number) {
-    return (Math.abs(b - a));
+    return Math.abs(b - a);
   }
   public move(p1: Player, p2: Player) {
     //check collision with walls
@@ -30,7 +30,7 @@ class Ball {
       this.direction = this.getRandomDirection();
       return p1.addScore();
     }
-    
+
     //check collision with players
     const pos1 = p1.getPosition();
     const pos2 = p2.getPosition();
@@ -49,7 +49,6 @@ class Ball {
     ) {
       this.direction.x = -1;
     }
-
 
     if (this.position.y <= 0) {
       this.direction.y = 1;
@@ -90,9 +89,11 @@ class Player {
   private readonly speed = 2;
   private maxY = 88;
   private score = 0;
-
-  constructor(pos: Pos) {
+  public client: ValidSocket;
+  public isReady = false;
+  constructor(client: ValidSocket, pos: Pos) {
     this.setPosition(pos);
+    this.client = client;
   }
 
   public getPosition() {
@@ -135,16 +136,13 @@ export class Pong {
   protected server: Server;
   private ball = new Ball();
 
-  p1: Player = new Player({ x: 2, y: 50 });
-  p2: Player = new Player({ x: 98, y: 50 });
-  constructor(
-    p1: ValidSocket,
-    server: Server,
-    id: string,
-  ) {
+  p1: Player;
+  p2: Player;
+  constructor(id: string, server: Server, p1: ValidSocket, p2?: ValidSocket) {
     this.id = id;
     this.server = server;
-
+    this.p1 = new Player(p1, { x: 2, y: 50 });
+    this.p2 = new Player(p2 ? p2 : p1, { x: 2, y: 50 });
     this.loop();
   }
 
@@ -172,19 +170,26 @@ export class Pong {
     switch (input) {
       case eventGame.ARROW_UP:
         this.p2.changePos(eventGame.UP);
-        break;
+        return;
       case eventGame.ARROW_DOWN:
         this.p2.changePos(eventGame.DOWN);
-        break;
+        return;
       case eventGame.W_KEY:
         this.p1.changePos(eventGame.UP);
-        break;
+        return;
       case eventGame.S_KEY:
         this.p1.changePos(eventGame.DOWN);
-        break;
+        return;
+      case eventGame.READY:
+        if (client.name === this.p1.client.name) this.p1.isReady = true;
+        else if (client.name === this.p2.client.name) this.p2.isReady = true;
+        if (this.p1.isReady && this.p2.isReady) {
+          this.loop();
+        }
+        return;
       default:
         console.info('the fuck');
-        break;
+        return;
     }
   }
 }

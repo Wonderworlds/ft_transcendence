@@ -52,9 +52,9 @@ export class PongGateway extends AGateway {
   onStart(@ConnectedSocket() client: ValidSocket, @Body() body: roomDto) {
     client.join(body.room);
     const game = new Pong(
-      client,
-      this.server,
       body.room,
+      this.server,
+      client,
     );
     this.listGame.set(body.room, game);
   }

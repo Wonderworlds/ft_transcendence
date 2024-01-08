@@ -1,46 +1,64 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import Cancel from '../components/Cancel.tsx';
-import SearchingPlayer from '../components/SearchingPlayer.tsx';
+import NavBar from '../components/NavBar.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
-import { Pages } from '../utils/types.tsx';
 import Pong from './Pong.tsx';
 
 const WaitingMatch: React.FC = () => {
 	const socket = getSocket();
-
+	const handleSubmit = () => {};
+	const [playLocalCB, setPlayLocalCB] = React.useState<boolean[]>([true, false, false]);
+	const [playOnlineCB, setPlayOnlineCB] = React.useState<boolean>(false);
 	React.useEffect(() => {
 		socket.socket.on('ready', (res: any) => {
 			console.log('ready', { room: res.room });
 			socket.setRoom(res.room);
 		});
-		socket.socket.emit('searchGame');
 		return () => {
 			socket.socket.off('ready');
-		};
-	}, []);
-
-	React.useEffect(() => {
-		return () => {
-			socket.socket.emit('cancelSearch');
 		};
 	}, []);
 
 	const waitingMatchElement = () => {
 		return (
 			<div className="waitingMatch">
-				<Link to={Pages.Home}>
-					<div
-						className="divCancel"
-						onClick={() => {
-							socket.socket.emit('cancelSearch');
-						}}
-					>
-						<Cancel />
+				<div className="divNav">
+					<NavBar />
+				</div>
+				<div className="divLobby">
+					<div className="divCreateLobby">
+						<p>Create Lobby</p>
+						<div className="divPlayLocal">
+							<div className="divPlayLocalList">
+								<label className="container">
+									2 Player:
+									<input type="radio" name="radio" />
+									<span className="checkmark"></span>
+								</label>
+								<label className="container">
+									vs AI:
+									<input type="radio" name="radio" />
+									<span className="checkmark"></span>
+								</label>
+								<label className="container">
+									Tournament:
+									<input type="radio" name="radio" />
+									<span className="checkmark"></span>
+								</label>
+							</div>
+							<button id="submitButton" onClick={handleSubmit}>
+								Play Local
+							</button>
+						</div>
+						<div className="divPlayOnline">
+							<button id="submitButton" onClick={handleSubmit}>
+								Play Online
+							</button>
+						</div>
 					</div>
-				</Link>
-				<div className="divSearchingPlayer">
-					<SearchingPlayer />
+					<div className="divFindLobby">
+						<p>GameLobby</p>
+						<div className="divFindLobbyList"></div>
+					</div>
 				</div>
 			</div>
 		);

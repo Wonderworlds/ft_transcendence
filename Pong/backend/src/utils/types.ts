@@ -28,7 +28,7 @@ export enum eventGame {
   ARROW_DOWN = 'ARROW_DOWN',
   W_KEY = 'W_KEY',
   S_KEY = 'S_KEY',
-  SPACE_KEY = 'SPACE_KEY',
+  READY = "READY",
 }
 
 export type Pos = {
