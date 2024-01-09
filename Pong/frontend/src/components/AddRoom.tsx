@@ -1,31 +1,29 @@
-import React from 'react';
 import DropdownMenu from './DropdownMenu.tsx';
 
-const AddRoom = () => {
-	
-	const createRoom = () => {
-		console.log("je creer une room");
-	}
-	const searchRoom = () => {
-		console.log("je cherche une room");
+const AddLobby = () => {
+	const createLobby = () => {
+		console.log('je creer une lobby');
 	};
-	
+	const searchLobby = () => {
+		console.log('je cherche une lobby');
+	};
+
 	const dropdownActions = [
-	{
-		name: "Create Room",
-		onClick: createRoom,
-	},
-	{
-		name: "Search Room",
-		onClick: searchRoom,
-	},
+		{
+			name: 'Create Lobby',
+			onClick: createLobby,
+		},
+		{
+			name: 'Search Lobby',
+			onClick: searchLobby,
+		},
 	];
 
 	return (
-		<div className="headerAddRoom">
+		<div className="headerAddLobby">
 			<DropdownMenu dropdownButtonName="+" dropdownActions={dropdownActions} />
 		</div>
 	);
 };
 
-export default AddRoom;
+export default AddLobby;

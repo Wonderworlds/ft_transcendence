@@ -15,21 +15,22 @@ export type ValidSocket = Socket & {
   name: string;
 };
 
-export enum roomProtection {
+export enum lobbyProtection {
   public = 'Public',
   private = 'Private',
   protected = 'Protected',
 }
 
-export enum eventGame {
-  UP = 'UP',
-  DOWN = 'DOWN',
-  ARROW_UP = 'ARROW_UP',
-  ARROW_DOWN = 'ARROW_DOWN',
-  W_KEY = 'W_KEY',
-  S_KEY = 'S_KEY',
-  SPACE_KEY = 'SPACE_KEY',
+export enum EventGame {
+	UP = 'UP',
+	DOWN = 'DOWN',
+	ARROW_UP = 'ARROW_UP',
+	ARROW_DOWN = 'ARROW_DOWN',
+	W_KEY = 'W_KEY',
+	S_KEY = 'S_KEY',
+	SPACE_KEY = 'SPACE',
 }
+
 
 export type Pos = {
   x: number;
@@ -39,4 +40,10 @@ export type Pos = {
 export type UserJwt = {
   userId: number;
   username: string;
+}
+
+export enum GameType {
+	classic = 'classic',
+	multiplayer = 'multiplayer',
+	tournament = 'Tournament',
 }

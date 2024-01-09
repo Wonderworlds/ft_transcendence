@@ -1,56 +1,101 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import Cancel from '../components/Cancel.tsx';
-import SearchingPlayer from '../components/SearchingPlayer.tsx';
+import { useNavigate } from 'react-router-dom';
+import CreateLobby, { CreateLobbyProps } from '../components/CreateLobby.tsx';
+import LobbyList from '../components/LobbyList.tsx';
+import NavBar from '../components/NavBar.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
-import { Pages } from '../utils/types.tsx';
-import Pong from './Pong.tsx';
+import { LobbyDto } from '../utils/dtos.tsx';
+import { GameType, Pages } from '../utils/types.tsx';
 
 const WaitingMatch: React.FC = () => {
-	const socket = getSocket();
+	const socketContext = getSocket();
+	const socket = socketContext.socket;
+	const navigate = useNavigate();
+	const [lobbyLocal, setLobbyLocal] = React.useState<LobbyDto>({} as LobbyDto);
+	const [playLocalCB, setPlayLocalCB] = React.useState<string>('local0');
+	const [playOnlineCB, setPlayOnlineCB] = React.useState<string>('online0');
 
 	React.useEffect(() => {
-		socket.socket.on('ready', (res: any) => {
-			console.log('ready', { room: res.room });
-			socket.setRoom(res.room);
+		if (!socket) return;
+		socket.on('lobbyCreated', (res: { lobby: string }) => {
+			socketContext.setLobby(res.lobby);
+			navigate(Pages.Pong);
 		});
-		socket.socket.emit('searchGame');
 		return () => {
-			socket.socket.off('ready');
+			socket.off('lobbyCreated');
 		};
-	}, []);
+	}, [socket]);
 
-	React.useEffect(() => {
-		return () => {
-			socket.socket.emit('cancelSearch');
-		};
-	}, []);
+	const playLocal = () => {
+		if (!socket) return console.log('socket not found');
+		const gameType =
+			playLocalCB === 'local0'
+				? GameType.classic
+				: playLocalCB === 'local1'
+				? GameType.multiplayer
+				: GameType.tournament;
+		socket.emit('createLobby', { gameType: gameType, isLocal: true });
+	};
 
-	const waitingMatchElement = () => {
-		return (
-			<div className="waitingMatch">
-				<Link to={Pages.Home}>
-					<div
-						className="divCancel"
-						onClick={() => {
-							socket.socket.emit('cancelSearch');
-						}}
-					>
-						<Cancel />
-					</div>
-				</Link>
-				<div className="divSearchingPlayer">
-					<SearchingPlayer />
+	const playOnline = () => {
+		if (!socket) return console.log('socket not found');
+		const gameType =
+			playOnlineCB === 'online0'
+				? GameType.classic
+				: playOnlineCB === 'online1'
+				? GameType.multiplayer
+				: GameType.tournament;
+		socket.emit('createLobby', { gameType: gameType, isLocal: false });
+	};
+
+	const playLocalProps: CreateLobbyProps = {
+		labels: ['2 Players', 'vs AI', 'Tournament'],
+		scores: ['local0', 'local1', 'local2'],
+		buttonSubmit: 'Play Local',
+		submit: playLocal,
+		state: playLocalCB,
+		setState: setPlayLocalCB,
+	};
+
+	const playOnlineProps: CreateLobbyProps = {
+		labels: [GameType.classic, GameType.multiplayer, GameType.tournament],
+		scores: ['online0', 'online1', 'online2'],
+		buttonSubmit: 'Play Online',
+		submit: playOnline,
+		state: playOnlineCB,
+		setState: setPlayOnlineCB,
+	};
+
+	return (
+		<div className="waitingMatch">
+			<div className="divNav">
+				<NavBar />
+			</div>
+			<div className="divLobby">
+				<div className="divCreateLobby">
+					<p>Create Lobby</p>
+					<CreateLobby {...playLocalProps} />
+					<CreateLobby {...playOnlineProps} />
+
+					{lobbyLocal ? (
+						<div className="divLobbyLocal">
+							<button
+								onClick={() => {
+									navigate(Pages.Pong);
+								}}
+							>
+								Lobby Local
+							</button>
+						</div>
+					) : null}
+				</div>
+				<div className="divFindLobby">
+					<p>Lobby List</p>
+					<LobbyList setLobbyLocal={setLobbyLocal} />
 				</div>
 			</div>
-		);
-	};
-
-	const pongElement = () => {
-		return <div className="Pong">{<Pong />}</div>;
-	};
-
-	return <>{socket.room ? pongElement() : waitingMatchElement()}</>;
+		</div>
+	);
 };
 
 export default WaitingMatch;

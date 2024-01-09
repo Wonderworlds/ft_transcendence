@@ -1,7 +1,7 @@
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateGameDto } from 'src/utils/Dtos';
-import { Pos, ValidSocket, eventGame } from 'src/utils/types';
+import { EventGame, Pos, ValidSocket } from 'src/utils/types';
 
 class Ball {
   private position: Pos = { x: 50, y: 50 };
@@ -17,7 +17,7 @@ class Ball {
   }
 
   private dist(a: number, b: number) {
-    return (Math.abs(b - a));
+    return Math.abs(b - a);
   }
   public move(p1: Player, p2: Player) {
     //check collision with walls
@@ -30,7 +30,7 @@ class Ball {
       this.direction = this.getRandomDirection();
       return p1.addScore();
     }
-    
+
     //check collision with players
     const pos1 = p1.getPosition();
     const pos2 = p2.getPosition();
@@ -49,7 +49,6 @@ class Ball {
     ) {
       this.direction.x = -1;
     }
-
 
     if (this.position.y <= 0) {
       this.direction.y = 1;
@@ -90,9 +89,11 @@ class Player {
   private readonly speed = 2;
   private maxY = 88;
   private score = 0;
-
-  constructor(pos: Pos) {
+  public client: ValidSocket;
+  public isReady = false;
+  constructor(client: ValidSocket, pos: Pos) {
     this.setPosition(pos);
+    this.client = client;
   }
 
   public getPosition() {
@@ -111,15 +112,15 @@ class Player {
     this.position = newPos;
   }
 
-  public changePos(event: eventGame) {
+  public changePos(event: EventGame) {
     //console.info(event);
-    if (event === eventGame.UP && this.position.y > 0) {
+    if (event === EventGame.UP && this.position.y > 0) {
       if (this.position.y - this.speed > 0) {
         this.position.y -= this.speed;
       } else {
         this.position.y = 0;
       }
-    } else if (event === eventGame.DOWN && this.position.y < this.maxY) {
+    } else if (event === EventGame.DOWN && this.position.y < this.maxY) {
       if (this.position.y + this.speed < this.maxY) {
         this.position.y += this.speed;
       } else {
@@ -135,16 +136,13 @@ export class Pong {
   protected server: Server;
   private ball = new Ball();
 
-  p1: Player = new Player({ x: 2, y: 50 });
-  p2: Player = new Player({ x: 98, y: 50 });
-  constructor(
-    p1: ValidSocket,
-    server: Server,
-    id: string,
-  ) {
+  p1: Player;
+  p2: Player;
+  constructor(id: string, server: Server, p1: ValidSocket, p2?: ValidSocket) {
     this.id = id;
     this.server = server;
-
+    this.p1 = new Player(p1, { x: 2, y: 50 });
+    this.p2 = new Player(p1, { x: 98, y: 50 });
     this.loop();
   }
 
@@ -160,31 +158,31 @@ export class Pong {
   }
 
   loop = () => {
-    setTimeout(this.loop, 1000 / 60);
+    setTimeout(this.loop, 1000 / 48);
     this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
   };
 
-  private UpdatePaddlePos(paddle: Player, input: eventGame) {}
+  private UpdatePaddlePos(paddle: Player, input: EventGame) {}
 
-  public onInput(@ConnectedSocket() client: ValidSocket, input: eventGame) {
+  public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame) {
     //console.log(this.getStateOfGame());
     switch (input) {
-      case eventGame.ARROW_UP:
-        this.p2.changePos(eventGame.UP);
-        break;
-      case eventGame.ARROW_DOWN:
-        this.p2.changePos(eventGame.DOWN);
-        break;
-      case eventGame.W_KEY:
-        this.p1.changePos(eventGame.UP);
-        break;
-      case eventGame.S_KEY:
-        this.p1.changePos(eventGame.DOWN);
-        break;
+      case EventGame.ARROW_UP:
+        this.p2.changePos(EventGame.UP);
+        return;
+      case EventGame.ARROW_DOWN:
+        this.p2.changePos(EventGame.DOWN);
+        return;
+      case EventGame.W_KEY:
+        this.p1.changePos(EventGame.UP);
+        return;
+      case EventGame.S_KEY:
+        this.p1.changePos(EventGame.DOWN);
+        return;
       default:
         console.info('the fuck');
-        break;
+        return;
     }
   }
 }

@@ -1,28 +1,28 @@
 import React from 'react';
-import NavBar from '../components/NavBar.tsx';
-import RoomsList from '../components/RoomsList.tsx';
 import ChatWithFriend from '../components/ChatWithFriend.tsx';
-import ListMembersRooms from '../components/ListMemberRooms.tsx';
+import ListMembersLobbys from '../components/ListMemberLobbys.tsx';
+import LobbysList from '../components/LobbysList.tsx';
+import NavBar from '../components/NavBar.tsx';
 
-const Rooms: React.FC = () => {
+const Lobbys: React.FC = () => {
 	return (
-		<div className="headerRooms">
+		<div className="headerLobbys">
 			<div className="divNav">
 				<NavBar />
 			</div>
 			<div className="blackScreen">
-				<div className="divRooms">
-					<RoomsList />
+				<div className="divLobbys">
+					<LobbysList />
 				</div>
-				<div className="divChatInRooms">
+				<div className="divChatInLobbys">
 					<ChatWithFriend />
 				</div>
-				<div className="divMemberRooms">
-					<ListMembersRooms />
+				<div className="divMemberLobbys">
+					<ListMembersLobbys />
 				</div>
 			</div>
 		</div>
 	);
 };
 
-export default Rooms;
+export default Lobbys;

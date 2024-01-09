@@ -1,4 +1,4 @@
-import { Pos, Status, eventGame } from './types';
+import { EventGame, GameType, Pos, Status } from './types';
 
 export type UserDto = {
 	username: string;
@@ -30,12 +30,12 @@ export type UpdateGameDto = {
 	scorePRight: number;
 };
 
-export type roomDto = {
-	room: string;
+export type lobbyIDDto = {
+	lobby: string;
 };
 
 export type inputDto = {
-	input: eventGame;
+	input: EventGame;
 };
 
 export type CodeDto = {
@@ -46,11 +46,20 @@ export type TwoFADto = {
 	code: string;
 };
 
-export type inputRoomDto = {
-	input: eventGame;
-	room: string;
+export type inputLobbyDto = {
+	input: EventGame;
+	lobby: string;
 };
 
 export type Success = {
 	success: boolean;
+};
+
+export type LobbyDto = {
+	id: string;
+	owner: string;
+	gameType: GameType;
+	nbPlayers: number;
+	maxPlayers: number;
+	status: 'waiting' | 'playing';
 };

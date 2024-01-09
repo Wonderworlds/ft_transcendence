@@ -19,31 +19,84 @@
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
+	
 
 
 }
 
-.divCancel {
-	position: absolute;
-	left: 5%;
-	right: 0%;
-	top: 5%;
-	bottom: 0%;
-	height: 10vh;
-	width: 15vw;
-	text-align: center;
+.divLobby {
+	
+	display: flex;
+	height: 70%;
+	width: 100%;
+	flex-direction: row;
+	justify-content: center;
+	margin-top: 5%;
+	p {
+		margin: 5%;
+		color: #800080;
+		font-weight: 400;
+		font-size: clamp(16px, 3vw, 40px);
+		font-family: zendots;
+	}
+	.divCreateLobby {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 30%;
+		min-width: 350px;
+		min-height: 400px;
+		border-radius: 2rem;
+	}
+	.divFindLobby {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 30%;
+		min-width: 450px;
+		min-height: 400px;
+		border-radius: 2rem;
+		margin-left: 10%;
+	}
+	
+.divLobbyLocal {
+	--color: #780606;
+	--hover: #4d0241;
+	display: flex;
+	margin: 6%;
+	justify-content: center;
+	width: 100%;
+	height: 20%;
+	> button {
+		border: 5px solid;
+		font-family: zendots;
+		line-height: 1.2;
+		margin: 0.5em;
+		padding: 0.5em 1em;
+		color: #780606;
+		transition: 0.25s;
+		font-size: 3vh;
+		border-color: var(--color);
+		font-weight: 500;
+		background-color: #1d1b40e8;
 
+		&:hover,
+		&:focus {
+			border-color: var(--hover);
+			color: #fff;
+		}
+	}
+	> button:hover,
+	> button:focus {
+		animation: pulse 1s;
+		box-shadow: 0 0 0 2em transparent;
+	}
+
+	@keyframes pulse {
+		0% {
+			box-shadow: 0 0 0 0 var(--hover);
+		}
+	}
 }
-
-.divSearchingPlayer {
-	position: absolute;
-	left: 34.5%;
-	right: 34.5%;
-	top: 40%;
-	bottom: 40%;
-	height: 10vh;
-	width: 26vw;
-	margin: auto;
-	text-align: center;
 
 }

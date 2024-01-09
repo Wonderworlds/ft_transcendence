@@ -1,4 +1,4 @@
-.headerRooms {
+.headerLobbys {
 
 	/* panorama */
 	
@@ -23,7 +23,7 @@
 		border-style: solid none none none;
 		flex-direction: row;
 
-		.divRooms {
+		.divLobbys {
 
 			display: flex;
 			width: 20%;
@@ -31,7 +31,7 @@
 
 		}
 
-		.divChatInRooms {
+		.divChatInLobbys {
 
 			display: flex;
 			width: 60%;
@@ -39,7 +39,7 @@
 
 		}
 
-		.divMemberRooms {
+		.divMemberLobbys {
 
 			display: flex;
 			width: 20%;
