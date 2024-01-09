@@ -1,7 +1,7 @@
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateGameDto } from 'src/utils/Dtos';
-import { Pos, ValidSocket, eventGame } from 'src/utils/types';
+import { EventGame, Pos, ValidSocket } from 'src/utils/types';
 
 class Ball {
   private position: Pos = { x: 50, y: 50 };
@@ -112,15 +112,15 @@ class Player {
     this.position = newPos;
   }
 
-  public changePos(event: eventGame) {
+  public changePos(event: EventGame) {
     //console.info(event);
-    if (event === eventGame.UP && this.position.y > 0) {
+    if (event === EventGame.UP && this.position.y > 0) {
       if (this.position.y - this.speed > 0) {
         this.position.y -= this.speed;
       } else {
         this.position.y = 0;
       }
-    } else if (event === eventGame.DOWN && this.position.y < this.maxY) {
+    } else if (event === EventGame.DOWN && this.position.y < this.maxY) {
       if (this.position.y + this.speed < this.maxY) {
         this.position.y += this.speed;
       } else {
@@ -142,7 +142,7 @@ export class Pong {
     this.id = id;
     this.server = server;
     this.p1 = new Player(p1, { x: 2, y: 50 });
-    this.p2 = new Player(p2 ? p2 : p1, { x: 2, y: 50 });
+    this.p2 = new Player(p1, { x: 98, y: 50 });
     this.loop();
   }
 
@@ -158,34 +158,27 @@ export class Pong {
   }
 
   loop = () => {
-    setTimeout(this.loop, 1000 / 60);
+    setTimeout(this.loop, 1000 / 48);
     this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
   };
 
-  private UpdatePaddlePos(paddle: Player, input: eventGame) {}
+  private UpdatePaddlePos(paddle: Player, input: EventGame) {}
 
-  public onInput(@ConnectedSocket() client: ValidSocket, input: eventGame) {
+  public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame) {
     //console.log(this.getStateOfGame());
     switch (input) {
-      case eventGame.ARROW_UP:
-        this.p2.changePos(eventGame.UP);
+      case EventGame.ARROW_UP:
+        this.p2.changePos(EventGame.UP);
         return;
-      case eventGame.ARROW_DOWN:
-        this.p2.changePos(eventGame.DOWN);
+      case EventGame.ARROW_DOWN:
+        this.p2.changePos(EventGame.DOWN);
         return;
-      case eventGame.W_KEY:
-        this.p1.changePos(eventGame.UP);
+      case EventGame.W_KEY:
+        this.p1.changePos(EventGame.UP);
         return;
-      case eventGame.S_KEY:
-        this.p1.changePos(eventGame.DOWN);
-        return;
-      case eventGame.READY:
-        if (client.name === this.p1.client.name) this.p1.isReady = true;
-        else if (client.name === this.p2.client.name) this.p2.isReady = true;
-        if (this.p1.isReady && this.p2.isReady) {
-          this.loop();
-        }
+      case EventGame.S_KEY:
+        this.p1.changePos(EventGame.DOWN);
         return;
       default:
         console.info('the fuck');

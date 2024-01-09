@@ -52,12 +52,12 @@ export enum Status {
 	Busy = 'Busy',
 }
 
-export enum eventGame {
+export enum EventGame {
 	UP = 'UP',
 	DOWN = 'DOWN',
 	ARROW_UP = 'ARROW_UP',
 	ARROW_DOWN = 'ARROW_DOWN',
 	W_KEY = 'W_KEY',
 	S_KEY = 'S_KEY',
-	SPACE_KEY = 'SPACE_KEY',
+	SPACE_KEY = 'SPACE',
 }

@@ -22,14 +22,18 @@ export class PongLobby {
 
   constructor(
     id: string,
+    server: Server,
     owner: ValidSocket,
     gameType: GameType,
     isLocal: boolean,
   ) {
     this.id = id;
+    this.server = server;
     this.owner = owner;
     this.gameType = gameType;
     this.isLocal = isLocal;
+    if (isLocal && this.gameType === GameType.classic) {
+    }
   }
 
   addClient(@ConnectedSocket() client: ValidSocket) {
@@ -61,13 +65,12 @@ export class PongLobby {
     if (client.id === this.owner.id && this.listClients.size > 0) {
       this.owner = this.listClients.values().next().value;
     }
-    if (this.mapTimeout.has(client.name))
-      this.mapTimeout.delete(client.name);
+    if (this.mapTimeout.has(client.name)) this.mapTimeout.delete(client.name);
     console.info('removeClientCB', client.id);
   }
 
   removeClient(@ConnectedSocket() client: ValidSocket) {
-    console.info('removeClient', 'based');
+    console.info('removeClient', client.id);
     if (this.listClients.size === 1 && !this.isLocal)
       return this.listClients.delete(client.name);
     const id = setTimeout(() => {
@@ -85,8 +88,16 @@ export class PongLobby {
   }
 
   public startGame() {
+    console.info('startGame');
     this.status = 'playing';
-    if (this.isLocal && this.gameType === GameType.classic)
+    if (this.isLocal && this.gameType === GameType.classic) {
+      this.pLeft = this.owner;
+      this.pRight = this.owner;
       this.pongInstance = new Pong(this.id, this.server, this.owner);
+    }
+  }
+
+  public onInput(@ConnectedSocket() client: ValidSocket, input: string) {
+    if (this.status !== 'playing') return;
   }
 }

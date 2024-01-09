@@ -1,4 +1,4 @@
-import { GameType, Pos, Status, eventGame } from './types';
+import { EventGame, GameType, Pos, Status } from './types';
 
 export type UserDto = {
 	username: string;
@@ -35,7 +35,7 @@ export type lobbyIDDto = {
 };
 
 export type inputDto = {
-	input: eventGame;
+	input: EventGame;
 };
 
 export type CodeDto = {
@@ -47,7 +47,7 @@ export type TwoFADto = {
 };
 
 export type inputLobbyDto = {
-	input: eventGame;
+	input: EventGame;
 	lobby: string;
 };
 

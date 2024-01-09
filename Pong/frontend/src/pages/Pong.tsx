@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Cancel from '../components/Cancel.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
 import { lobbyIDDto } from '../utils/dtos.tsx';
-import { Pages, eventGame } from '../utils/types.tsx';
+import { EventGame, Pages } from '../utils/types.tsx';
 
 export type Position = {
 	x: number;
@@ -54,24 +54,27 @@ const Pong: React.FC = () => {
 
 	const handleKeyUp = (e: KeyboardEvent) => {
 		pressedKeys.delete(e.key);
+		if (e.key === ' ') {
+			sendInput(EventGame.SPACE_KEY);
+		}
 	};
 
 	const handleKeyPress = () => {
 		if (pressedKeys.has('ArrowUp')) {
-			sendInput(eventGame.ARROW_UP);
+			sendInput(EventGame.ARROW_UP);
 		}
 		if (pressedKeys.has('ArrowDown')) {
-			sendInput(eventGame.ARROW_DOWN);
+			sendInput(EventGame.ARROW_DOWN);
 		}
 		if (pressedKeys.has('s')) {
-			sendInput(eventGame.S_KEY);
+			sendInput(EventGame.S_KEY);
 		}
 		if (pressedKeys.has('w')) {
-			sendInput(eventGame.W_KEY);
+			sendInput(EventGame.W_KEY);
 		}
 	};
 
-	function sendInput(input: eventGame) {
+	function sendInput(input: EventGame) {
 		socket.emit('input', { lobby: socketContext.lobby, input: input });
 	}
 

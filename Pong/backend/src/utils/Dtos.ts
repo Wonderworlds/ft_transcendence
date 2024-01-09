@@ -1,6 +1,6 @@
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
 import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsStrongPassword, Length } from "class-validator";
-import { GameType, Pos, Status, eventGame } from "./types";
+import { EventGame, GameType, Pos, Status } from "./types";
 
 
 export type LobbyDto = {
@@ -95,8 +95,8 @@ export class lobbyIDDto {
 }
 
 export class inputDto {
-	@IsEnum(eventGame)
-	input: eventGame;
+	@IsEnum(EventGame)
+	input: EventGame;
 }
 
 export class inputLobbyDto extends IntersectionType(lobbyIDDto, inputDto) {};

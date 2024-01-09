@@ -10,7 +10,7 @@ import {
   inputLobbyDto,
   lobbyIDDto,
 } from 'src/utils/Dtos';
-import { GameType, ValidSocket } from 'src/utils/types';
+import { EventGame, GameType, ValidSocket } from 'src/utils/types';
 import { AGateway } from 'src/websocket/Agateway';
 import { v4 as uuidv4 } from 'uuid';
 import { PongLobby } from './pong.lobby';
@@ -72,7 +72,7 @@ export class PongGateway extends AGateway {
     }
     console.info('createLobby', body);
     const id = uuidv4();
-    const lobby = new PongLobby(id, client, body.gameType, body.isLocal);
+    const lobby = new PongLobby(id, this.server, client, body.gameType, body.isLocal);
     this.listGame.set(id, lobby);
     this.server.to(client.id).emit('lobbyCreated', { lobby: id });
   }
@@ -82,7 +82,9 @@ export class PongGateway extends AGateway {
     @ConnectedSocket() client: ValidSocket,
     @Body() body: inputLobbyDto,
   ) {
-    console.info('input', body);
+    if (body.input === EventGame.SPACE_KEY)
+      this.listGame.get(body.lobby).startGame();
+
     // this.listGame.get(body.lobby).onInput(client, body.input);
   }
 
