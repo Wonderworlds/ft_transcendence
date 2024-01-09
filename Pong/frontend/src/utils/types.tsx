@@ -1,3 +1,8 @@
+export enum GameType {
+	classic = 'classic',
+	multiplayer = 'multiplayer',
+	tournament = 'Tournament',
+}
 
 export type Match = {
 	me: User;
@@ -9,7 +14,7 @@ export type Match = {
 export type Pos = {
 	x: number;
 	y: number;
-  };
+};
 
 export type User = {
 	pseudo: string;
@@ -20,7 +25,7 @@ export type User = {
 export type Msg = {
 	pseudo: string;
 	text: string;
-}
+};
 
 export enum Pages {
 	Root = '/',
@@ -45,9 +50,8 @@ export enum Status {
 	Offline = 'Offline',
 	DnD = 'Do Not Disturb',
 	Busy = 'Busy',
-  }
-  
-  
+}
+
 export enum eventGame {
 	UP = 'UP',
 	DOWN = 'DOWN',
@@ -56,4 +60,4 @@ export enum eventGame {
 	W_KEY = 'W_KEY',
 	S_KEY = 'S_KEY',
 	SPACE_KEY = 'SPACE_KEY',
-  }
+}

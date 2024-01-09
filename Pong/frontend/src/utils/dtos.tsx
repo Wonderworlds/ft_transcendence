@@ -1,4 +1,4 @@
-import { Pos, Status, eventGame } from './types';
+import { GameType, Pos, Status, eventGame } from './types';
 
 export type UserDto = {
 	username: string;
@@ -53,4 +53,13 @@ export type inputRoomDto = {
 
 export type Success = {
 	success: boolean;
+};
+
+export type LobbyDto = {
+	id: string;
+	owner: string;
+	gametype: GameType;
+	nbPlayers: number;
+	maxPlayers: number;
+	status: 'waiting' | 'playing';
 };
