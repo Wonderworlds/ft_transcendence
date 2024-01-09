@@ -30,8 +30,8 @@ export type UpdateGameDto = {
 	scorePRight: number;
 };
 
-export type roomDto = {
-	room: string;
+export type lobbyIDDto = {
+	lobby: string;
 };
 
 export type inputDto = {
@@ -46,9 +46,9 @@ export type TwoFADto = {
 	code: string;
 };
 
-export type inputRoomDto = {
+export type inputLobbyDto = {
 	input: eventGame;
-	room: string;
+	lobby: string;
 };
 
 export type Success = {
@@ -58,7 +58,7 @@ export type Success = {
 export type LobbyDto = {
 	id: string;
 	owner: string;
-	gametype: GameType;
+	gameType: GameType;
 	nbPlayers: number;
 	maxPlayers: number;
 	status: 'waiting' | 'playing';

@@ -6,8 +6,8 @@ import { getUser } from './UserContext';
 
 type WebSocketContextType = {
 	socket: Socket;
-	room: string;
-	setRoom: React.Dispatch<React.SetStateAction<string>>;
+	lobby: string;
+	setLobby: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const WebsocketContext = createContext({} as WebSocketContextType);
@@ -15,7 +15,7 @@ export const WebsocketContext = createContext({} as WebSocketContextType);
 export const WebsocketProvider = ({ children }: { children: React.ReactNode }) => {
 	const axios = getAxios();
 	const user = getUser();
-	const [room, setRoom] = useState<string>('');
+	const [lobby, setLobby] = useState<string>('');
 	const url = `${import.meta.env.VITE_BURL}`;
 	const [socket, setSocket] = useState<Socket>();
 
@@ -56,7 +56,7 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 	}, [axios.ready]);
 
 	return (
-		<WebsocketContext.Provider value={{ socket: socket!, room, setRoom }}>
+		<WebsocketContext.Provider value={{ socket: socket!, lobby, setLobby }}>
 			{children}
 		</WebsocketContext.Provider>
 	);

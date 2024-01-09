@@ -23,9 +23,9 @@ export abstract class AGateway
   @WebSocketServer() server: Server;
 
   constructor(
-    protected websocketService: WebsocketService,
+    protected readonly websocketService: WebsocketService,
     private readonly jwtService: JwtService,
-    private readonly userService: UsersService,
+    protected readonly userService: UsersService,
   ) {}
 
   afterInit(server: Server) {

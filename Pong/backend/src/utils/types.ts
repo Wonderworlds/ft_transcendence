@@ -15,7 +15,7 @@ export type ValidSocket = Socket & {
   name: string;
 };
 
-export enum roomProtection {
+export enum lobbyProtection {
   public = 'Public',
   private = 'Private',
   protected = 'Protected',
@@ -39,4 +39,10 @@ export type Pos = {
 export type UserJwt = {
   userId: number;
   username: string;
+}
+
+export enum GameType {
+	classic = 'classic',
+	multiplayer = 'multiplayer',
+	tournament = 'Tournament',
 }

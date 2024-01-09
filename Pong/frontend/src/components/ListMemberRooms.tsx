@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-const ListMembersRooms: React.FC = () => {
+const ListMembersLobbys: React.FC = () => {
 	return (
 		<div className="headerListMember">
 			<div className="divTitleMembers">
@@ -20,4 +20,4 @@ const ListMembersRooms: React.FC = () => {
 	);
 };
 
-export default ListMembersRooms;
+export default ListMembersLobbys;

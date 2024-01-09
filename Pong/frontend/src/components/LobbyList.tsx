@@ -1,103 +1,28 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../context/WebsocketContext';
 import { LobbyDto } from '../utils/dtos';
-import { GameType } from '../utils/types';
+import { Pages } from '../utils/types';
 
-const LobbyList: React.FC = () => {
-	const socket = getSocket();
+const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<LobbyDto>> }> = ({
+	setLobbyLocal,
+}) => {
+	const socketContext = getSocket();
+	const socket = socketContext.socket;
+	const navigate = useNavigate();
+	const [lobbyList, setLobbyList] = React.useState<LobbyDto[]>([]);
 
-	// React.useEffect(() => {
-	// 	if (!socket) return;
-	// 	socket.on('lobbyList', (res: any) => {
-	// 		console.log('lobbyList', { res });
-	// 	});
-	// 	return () => {
-	// 		socket.off('lobbyList');
-	// 	};
-	// }, []);
-
-	const lobbyData: LobbyDto[] = [
-		{
-			id: '1',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.classic,
-			status: 'waiting',
-		},
-		{
-			id: '2',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.multiplayer,
-			status: 'playing',
-		},
-		{
-			id: '3',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.tournament,
-			status: 'waiting',
-		},
-		{
-			id: '4',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.classic,
-			status: 'playing',
-		},
-		{
-			id: '5',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.tournament,
-			status: 'waiting',
-		},
-		{
-			id: '6',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.classic,
-			status: 'playing',
-		},
-		{
-			id: '7',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.classic,
-			status: 'playing',
-		},
-		{
-			id: '8',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.classic,
-			status: 'playing',
-		},
-		{
-			id: '9',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.classic,
-			status: 'playing',
-		},
-		{
-			id: '10',
-			owner: 'floran',
-			nbPlayers: 1,
-			maxPlayers: 2,
-			gametype: GameType.classic,
-			status: 'playing',
-		},
-	];
+	React.useEffect(() => {
+		if (!socket) return;
+		socket.on('lobbyList', (res: { lobbys: LobbyDto[]; lobbyLocal: LobbyDto }) => {
+			setLobbyList(res.lobbys);
+			setLobbyLocal(res.lobbyLocal);
+		});
+		socket.emit('getLobbys');
+		return () => {
+			socket.off('lobbyList');
+		};
+	}, [socket]);
 
 	const lobbyElement = (lobby: LobbyDto) => {
 		let statusStyle;
@@ -110,7 +35,7 @@ const LobbyList: React.FC = () => {
 
 		return (
 			<div key={lobby.id} className="divLobby" style={statusStyle}>
-				<p>{lobby.gametype}</p>
+				<p>{lobby.gameType}</p>
 				<p>{lobby.owner}</p>
 				<p>
 					{lobby.nbPlayers} / {lobby.maxPlayers}
@@ -118,7 +43,8 @@ const LobbyList: React.FC = () => {
 				<div className={lobby.status === 'waiting' ? 'buttonJoin' : 'buttonSpectate'}>
 					<button
 						onClick={() => {
-							socket.setRoom(lobby.id);
+							socketContext.setLobby(lobby.id);
+							navigate(Pages.Pong);
 						}}
 					>
 						{lobby.status === 'waiting' ? 'Join' : 'spectate'}
@@ -131,7 +57,7 @@ const LobbyList: React.FC = () => {
 	return (
 		// JSX code for your component's UI
 		<div className="divFindLobbyList">
-			{lobbyData.map((lobby) => {
+			{lobbyList.map((lobby) => {
 				return lobbyElement(lobby);
 			})}
 		</div>

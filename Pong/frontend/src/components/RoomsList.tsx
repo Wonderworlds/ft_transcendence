@@ -1,43 +1,43 @@
 import React from 'react';
 
-const RoomsList: React.FC = () => {
+const LobbysList: React.FC = () => {
 	return (
-		<div className="headerRoomsList">
+		<div className="headerLobbysList">
 			<div className="divToFriend">
 				{/* <Link to="/Chat"><h1 className='friends'>friends</h1></Link> */}
 			</div>
-			<div className="divTitleRooms">
-				<h1>rooms</h1>
+			<div className="divTitleLobbys">
+				<h1>lobbys</h1>
 			</div>
-			<div className="divDisplayRooms">
-				<p>name room</p>
-				<p>name room</p>
-				<p>name room</p>
-				<p>name room</p>
+			<div className="divDisplayLobbys">
+				<p>name lobby</p>
+				<p>name lobby</p>
+				<p>name lobby</p>
+				<p>name lobby</p>
 			</div>
-			<div className="divAddRooms">
-				<div className="divIdRooms">
+			<div className="divAddLobbys">
+				<div className="divIdLobbys">
 					<div className="divId">
 						<p>name</p>
 					</div>
-					<div className="divInputNameRoom">
-						<input type="text" id="idRoom" name="idRoom" className="name" />
+					<div className="divInputNameLobby">
+						<input type="text" id="idLobby" name="idLobby" className="name" />
 					</div>
 				</div>
-				<div className="divPswRooms">
+				<div className="divPswLobbys">
 					<div className="divPsw">
 						<p>password</p>
 					</div>
-					<div className="divInputPswRoom">
-						<input type="text" id="pswRoom" name="pswRoom" className="psw" />
+					<div className="divInputPswLobby">
+						<input type="text" id="pswLobby" name="pswLobby" className="psw" />
 					</div>
 				</div>
-				<div className="divSendRooms">
-					<button>add rooms</button>
+				<div className="divSendLobbys">
+					<button>add lobbys</button>
 				</div>
 			</div>
 		</div>
 	);
 };
 
-export default RoomsList;
+export default LobbysList;

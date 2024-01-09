@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Cancel from '../components/Cancel.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
-import { eventGame } from '../utils/types.tsx';
+import { lobbyIDDto } from '../utils/dtos.tsx';
+import { Pages, eventGame } from '../utils/types.tsx';
 
 export type Position = {
 	x: number;
@@ -14,6 +17,7 @@ export type UpdateGameDto = {
 };
 
 const Pong: React.FC = () => {
+	const navigate = useNavigate();
 	const socketContext = getSocket();
 	const socket = socketContext.socket;
 	const [pLeft, setPLeft] = useState<Position>({ x: 2, y: 50 });
@@ -22,6 +26,7 @@ const Pong: React.FC = () => {
 	const pressedKeys = new Set<string>();
 
 	useEffect(() => {
+		if (!socket) return;
 		socket.on('updateGame', (res: UpdateGameDto) => {
 			//console.log(res);
 			if (res) {
@@ -30,12 +35,18 @@ const Pong: React.FC = () => {
 				setBall(res.ball);
 			}
 		});
-		socket.emit('start', { room: socketContext.room });
+		socket.on('joinedLobby', (res: lobbyIDDto) => {
+			if (!res.lobby) navigate(Pages.WaitingMatch);
+			else if (!socketContext.lobby) socketContext.setLobby(res.lobby);
+		});
+		socket.emit('joinLobby', { lobby: socketContext.lobby });
 
 		return () => {
 			socket.off('updateGame');
+			socket.off('joinedLobby');
+			socket.emit('leaveLobby', { lobby: socketContext.lobby });
 		};
-	}, []);
+	}, [socket, socketContext.lobby]);
 
 	const handleKeyDown = (e: KeyboardEvent) => {
 		pressedKeys.add(e.key);
@@ -61,7 +72,7 @@ const Pong: React.FC = () => {
 	};
 
 	function sendInput(input: eventGame) {
-		socket.emit('input', { room: socketContext.room, input: input });
+		socket.emit('input', { lobby: socketContext.lobby, input: input });
 	}
 
 	window.requestAnimationFrame(gameLoop);
@@ -96,6 +107,11 @@ const Pong: React.FC = () => {
 
 	return (
 		<div className="pong">
+			<Link to={Pages.WaitingMatch}>
+				<div className="divCancel">
+					<Cancel />
+				</div>
+			</Link>
 			<div className="PONG_TITLE">
 				<h1>PONG GAME</h1>
 				<p>Position du joueur 1 : {pLeft.y}</p>

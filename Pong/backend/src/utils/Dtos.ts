@@ -1,6 +1,16 @@
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
 import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsStrongPassword, Length } from "class-validator";
-import { Pos, Status, eventGame } from "./types";
+import { GameType, Pos, Status, eventGame } from "./types";
+
+
+export type LobbyDto = {
+	id: string;
+	owner: string;
+	gameType: GameType;
+	nbPlayers: number;
+	maxPlayers: number;
+	status: 'waiting' | 'playing';
+};
 
 export class AuthDto  {
 	@IsString()
@@ -59,6 +69,12 @@ export class CodeDto {
 	password: string;
 }
 
+export class CreateLobbyDto {
+	@IsEnum(GameType)
+	gameType: GameType;
+	@IsBoolean()
+	isLocal: boolean;
+}
 export class MatchDto {
 	@IsNumber()
 	scoreP1: number;
@@ -73,9 +89,9 @@ export class MatchDto {
 	P2: string;
 }
 
-export class roomDto {
+export class lobbyIDDto {
 	@IsString()
-	room: string;
+	lobby: string;
 }
 
 export class inputDto {
@@ -83,7 +99,7 @@ export class inputDto {
 	input: eventGame;
 }
 
-export class inputRoomDto extends IntersectionType(roomDto, inputDto) {};
+export class inputLobbyDto extends IntersectionType(lobbyIDDto, inputDto) {};
 
 export class UpdateGameDto {
   ball: Pos;

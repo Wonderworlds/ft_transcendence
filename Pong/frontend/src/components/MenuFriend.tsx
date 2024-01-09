@@ -23,8 +23,8 @@ const MenuFriend: React.FC = () => {
 				</div>
 			</div>
 			<div className="divChangePageServer">
-				{/* <Link to="/Rooms">
-					<h1 className="disconnectText">rooms</h1>
+				{/* <Link to="/Lobbys">
+					<h1 className="disconnectText">lobbys</h1>
 				</Link> */}
 			</div>
 		</div>
