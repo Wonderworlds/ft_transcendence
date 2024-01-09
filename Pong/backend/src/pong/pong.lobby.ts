@@ -89,6 +89,7 @@ export class PongLobby {
 
   public startGame() {
     console.info('startGame');
+	if (this.status === 'playing') return;
     this.status = 'playing';
     if (this.isLocal && this.gameType === GameType.classic) {
       this.pLeft = this.owner;
@@ -99,5 +100,8 @@ export class PongLobby {
 
   public onInput(@ConnectedSocket() client: ValidSocket, input: string) {
     if (this.status !== 'playing') return;
+	if (this.isLocal && this.gameType === GameType.classic) {
+		this.pongInstance.onInput(client, input);
+	}
   }
 }

@@ -91,6 +91,8 @@ class Player {
   private score = 0;
   public client: ValidSocket;
   public isReady = false;
+
+
   constructor(client: ValidSocket, pos: Pos) {
     this.setPosition(pos);
     this.client = client;
@@ -135,6 +137,8 @@ export class Pong {
 
   protected server: Server;
   private ball = new Ball();
+  private running:boolean = true;
+  private scoreEnd = 2;
 
   p1: Player;
   p2: Player;
@@ -143,7 +147,7 @@ export class Pong {
     this.server = server;
     this.p1 = new Player(p1, { x: 2, y: 50 });
     this.p2 = new Player(p1, { x: 98, y: 50 });
-    this.loop();
+	this.loop();
   }
 
   getStateOfGame() {
@@ -157,32 +161,56 @@ export class Pong {
     return stateOfGame;
   }
 
+  checkScore() {
+	  if (this.p1.getScore() < this.scoreEnd && this.p2.getScore() < this.scoreEnd)
+		  return 0;
+	  else if (this.p1.getScore() === this.scoreEnd) {
+		  return 1;
+	  } else if (this.p2.getScore() === this.scoreEnd) {
+		  return 2;
+	  }
+  }
+
   loop = () => {
+	if (!this.running)
+		return;
+
     setTimeout(this.loop, 1000 / 48);
     this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
+
+	if (this.checkScore() !== 0) {
+		console.log('game over');
+		this.server.to(this.id).emit('gameOver', this.getStateOfGame());
+		this.stopLoop();
+		return;
+	}
+
   };
+
+  stopLoop() {
+	  this.running = false;
+  }
 
   private UpdatePaddlePos(paddle: Player, input: EventGame) {}
 
-  public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame) {
+  public onInput(@ConnectedSocket() client: ValidSocket, input: string) {
     //console.log(this.getStateOfGame());
+	if (!client || !this.running)
+		return;
+	if (client.id !== this.p1.client.id && client.id !== this.p2.client.id)
+	  return;
     switch (input) {
-      case EventGame.ARROW_UP:
-        this.p2.changePos(EventGame.UP);
-        return;
-      case EventGame.ARROW_DOWN:
-        this.p2.changePos(EventGame.DOWN);
-        return;
-      case EventGame.W_KEY:
-        this.p1.changePos(EventGame.UP);
-        return;
-      case EventGame.S_KEY:
-        this.p1.changePos(EventGame.DOWN);
-        return;
-      default:
-        console.info('the fuck');
-        return;
+		case 'ARROW_UP':
+			return this.p2.changePos(EventGame.UP);
+		case 'ARROW_DOWN':
+			return this.p2.changePos(EventGame.DOWN);
+		case 'W_KEY':
+			return this.p1.changePos(EventGame.UP);
+		case 'S_KEY':
+			return this.p1.changePos(EventGame.DOWN);
+		default:
+			return console.info('the fuck');
     }
   }
 }
