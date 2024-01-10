@@ -46,6 +46,10 @@ const Pong: React.FC = () => {
 			if (!res.lobby) navigate(Pages.WaitingMatch);
 			else if (!socketContext.lobby) socketContext.setLobby(res.lobby);
 		});
+		socket.on('gameOver', (res: UpdateGameDto) => {
+			if (!res) return;
+			console.log("GAME OVER");
+		});
 		socket.emit('joinLobby', { lobby: socketContext.lobby });
 
 		return () => {
@@ -105,7 +109,6 @@ const Pong: React.FC = () => {
 
 	useEffect(() => {}, [pLeft, pRight, ball]);
 
-	const PongDivStyle = {};
 	const PleftStyle = { width: '1.2%', height: '12%', left: `${pLeft.x}%`, top: `${pLeft.y}%` };
 	const PrightStyle = {
 		width: '1.2%',
@@ -124,14 +127,15 @@ const Pong: React.FC = () => {
 			</Link>
 			<div className="PONG_TITLE">
 				<div className="GameArea">
-					<div className="Score">
-						<div className="ScoreP1">{scorePLeft}</div>
-						<div className="ScoreP2">{scorePRight}</div>
-					</div>
-					<div className="PongDiv" style={PongDivStyle}>
+					<div className="PongDiv">
+						<div className="score">
+							<div className="leftscore">{scorePLeft}</div>
+							<div className="rightscore">{scorePRight}</div>
+						</div>
 						<div className="Pleft" style={PleftStyle}></div>
 						<div className="Pright" style={PrightStyle}></div>
 						<div className="Ball" style={BallStyle}></div>
+						<div className="sepline"></div>
 					</div>
 				</div>
 			</div>
