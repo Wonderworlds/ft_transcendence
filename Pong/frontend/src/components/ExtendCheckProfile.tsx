@@ -1,5 +1,5 @@
 import React from 'react';
-import DropdownMenu from "./DropdownMenu.tsx";
+import DropleftMenu from './DropLeftMenu';
 
 interface UserName
 {
@@ -15,7 +15,7 @@ const ExtendCheckProfile: React.FC<UserName> = ({pseudo}) => {
 		console.log("send invite");
 	};
 	
-	const dropdownActions = [
+	const dropleftActions = [
 	{
 		name: "checkProfile",
 		onClick: checkProfile,
@@ -28,7 +28,7 @@ const ExtendCheckProfile: React.FC<UserName> = ({pseudo}) => {
 
 	return (
 		<div className="headerExtendInChat">
-			<DropdownMenu dropdownButtonName={pseudo} dropdownActions={dropdownActions} />
+			<DropleftMenu dropleftButtonName={pseudo} dropleftActions={dropleftActions} />
 		</div>
 	);
 };
