@@ -128,7 +128,12 @@ const Friends: React.FC = () => {
 			</div>
 			<div className="divFriendsMiddle">
 				{isClicked ? (
-					<ProfilePlayer pseudo={isClicked} inviteGame={inviteGame} deleteFriend={deleteFriend} />
+					<ProfilePlayer
+						pseudo={isClicked}
+						inviteGame={inviteGame}
+						deleteFriend={deleteFriend}
+						isClicked={isClicked}
+					/>
 				) : null}
 			</div>
 			<div className="divFriendsRight">

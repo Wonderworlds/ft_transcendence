@@ -89,10 +89,7 @@ export class UsersService {
     return user.ppImg;
   }
 
-  async getMatchHistory(pseudo: string): Promise<Array<MatchDto>> {
-
-    const user = await this.findUserByPseudo(pseudo);
-    if (!user) throw new BadRequestException('User Not Found');
+  async getMatchHistory(user: User): Promise<Array<MatchDto>> {
     const matchs = await this.matchRepository.find({
       where: [{ winner: user }, { loser: user }],
       relations: ['winner', 'loser'],

@@ -32,6 +32,8 @@ export class UsersController {
   @Get(':pseudo/matchs')
   async getMatchHistoryByUser(@Param('pseudo') pseudo: string) {
     myDebug('getMatchHistoryByUser', pseudo);
-    return await this.userService.getMatchHistory(pseudo);
+    const user = await this.userService.findUserByPseudo(pseudo);
+    if (!user) throw new BadRequestException('Target Not Found');
+    return await this.userService.getMatchHistory(user);
   }
 }

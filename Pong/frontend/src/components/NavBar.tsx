@@ -1,10 +1,9 @@
-import PongTitle from './PongTitle.tsx';
-import Play from './Play.tsx';
-import Chat from './Chat.tsx';
 import React from 'react';
-import { getUser } from '../context/UserContext.tsx';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { getUser } from '../context/UserContext.tsx';
 import { Pages } from '../utils/types.tsx';
+import Play from './Play.tsx';
+import PongTitle from './PongTitle.tsx';
 
 const NavBar: React.FC = () => {
 	const user = getUser();
@@ -52,9 +51,13 @@ const NavBar: React.FC = () => {
 					>
 						<p>{user.pseudo}</p>
 					</div>
-					<div className="navChat" onClick={() => {}}>
-						<Chat />
-					</div>
+					<div
+						className="gg-log-off"
+						onClick={() => {
+							navigate(Pages.Root);
+							window.location.reload();
+						}}
+					></div>
 				</div>
 			</nav>
 		</header>

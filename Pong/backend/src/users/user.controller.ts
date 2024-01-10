@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -156,6 +157,14 @@ export class UserController {
   async getBlockList(@Req() req: any) {
     myDebug('getBlockList', req.user);
     return await this.userService.getBlockList(req.user.userId);
+  }
+
+  @Get('matchs')
+  async getMatchHistory(@Req() req: any) {
+    myDebug('getMatchHistory', req.user);
+    const user = await this.userService.findUserById(req.user.userId);
+    if (!user) throw new BadRequestException('User Not Found');
+    return await this.userService.getMatchHistory(user);
   }
 }
 

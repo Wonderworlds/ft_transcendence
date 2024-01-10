@@ -1,43 +1,26 @@
 import React from 'react';
 import { getAxios } from '../context/AxiosContext';
 import { MatchDto } from '../utils/dtos';
-import { GameType } from '../utils/types';
 import MatchInfo from './MatchInfo';
 
 interface ProfilePlayerProps {
 	pseudo: string;
+	isClicked: string;
 	inviteGame?: (pseudo: string) => void;
 	deleteFriend?: (pseudo: string) => void;
 }
 
-const ProfilePlayer: React.FC<ProfilePlayerProps> = ({ pseudo, inviteGame, deleteFriend }) => {
+const ProfilePlayer: React.FC<ProfilePlayerProps> = ({
+	pseudo,
+	inviteGame,
+	deleteFriend,
+	isClicked,
+}) => {
 	const axios = getAxios();
-	const [winRate, setWinRate] = React.useState(0);
+	const [winRate, setWinRate] = React.useState<string>('0');
 	const [wins, setWins] = React.useState(0);
 	const [loses, setLoses] = React.useState(0);
 	const [matchs, setMatchs] = React.useState<MatchDto[]>([]);
-	const match = {
-		scoreP1: 9,
-		scoreP2: 2,
-		P1: 'mauguin',
-		P2: 'albert',
-		won: true,
-		gameType: GameType.classic,
-	} as MatchDto;
-	const match2 = {
-		scoreP1: 9,
-		scoreP2: 2,
-		P2: 'mauguin',
-		P1: 'sacha',
-		won: false,
-		gameType: GameType.multiplayer,
-	} as MatchDto;
-
-	// const matchs1: MatchDto[] = [];
-	// for (let i = 0; i < 12; i++) {
-	// 	matchs.push(match);
-	// 	matchs.push(match2);
-	// }
 
 	function calculateStats(matchs: MatchDto[]) {
 		let wins = 0;
@@ -48,8 +31,9 @@ const ProfilePlayer: React.FC<ProfilePlayerProps> = ({ pseudo, inviteGame, delet
 		});
 		setWins(wins);
 		setLoses(loses);
-		if (wins + loses === 0) return setWinRate(0);
-		setWinRate((wins / (wins + loses)) * 100);
+		if (wins + loses === 0) return setWinRate('0');
+		const winRate: number = (wins / (wins + loses)) * 100;
+		setWinRate(winRate.toFixed(2));
 	}
 	React.useEffect(() => {
 		if (!axios.auth.token) return;
@@ -62,10 +46,9 @@ const ProfilePlayer: React.FC<ProfilePlayerProps> = ({ pseudo, inviteGame, delet
 			.catch((err: any) => {
 				alert(err.response?.data?.message);
 			});
-	}, [axios.ready]);
+	}, [axios.ready, isClicked]);
 
-	const hue = winRate.toString(10);
-	const hsl = `hsl(${hue}, 87%, 45%)`;
+	const hsl = `hsl(${winRate}, 87%, 45%)`;
 	return (
 		<div className="divProfilePlayer">
 			<p>{pseudo}</p>
