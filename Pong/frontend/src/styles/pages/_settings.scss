@@ -48,3 +48,13 @@ body {
 	background-color: #2A1054;
 	overflow: auto;
 }
+
+input {
+	border-radius: 1px;
+
+	padding: 0.6em 1.2em;
+	font-size: 0.8em;
+	font-weight: 500;
+	font-family: Inter;
+	transition: border-color 0.25s;
+}

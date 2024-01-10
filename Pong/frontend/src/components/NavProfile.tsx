@@ -1,17 +1,16 @@
 import React from 'react';
-import { TabOption } from '../utils/types';
 
 interface NavProfileProps {
-	tab: TabOption;
+	tab: string;
 	setTab: React.Dispatch<React.SetStateAction<any>>;
-	tabOptions: TabOption[];
+	tabOptions: string[];
 }
 
 const navProfileElement = (
-	tab: TabOption,
+	tab: string,
 	key: number,
-	setTab: React.Dispatch<React.SetStateAction<TabOption>>,
-	tabOption: TabOption
+	setTab: React.Dispatch<React.SetStateAction<string>>,
+	tabOption: string
 ) => {
 	return (
 		<div key={key} className="divButton">
