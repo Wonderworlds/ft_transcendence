@@ -3,9 +3,9 @@ import { AxiosContextProvider } from './context/AxiosContext.tsx';
 import { UserContextProvider } from './context/UserContext.tsx';
 import { WebsocketProvider } from './context/WebsocketContext.tsx';
 import Default from './pages/Default.tsx';
+import Game from './pages/Game.tsx';
 import Home from './pages/Home.tsx';
 import MainPage from './pages/MainPage.tsx';
-import Pong from './pages/Pong.tsx';
 import Settings from './pages/Settings.tsx';
 import Stats from './pages/Stats.tsx';
 import WaitingMatch from './pages/WaitingMatch.tsx';
@@ -25,7 +25,7 @@ const App = () => {
 								<Route path={Pages.Settings} element={<Settings />} />
 								<Route path={Pages.Stats} element={<Stats />} />
 								<Route path={Pages.WaitingMatch} element={<WaitingMatch />} />
-								<Route path={Pages.Pong} element={<Pong />} />
+								<Route path={Pages.Pong} element={<Game />} />
 								<Route path={Pages.Default} element={<Default />} />
 							</Routes>
 						</WebsocketProvider>

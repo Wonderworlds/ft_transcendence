@@ -1,29 +1,27 @@
 import React from 'react';
-import DropleftMenu from './DropLeftMenu';
+import DropleftMenu from './DropleftMenu';
 
-interface UserName
-{
+interface UserName {
 	pseudo: string;
 }
 
-const ExtendCheckProfile: React.FC<UserName> = ({pseudo}) => {
-
+const ExtendCheckProfile: React.FC<UserName> = ({ pseudo }) => {
 	const checkProfile = () => {
-		console.log("check profile");
-	}
-	const inviteToPlay = () => {
-		console.log("send invite");
+		console.log('check profile');
 	};
-	
+	const inviteToPlay = () => {
+		console.log('send invite');
+	};
+
 	const dropleftActions = [
-	{
-		name: "checkProfile",
-		onClick: checkProfile,
-	},
-	{
-		name: "inviteToPlay",
-		onClick: inviteToPlay,
-	},
+		{
+			name: 'checkProfile',
+			onClick: checkProfile,
+		},
+		{
+			name: 'inviteToPlay',
+			onClick: inviteToPlay,
+		},
 	];
 
 	return (

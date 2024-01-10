@@ -1,6 +1,6 @@
 import React from 'react';
-import GameDisplayTop from '../components/GameDisplayTop.tsx';
 import GameDisplay from '../components/GameDisplay.tsx';
+import GameDisplayTop from '../components/GameDisplayTop.tsx';
 
 const Game: React.FC = () => {
 	return (
@@ -11,8 +11,7 @@ const Game: React.FC = () => {
 			<div className="divDisplayGame">
 				<GameDisplay />
 			</div>
-			<div className="divDisplayBottom">
-			</div>
+			<div className="divDisplayBottom"></div>
 		</div>
 	);
 };

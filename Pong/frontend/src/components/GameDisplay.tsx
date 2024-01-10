@@ -1,24 +1,19 @@
 import React from 'react';
-import ChatInGame from './ChatInGame';
+import Pong from '../pages/Pong.tsx';
 import { TypeMatch } from '../utils/types.tsx';
+import ChatInGame from './ChatInGame';
 
 const GameDisplay: React.FC = () => {
-	let TypeGame = new Array<{typeMatch: TypeMatch}>();
-	let p = {type:"type: 1 VS 1", player:12, tournament:1} as TypeMatch;
+	let TypeGame = new Array<{ typeMatch: TypeMatch }>();
+	let p = { type: 'type: 1 VS 1', player: 12, tournament: 1 } as TypeMatch;
 
 	TypeGame.push({
-		typeMatch: p
+		typeMatch: p,
 	});
 
 	const titleTypeGame: any = TypeGame.map((item) => {
-		if (item.typeMatch.tournament == 0)
-			return (
-				<h1>Start Match</h1>
-			);
-		else
-			return (
-				<h1>Start Tournament</h1>
-			);
+		if (item.typeMatch.tournament == 0) return <h1>Start Match</h1>;
+		else return <h1>Start Tournament</h1>;
 	});
 
 	return (
@@ -27,7 +22,7 @@ const GameDisplay: React.FC = () => {
 			<div className="divDisplayGame">
 				<div className="display">
 					<div className="displayGame">
-
+						<Pong />
 					</div>
 					<div className="displayTypeGame">
 						<div className="leftDisplayTypeGame">
@@ -40,9 +35,7 @@ const GameDisplay: React.FC = () => {
 							</div>
 						</div>
 						<div className="RightDisplayTypeGame">
-							<div className="divTitleReady">
-								{titleTypeGame}
-							</div>
+							<div className="divTitleReady">{titleTypeGame}</div>
 							<div className="divButtonReady">
 								<button>Ready</button>
 							</div>
