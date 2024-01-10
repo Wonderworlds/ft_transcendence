@@ -47,7 +47,6 @@ export enum Pages {
 export enum TabOption {
 	Friend = 'Friends',
 	History = 'MatchHistory',
-	jikenifme = 'jikenifme',
 }
 
 export enum Status {
