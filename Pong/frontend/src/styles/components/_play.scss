@@ -7,8 +7,7 @@
 	
 	.playText {
 		font-weight: 400;
-		font-size: 1.5vw;
-		margin: auto;
+		font-size: clamp(10px, 3vw, 30px);
 		text-align: center;
 		color: purple;
 

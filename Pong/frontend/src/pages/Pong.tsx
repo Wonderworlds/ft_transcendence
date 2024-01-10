@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Cancel from '../components/Cancel.tsx';
+import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../context/WebsocketContext.tsx';
 import { lobbyIDDto } from '../utils/dtos.tsx';
 import { EventGame, Pages } from '../utils/types.tsx';
@@ -116,24 +115,11 @@ const Pong: React.FC = () => {
 	const BallStyle = { width: '15px', height: '15px', left: `${ball.x}%`, top: `${ball.y}%` };
 
 	return (
-		<div className="pong">
-			<Link to={Pages.WaitingMatch}>
-				<div className="divCancel">
-					<Cancel />
-				</div>
-			</Link>
-			<div className="PONG_TITLE">
-				<div className="GameArea">
-					<div className="Score">
-						<div className="ScoreP1">{scorePLeft}</div>
-						<div className="ScoreP2">{scorePRight}</div>
-					</div>
-					<div className="PongDiv" style={PongDivStyle}>
-						<div className="Pleft" style={PleftStyle}></div>
-						<div className="Pright" style={PrightStyle}></div>
-						<div className="Ball" style={BallStyle}></div>
-					</div>
-				</div>
+		<div className="GameArea">
+			<div className="PongDiv" style={PongDivStyle}>
+				<div className="Pleft" style={PleftStyle}></div>
+				<div className="Pright" style={PrightStyle}></div>
+				<div className="Ball" style={BallStyle}></div>
 			</div>
 		</div>
 	);

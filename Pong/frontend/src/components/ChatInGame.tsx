@@ -1,14 +1,19 @@
 import React from 'react';
 import { Msg } from '../utils/types.tsx';
 import ProfileInfo from './ProfileInfo.tsx'
+import SystemInfo from './SystemInfo.tsx';
 
 const ChatInGame: React.FC = () => {
 	let FriendsList = new Array<{msg: Msg}>();
-	let p1 = {pseudo:"Ben", text: "test"} as Msg;
-	let p2 = {pseudo:"Jean", text: "test"} as Msg;
+	let p1 = {pseudo:"Tao", text: "test", type:1} as Msg;
+	let p2 = {pseudo:"sneaky Tao", text: "test", type:2} as Msg;
+	let p3 = {pseudo:"system", text: "get ready for next pong", type:0} as Msg;
 
 	FriendsList.push({
 		msg: p1
+	});
+	FriendsList.push({
+		msg: p3
 	});
 	FriendsList.push({
 		msg: p2
@@ -21,9 +26,14 @@ const ChatInGame: React.FC = () => {
 	});
 
 	const chatElement: any = FriendsList.map((item) => {
-		return (
-			<ProfileInfo pseudo={item.msg.pseudo} text={item.msg.text} />
-		);
+		if (item.msg.type >= 1)
+			return (
+				<ProfileInfo pseudo={item.msg.pseudo} text={item.msg.text} type={item.msg.type}/>
+			);
+		else
+			return (
+				<SystemInfo text={item.msg.text}/>
+			);
 	});
 
 	return (

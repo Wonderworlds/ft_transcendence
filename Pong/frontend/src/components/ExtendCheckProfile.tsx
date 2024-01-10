@@ -1,34 +1,32 @@
 import React from 'react';
-import DropdownMenu from "./DropdownMenu.tsx";
+import DropleftMenu from './DropleftMenu';
 
-interface UserName
-{
+interface UserName {
 	pseudo: string;
 }
 
-const ExtendCheckProfile: React.FC<UserName> = ({pseudo}) => {
-
+const ExtendCheckProfile: React.FC<UserName> = ({ pseudo }) => {
 	const checkProfile = () => {
-		console.log("check profile");
-	}
-	const inviteToPlay = () => {
-		console.log("send invite");
+		console.log('check profile');
 	};
-	
-	const dropdownActions = [
-	{
-		name: "checkProfile",
-		onClick: checkProfile,
-	},
-	{
-		name: "inviteToPlay",
-		onClick: inviteToPlay,
-	},
+	const inviteToPlay = () => {
+		console.log('send invite');
+	};
+
+	const dropleftActions = [
+		{
+			name: 'checkProfile',
+			onClick: checkProfile,
+		},
+		{
+			name: 'inviteToPlay',
+			onClick: inviteToPlay,
+		},
 	];
 
 	return (
 		<div className="headerExtendInChat">
-			<DropdownMenu dropdownButtonName={pseudo} dropdownActions={dropdownActions} />
+			<DropleftMenu dropleftButtonName={pseudo} dropleftActions={dropleftActions} />
 		</div>
 	);
 };

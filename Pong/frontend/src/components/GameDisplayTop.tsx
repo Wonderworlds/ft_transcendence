@@ -4,23 +4,15 @@ const GameDisplayTop: React.FC = () => {
 	return (
 		<div className="headerGameDisplayTop">
 			<div className="divNameFirstPLayer">
-				<div className="divPictureFirstPLayer">
-					<input type="image" id="image" alt="" src="../../pp_1.png" className="pp1"/>
-				</div>
-				<div className="divPutNameFirstPlayer">
-					<h1>First</h1>
-				</div>
+				<img src="../../pp_1.png" />
+				<h1>First</h1>
 			</div>
 			<div className="divPutVersus">
 				<h1>VS</h1>
 			</div>
 			<div className="divNameSecondPLayer">
-				<div className="divPutNameSecondPlayer">
-					<h1>Second</h1>
-				</div>
-				<div className="divPictureSecondPLayer">
-					<input type="image" id="image" alt="" src="../../pp_1.png" className="pp2"/>
-				</div>
+				<h1>Second</h1>
+				<img src="../../pp_1.png" />
 			</div>
 		</div>
 	);

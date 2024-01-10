@@ -10,7 +10,7 @@
 	justify-content: space-between;
 	align-items: center;
 	color: white;
-	font-size: 1vw;
+	font-size: clamp(10px, 2vw, 20px);
 	box-shadow: 0 15px 35px rgba(93, 50, 93, 0.562), 0 5px 15px rgba(0, 0, 0, 0.07);
 
 	* {
@@ -23,7 +23,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
-		margin-left: 0.5%;
+		margin-left: 3%;
 
 		h1:hover {
 			color: #ff00aa99;
@@ -44,12 +44,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-		margin-right: 2%;
 		gap: 2%;
 
 		p {
+			font-size: clamp(10px, 2vw, 20px);
 			color: white;
-
 			&:hover {
 				color: #ff00aa99;
 			}
@@ -72,16 +71,10 @@
 			margin: 3%;
 		}
 
-		.navChat {
-			width: auto;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 1%;
-		}
+		
 	}
 	.gg-log-off {
+		margin-right: 4%;
 		box-sizing: border-box;
 		position: relative;
 		display: block;

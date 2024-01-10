@@ -16,6 +16,12 @@ export type Pos = {
 	y: number;
 };
 
+export type TypeMatch = {
+	type: string;
+	player: number;
+	tournament: number;
+}
+
 export type User = {
 	pseudo: string;
 	ppImg: string;
@@ -25,7 +31,8 @@ export type User = {
 export type Msg = {
 	pseudo: string;
 	text: string;
-};
+	type: number;
+}
 
 export enum Pages {
 	Root = '/',
