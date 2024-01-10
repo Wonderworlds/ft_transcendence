@@ -29,8 +29,9 @@ export class AuthService {
     found = await this.userService.findUserByPseudo(pseudo);
     let step = 0;
     while (found) {
-      pseudo.concat(step.toString());
+      pseudo = pseudo.concat(step.toString());
       found = await this.userService.findUserByPseudo(pseudo);
+      console.info(found);
       step++;
     }
     userToLog.password = await bcrypt.hash(userToLog.password, 10);
@@ -38,7 +39,7 @@ export class AuthService {
       ...userToLog,
       pseudo: pseudo,
       status: Status.Offline,
-      ppImg: 'pp_default.png',
+      ppImg: `${process.env.VITE_BURL}/public/pp_default.png`,
     };
     return await this.userService.createUserDB(newUser);
   }

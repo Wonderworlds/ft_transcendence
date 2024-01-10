@@ -1,0 +1,95 @@
+.divProfilePlayer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-center;
+	height: 100%;
+	width: 100%;
+
+	> p {
+		color: #d7a20f;
+				font-weight: 600;
+				font-size: 3vw;
+				font-family: zendots;
+	}
+
+}
+
+.divProfilePlayerStats {
+	margin-top: 3%;
+	display: flex;
+	flex-direction: row;
+	height: 10%;
+	width: 95%;
+	justify-content: space-around;
+	> p {
+		color: #d7a20f;
+				font-weight: 500;
+				font-size: 3vw;
+				font-family: zendots;
+	}
+}
+
+.divProfilePlayerMatchs {
+	display: flex;
+	flex-direction: column;
+	height: auto;
+	min-height: 10%;
+	width: 85%;
+	margin: 3%;
+	border-radius: 1rem;
+	background-color: rgba(128, 128, 128, 0.749);
+	overflow-y: auto;
+}
+
+.divProfilePlayerButton {
+	height: auto;
+	width: 60%;
+	display: flex;
+	justify-content: space-between;
+	align-items: end;
+	margin-bottom: 1%;
+	.divProfilePlayerButtonInvite {
+
+		> button {
+			border: 5px solid;
+			font-family: zendots;
+			line-height: 1.2;
+			margin: 0.5em;
+			padding: 0.5em 1em;
+			color: #06a52b;
+			transition: 0.25s;
+			font-size: 2.2vh;
+			border-color: var(--color);
+			font-weight: 500;
+	
+			&:hover,
+			&:focus {
+				border-color: var(--hover);
+				color: #fff;
+			}
+		}
+	
+	}
+	.divProfilePlayerButtonDelete {
+
+		> button {
+			border: 5px solid;
+			font-family: zendots;
+			line-height: 1.2;
+			margin: 0.5em;
+			padding: 0.5em 1em;
+			color: #8a1111;
+			transition: 0.25s;
+			font-size: 2.2vh;
+			font-weight: 500;
+	
+			&:hover {
+				color: #fff;
+			}
+		}
+		
+	}
+
+
+}

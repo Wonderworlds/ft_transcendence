@@ -2,51 +2,34 @@ import React from 'react';
 import { TabOption } from '../utils/types';
 
 interface NavProfileProps {
-	settab: React.Dispatch<React.SetStateAction<any>>;
+	tab: TabOption;
+	setTab: React.Dispatch<React.SetStateAction<any>>;
+	tabOptions: TabOption[];
 }
 
-const NavProfile: React.FC<NavProfileProps> = ({ settab }) => {
+const navProfileElement = (
+	tab: TabOption,
+	key: number,
+	setTab: React.Dispatch<React.SetStateAction<TabOption>>,
+	tabOption: TabOption
+) => {
 	return (
-		<div className="headerNavProfile">
-			<nav className="navProfile">
-				<div>
-					<div
-						onClick={() => {
-							settab(TabOption.History);
-						}}
-					>
-						<p>Match History</p>
-					</div>
-				</div>
-				<div>
-					<div
-						onClick={() => {
-							settab(TabOption.Achievement);
-						}}
-					>
-						<p>Achievement</p>
-					</div>
-				</div>
-				<div>
-					<div
-						onClick={() => {
-							settab(TabOption.Friend);
-						}}
-					>
-						<p>Friends</p>
-					</div>
-				</div>
-				<div>
-					<div
-						onClick={() => {
-							settab(TabOption.Leaderboard);
-						}}
-					>
-						<p>Leaderboard</p>
-					</div>
-				</div>
-			</nav>
+		<div key={key} className="divButton">
+			<button
+				className={tab === tabOption ? 'ButtonNavProfileOn' : 'ButtonNavProfileOff'}
+				onClick={() => {
+					setTab(tabOption);
+				}}
+			>
+				<p>{tabOption}</p>
+			</button>
 		</div>
+	);
+};
+
+const NavProfile: React.FC<NavProfileProps> = ({ setTab, tab, tabOptions }) => {
+	return (
+		<>{tabOptions.map((tabOption, index) => navProfileElement(tab, index, setTab, tabOption))}</>
 	);
 };
 

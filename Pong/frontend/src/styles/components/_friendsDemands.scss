@@ -1,0 +1,47 @@
+.divFriendDemandsBox {
+	width: 100%;
+	height: 50px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-top: 2%;
+	background: rgba(128, 128, 128, 0.68);
+	border-radius: 2rem;
+	box-shadow: 0 15px 35px #060f6c8f, 0 5px 15px #480a5a12;
+	justify-content: space-between;
+
+	.divFriendDemandsSender {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: row;
+		justify-content: end;
+		align-items: center;
+		> p {
+			margin: 2px;
+			font-size: clamp(10px, 1.2vw, 20px);
+			font-family: Inter;
+			color: white;
+		}
+		> img {
+			max-width: 45px;
+			max-height: 45px;
+			border-radius: 50%;
+			margin-left: 2px;
+		}
+	}
+	.divFriendDemandsButton {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: row;
+		justify-content: start;
+		align-items: center;
+		> p {
+			margin: 2px;
+			font-size: clamp(1.8vh, 1.5vw, 2.5vh);
+			font-family: Inter;
+			color: white;
+		}
+	}
+}

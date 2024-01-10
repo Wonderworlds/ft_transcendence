@@ -82,8 +82,10 @@ export class PongGateway extends AGateway {
     @ConnectedSocket() client: ValidSocket,
     @Body() body: inputLobbyDto,
   ) {
-    if (body.input === EventGame.SPACE_KEY)
-      this.listGame.get(body.lobby).startGame();
+    if (body.input === EventGame.SPACE_KEY )
+		this.listGame.get(body.lobby).startGame();
+	else
+		this.listGame.get(body.lobby).onInput(client, body.input);
 
     // this.listGame.get(body.lobby).onInput(client, body.input);
   }
@@ -145,4 +147,5 @@ export class PongGateway extends AGateway {
     console.info('onStart', body);
     this.listGame.get(body.lobby).startGame();
   }
+
 }

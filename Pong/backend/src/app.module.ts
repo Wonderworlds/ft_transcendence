@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { OtpModule } from './2FA/otp.module';
@@ -41,14 +41,30 @@ import { UsersModule } from './users/users.module';
     PongModule,
     ThrottlerModule.forRoot([
       {
-        ttl: 10000,
-        limit: 5,
+        name: 'veryShort',
+        ttl: 200,
+        limit: 1,
       },
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 20
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 100
+      }
     ]),
     AuthModule,
     OtpModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_GUARD, useClass: ThrottlerGuard}],
 })
 export class AppModule {}

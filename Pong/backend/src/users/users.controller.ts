@@ -6,6 +6,7 @@ import {
   Param,
   Post
 } from '@nestjs/common';
+import { myDebug } from 'src/utils/DEBUG';
 import { LimitedUserDto, MatchDto } from 'src/utils/Dtos';
 import { UsersService } from './users.service';
 
@@ -30,6 +31,9 @@ export class UsersController {
 
   @Get(':pseudo/matchs')
   async getMatchHistoryByUser(@Param('pseudo') pseudo: string) {
-    return await this.userService.getMatchHistory(pseudo);
+    myDebug('getMatchHistoryByUser', pseudo);
+    const user = await this.userService.findUserByPseudo(pseudo);
+    if (!user) throw new BadRequestException('Target Not Found');
+    return await this.userService.getMatchHistory(user);
   }
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -49,6 +50,7 @@ export class UserController {
   @Put('/pseudo')
   async UpdateUserPseudo(@Body() body: UserDtoPseudo, @Req() req: any): Promise<Success | HttpException> {
     myDebug('UpdateUserPseudo', req.user, body);
+    body.pseudo = body.pseudo.toLowerCase();
     const res = await this.userService.updateUserById(req.user.userId, body);
     if (res.affected) return { success: true };
     return { success: false };
@@ -82,8 +84,9 @@ export class UserController {
       )
 	@Post('/uploadAvatar')
   async uploadedFile(@Req() req: any, @UploadedFile() file) {
-    await this.userService.updateUserById(req.user.userId, {ppImg: file.filename});
-    return {src: file.filename};
+    const fileNamePath = `${process.env.VITE_BURL}/public/${file.filename}`;
+    await this.userService.updateUserById(req.user.userId, {ppImg: fileNamePath});
+    return {src: fileNamePath};
     }
 
   
@@ -154,6 +157,14 @@ export class UserController {
   async getBlockList(@Req() req: any) {
     myDebug('getBlockList', req.user);
     return await this.userService.getBlockList(req.user.userId);
+  }
+
+  @Get('matchs')
+  async getMatchHistory(@Req() req: any) {
+    myDebug('getMatchHistory', req.user);
+    const user = await this.userService.findUserById(req.user.userId);
+    if (!user) throw new BadRequestException('User Not Found');
+    return await this.userService.getMatchHistory(user);
   }
 }
 

@@ -20,6 +20,7 @@ import { SkipAuth } from './utils';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+
   @HttpCode(200)
   @SkipAuth()
   @Post('/signup')

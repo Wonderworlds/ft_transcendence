@@ -13,12 +13,13 @@ const UpdateUser: React.FC<ChangeNameProps> = () => {
 	const [cb, setCB] = React.useState<boolean>(user.doubleAuth);
 
 	const handleSubmit = () => {
-		if (pseudo === '' || pseudo === user.pseudo) return;
+		const pseudoLC = pseudo.toLowerCase();
+		if (pseudoLC === '' || pseudoLC === user.pseudo) return alert('Invalid pseudo');
 		client
-			.put('/me/pseudo', { pseudo: pseudo })
+			.put('/me/pseudo', { pseudo: pseudoLC })
 			.then((res: AxiosResponse) => {
-				if (res.data?.success) user.setPseudo(pseudo);
-				alert('pseudo changed to ' + pseudo);
+				if (res.data?.success) user.setPseudo(pseudoLC);
+				alert('pseudo changed to ' + pseudoLC);
 			})
 			.catch((err) => {
 				alert('Error: ' + err.response.data?.message);
@@ -39,11 +40,12 @@ const UpdateUser: React.FC<ChangeNameProps> = () => {
 	}, [cb]);
 
 	const handleSubmit2FA = () => {
+		const emailLC = email.toLowerCase();
 		client
-			.put('/me/email', { email: email })
+			.put('/me/email', { email: emailLC })
 			.then((res: AxiosResponse) => {
-				if (res.data?.success) user.setEmail(email);
-				alert('email changed to ' + email);
+				if (res.data?.success) user.setEmail(emailLC);
+				alert('email changed to ' + emailLC);
 			})
 			.catch((err) => {
 				alert('Error: ' + err.response.data?.message);

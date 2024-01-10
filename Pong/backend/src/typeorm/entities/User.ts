@@ -17,7 +17,7 @@ export class User {
 	@Column({ unique: true})
 	pseudo: string;
 
-	@Column({default: 'pp_default.png'})
+	@Column({default: `${process.env.VITE_BURL}/public/pp_default.png`})
 	ppImg: string;
 
 	@Column({default: false})

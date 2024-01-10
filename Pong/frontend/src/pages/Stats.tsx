@@ -1,31 +1,24 @@
 import React from 'react';
-import NavProfile from '../components/NavProfile.tsx';
 import ActiveInfo from '../components/ActiveInfo.tsx';
 import NavBar from '../components/NavBar.tsx';
+import NavProfile from '../components/NavProfile.tsx';
 import { TabOption } from '../utils/types.tsx';
 
 const Stats: React.FC = () => {
-	const [tab, settab] = React.useState(TabOption.Null);
+	const [tab, setTab] = React.useState(TabOption.Friend);
+	const values = Object.values(TabOption);
 
 	return (
 		<div className="stats">
-			<div className="divNav">
-				<NavBar />
-			</div>
-			<div className="top">
-				<div className="divRatio">
-					<p className="win">Win: 7</p>
-					<p className="loose">Loose: 7</p>
+			<NavBar />
+			<div className="divProfile">
+				<div className="divTopTitle">
+					<h1>Profile</h1>
 				</div>
-				<div className="divRank">
-					<p className="rank">Rank: Silver</p>
+				<div className="divMiddleButton">
+					<NavProfile setTab={setTab} tab={tab} tabOptions={values} />
 				</div>
-			</div>
-			<div className="bottom">
-				<div className="divNavProfile">
-					<NavProfile settab={settab} />
-				</div>
-				<div className="divActiveInfo">
+				<div className="divBottomInfo">
 					<ActiveInfo tab={tab} />
 				</div>
 			</div>

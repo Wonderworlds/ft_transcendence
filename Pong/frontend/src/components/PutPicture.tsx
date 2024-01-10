@@ -23,7 +23,7 @@ const PutPicture: React.FC = () => {
 				},
 			})
 			.then((res: any) => {
-				user.setPPSrc(res.data.src);
+				user.setppImg(res.data.src);
 				setFile(null);
 			})
 			.catch((err) => {

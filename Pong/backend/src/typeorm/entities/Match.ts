@@ -1,4 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { GameType } from "src/utils/types";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 
 @Entity({ name: 'match' })
@@ -26,6 +27,9 @@ export class Match {
 	@Column()
 	scoreP2: number;
 
+	@Column()
+	gameType: GameType;
+	
 	@Column({default: new Date()})
 	createdAt: Date;
 }

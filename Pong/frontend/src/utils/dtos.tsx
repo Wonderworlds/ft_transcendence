@@ -14,6 +14,8 @@ export type MatchDto = {
 	scoreP2: number;
 	P1: string;
 	P2: string;
+	won: boolean;
+	gameType: GameType;
 };
 
 export type AuthDto = {

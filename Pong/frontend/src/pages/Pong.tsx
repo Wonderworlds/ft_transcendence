@@ -14,6 +14,8 @@ export type UpdateGameDto = {
 	ball: Position;
 	pLeft: Position;
 	pRight: Position;
+	scorePLeft: number;
+	scorePRight: number;
 };
 
 const Pong: React.FC = () => {
@@ -23,6 +25,9 @@ const Pong: React.FC = () => {
 	const [pLeft, setPLeft] = useState<Position>({ x: 2, y: 50 });
 	const [pRight, setPRight] = useState<Position>({ x: 98, y: 50 });
 	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
+	const [scorePLeft, setScorePLeft] = useState<number>(0);
+	const [scorePRight, setScorePRight] = useState<number>(0);
+
 	const pressedKeys = new Set<string>();
 
 	useEffect(() => {
@@ -33,6 +38,8 @@ const Pong: React.FC = () => {
 				setPLeft(res.pLeft);
 				setPRight(res.pRight);
 				setBall(res.ball);
+				setScorePLeft(res.scorePLeft);
+				setScorePRight(res.scorePRight);
 			}
 		});
 		socket.on('joinedLobby', (res: lobbyIDDto) => {
@@ -116,10 +123,11 @@ const Pong: React.FC = () => {
 				</div>
 			</Link>
 			<div className="PONG_TITLE">
-				<h1>PONG GAME</h1>
-				<p>Position du joueur 1 : {pLeft.y}</p>
-				<p>Position du joueur 2 : {pRight.y}</p>
 				<div className="GameArea">
+					<div className="Score">
+						<div className="ScoreP1">{scorePLeft}</div>
+						<div className="ScoreP2">{scorePRight}</div>
+					</div>
 					<div className="PongDiv" style={PongDivStyle}>
 						<div className="Pleft" style={PleftStyle}></div>
 						<div className="Pright" style={PrightStyle}></div>
