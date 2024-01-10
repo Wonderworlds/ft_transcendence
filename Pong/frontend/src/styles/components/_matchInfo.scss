@@ -1,0 +1,28 @@
+
+.divMatchInfoWon {
+	background-color: rgba(0, 128, 0, 0.45);
+	height: auto;
+	align-items: center;
+	border-radius: 1rem;
+	margin: 0.2%;
+}
+
+.divMatchInfoLost {
+	background-color: rgba(128, 0, 0, 0.45);
+	height: auto;
+	align-items: center;
+	border-radius: 1rem;
+	margin: 0.2%;
+}
+.divMatchInfo {
+	display: flex;
+	justify-content: space-around;
+	flex-direction: row;
+	> p {
+		margin: 2px;
+		color: white;
+		font-weight: 500;
+		font-size: clamp(10px, 1.5vw, 20px);
+		font-family: zendots;
+	}
+}

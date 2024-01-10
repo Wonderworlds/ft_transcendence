@@ -1,80 +1,78 @@
-.stats {	
-	
+.stats {
 	/* Panorama */
-	
+
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	left: 0%;
 	top: 0%;
-	
+
 	background-image: url(background.png);
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
-
 	/* Items */
 
-	display: flex;
-	flex-direction: column;
-
-}
-
-.top {
-	width: 100%;
-	height: 30%;
-	display: flex;
-	margin-top: 2.5%;
-	
-	p {
-		font-family: 'Inter';
-		font-size: 4vh;
-	}
-
-	.divRatio {
-		width: 50%;
-		height: 100%;
+	.divProfile {
 		display: flex;
+		align-items: center;
 		flex-direction: column;
-		justify-content: space-around;
-		align-items: center;
-		color: white;
-		padding-top: 2%;
-		padding-bottom: 2%;
+		.divTopTitle {
+			margin-top: 40px;
+			h1 {
+				color: #d7a20f;
+				font-weight: 600;
+				font-size: 5vw;
+				font-family: zendots;
+			}
+		}
+		.divMiddleButton {
+			width: 70%;
+			display: flex;
+			margin: 40px;
+			.divButton {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-around;
+				align-items: center;
+				.ButtonNavProfileOff {
+					font-family: zendots;
+					font-size: clamp(12px, 2vw, 20px);
+					font-weight: 400;
+					color: #e4dce291;
+					background-color: #4d02415f;
+					border-radius: 1rem;
+					transition: 0.5s;
+					&:hover,
+					&:focus {
+						background-color: #4d024191;
+						border-radius: 2rem;
+						color: #d7a20f;
+					border: 3px solid;
+					box-shadow: 0 15px 35px rgba(93, 50, 93, 0.562), 0 5px 15px #d7a20f;
+				}
+				}
+				.ButtonNavProfileOn {
+					border: 3px solid;
+					font-family: zendots;
+					font-size: clamp(12px, 2vw, 20px);
+					font-weight: 600;
+					background-color: #293877e2;
+					border-radius: 2rem;
+					color: #d7a20f;
+					box-shadow: 0 15px 35px rgba(93, 50, 93, 0.562), 0 5px 15px #d7a20f;
+					
+				}
+			}
+		}
+		.divBottomInfo {
+			position: absolute;
+			left: 0%;
+			bottom: 0%;
+			width: 100%;
+			height: 60%;
+			background-color: #1b2137b6;
+			border-top: 5px solid #031554e2;
 	}
-	
-	.divRank {
-		width: 50%;
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		color: white;
-	}
-}
-
-.bottom {
-	width: 100%;
-	height: 61.5%;
-	display: flex;
-	background-color: #1616169b ;
-
-	p {
-		font-family: 'Inter';
-		font-size: 2.5vh;
-	}
-
-	.divNavProfile {
-		width: 15%;
-		height: 100%;
-		display: flex;
-		border-style: none ridge none none;
-		overflow-x: scroll;
-	}
-
-	.divActiveInfo {
-		display: flex;
-		width: 85%;
-		height: 100%;
 	}
 }

@@ -38,17 +38,13 @@ export enum Pages {
 }
 
 export enum TabOption {
-	Null = '',
-	History = 'matchHistory',
-	Achievement = 'achievement',
-	Friend = 'friend',
-	Leaderboard = 'leaderboard',
+	Friend = 'Friends',
+	History = 'MatchHistory',
 }
 
 export enum Status {
 	Online = 'Online',
 	Offline = 'Offline',
-	DnD = 'Do Not Disturb',
 	Busy = 'Busy',
 }
 

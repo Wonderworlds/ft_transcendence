@@ -87,6 +87,13 @@ export class MatchDto {
 
 	@IsString()
 	P2: string;
+
+	@IsBoolean()
+	won: boolean;
+
+	@IsEnum(GameType)
+	gameType: GameType;
+
 }
 
 export class lobbyIDDto {

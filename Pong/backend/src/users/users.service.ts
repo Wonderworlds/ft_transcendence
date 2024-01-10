@@ -208,7 +208,7 @@ export class UsersService {
       'friendsPending',
     ], ['friends', 'friendsPending', 'id']);
     if (!friend) throw new BadRequestException('Target Not Found');
-    if (friend === user)
+    if (friend.id === user.id)
       throw new BadRequestException("You can't add yourself");
     if (!this.isUserInArray(friend, user.friendsDemands))
       throw new BadRequestException(
@@ -232,8 +232,6 @@ export class UsersService {
       'friendsPending',
     ], ['friendsPending', 'id']);
     if (!friend) throw new BadRequestException('Target Not Found');
-    if (friend === user)
-      throw new BadRequestException("You can't add yourself");
     if (!this.isUserInArray(friend, user.friendsDemands))
       throw new BadRequestException(
         "You don't have a friend demand from this user",
@@ -242,13 +240,15 @@ export class UsersService {
   }
 
   async sendFriendDemand(id: number, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ id: id }, ['friendsPending'], ['friendsPending', 'id']);
+    const user = await this.findOneUser({ id: id }, ['friends', 'friendsPending'], ['friends', 'friendsPending', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({ pseudo: pseudo }, [
       'friendsDemands',
     ], ['friendsDemands', 'id']);
-    if (!friend) throw new BadRequestException('Target Not Found');
-    if (friend === user)
+    if (this.isUserInArray(friend, user.friends)) 
+      throw new BadRequestException("Already friends");
+      if (!friend) throw new BadRequestException('Target Not Found');
+    if (friend.id === user.id)
       throw new BadRequestException("You can't add yourself");
     const friendsPending: User[] = user.friendsPending;
     friendsPending.push(friend);
@@ -264,7 +264,6 @@ export class UsersService {
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({ pseudo: pseudo }, ['friends'], ['friends', 'id']);
     if (!friend) throw new BadRequestException('Target Not Found');
-    if (friend === user)
       throw new BadRequestException("You can't delete yourself");
     if (!this.isUserInArray(friend, user.friends))
       throw new BadRequestException('This user is not your friend');
@@ -292,7 +291,7 @@ export class UsersService {
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({ pseudo: pseudo }, ['blockedBy'], ['blockedBy', 'id']);
     if (!friend) throw new BadRequestException('Target Not Found');
-    if (friend === user)
+    if (friend.id === user.id)
       throw new BadRequestException("You can't block yourself");
     if (this.isUserInArray(friend, user.blocked))
       throw new BadRequestException('This user is already blocked');

@@ -1,6 +1,6 @@
 import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { GameType, ValidSocket } from 'src/utils/types';
+import { EventGame, GameType, ValidSocket } from 'src/utils/types';
 import { Pong } from './Pong';
 
 export class PongLobby {
@@ -98,10 +98,8 @@ export class PongLobby {
     }
   }
 
-  public onInput(@ConnectedSocket() client: ValidSocket, input: string) {
-    if (this.status !== 'playing') return;
-	if (this.isLocal && this.gameType === GameType.classic) {
-		this.pongInstance.onInput(client, input);
-	}
+  public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame) {
+    if (this.status !== 'playing' && client === this.pLeft || client === this.pRight) return;
+		  this.pongInstance.onInput(client, input);
   }
 }
