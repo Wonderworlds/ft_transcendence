@@ -1,5 +1,5 @@
 import { IntersectionType, PickType } from "@nestjs/mapped-types";
-import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsStrongPassword, Length } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsOptional, IsString, IsStrongPassword, Length } from "class-validator";
 import { EventGame, GameType, Pos, Status } from "./types";
 
 
@@ -88,12 +88,13 @@ export class MatchDto {
 	@IsString()
 	P2: string;
 
-	@IsBoolean()
-	won: boolean;
-
+	
 	@IsEnum(GameType)
 	gameType: GameType;
-
+	
+	@IsBoolean()
+	@IsOptional()
+	won?: boolean;
 }
 
 export class lobbyIDDto {

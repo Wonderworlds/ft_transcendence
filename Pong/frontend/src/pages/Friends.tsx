@@ -11,7 +11,6 @@ const Friends: React.FC = () => {
 	const [friendsList, setFriendsList] = React.useState<Array<User>>([]);
 	const [friendPseudo, setFriendPseudo] = React.useState<string>('');
 	const [isClicked, setIsClicked] = React.useState<string>('');
-	const [isFriendsDemands, setIsFriendsDemands] = React.useState<boolean>(true);
 
 	React.useEffect(() => {
 		if (!axios.auth.token) return;
@@ -31,7 +30,6 @@ const Friends: React.FC = () => {
 		await axios.client
 			.get('me/friends/demands')
 			.then((res: any) => {
-				console.log(res.data);
 				setFriendsDemands(res.data);
 			})
 			.catch((err: any) => {
@@ -58,7 +56,6 @@ const Friends: React.FC = () => {
 		await axios.client
 			.get('me/friends')
 			.then((res: any) => {
-				console.log(res.data);
 				setFriendsList(res.data);
 			})
 			.catch((err: any) => {
@@ -69,6 +66,7 @@ const Friends: React.FC = () => {
 	}
 
 	async function handleClick(option: string, pseudo: string) {
+		console.log(option, pseudo);
 		if (!(await responseFriendsDemands(option, pseudo))) return;
 		await getFriendsList();
 		await getFriendsDemands();
@@ -97,10 +95,19 @@ const Friends: React.FC = () => {
 	});
 
 	const inviteGame = (pseudo: string) => {
-		console.log('invite game');
+		console.log('invite game', pseudo);
 	};
 	const deleteFriend = (pseudo: string) => {
-		console.log('delete friend');
+		axios.client
+			.delete(`me/friends/${pseudo}`)
+			.then(() => {
+				if (pseudo === isClicked) setIsClicked('');
+				getFriendsList();
+			})
+			.catch((err: any) => {
+				alert(err.response?.data?.message);
+				return false;
+			});
 	};
 	return (
 		<div className="headerFriends">
@@ -124,12 +131,10 @@ const Friends: React.FC = () => {
 					<ProfilePlayer pseudo={isClicked} inviteGame={inviteGame} deleteFriend={deleteFriend} />
 				) : null}
 			</div>
-			{isFriendsDemands ? (
-				<div className="divFriendsRight">
-					<p>Friends demands</p>
-					<div className="divFriendElement">{friendsDemandsElement}</div>
-				</div>
-			) : null}
+			<div className="divFriendsRight">
+				<p>Friends demands</p>
+				<div className="divFriendElement">{friendsDemandsElement}</div>
+			</div>
 		</div>
 	);
 };

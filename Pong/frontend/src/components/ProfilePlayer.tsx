@@ -1,4 +1,5 @@
 import React from 'react';
+import { getAxios } from '../context/AxiosContext';
 import { MatchDto } from '../utils/dtos';
 import { GameType } from '../utils/types';
 import MatchInfo from './MatchInfo';
@@ -10,9 +11,11 @@ interface ProfilePlayerProps {
 }
 
 const ProfilePlayer: React.FC<ProfilePlayerProps> = ({ pseudo, inviteGame, deleteFriend }) => {
+	const axios = getAxios();
 	const [winRate, setWinRate] = React.useState(0);
 	const [wins, setWins] = React.useState(0);
 	const [loses, setLoses] = React.useState(0);
+	const [matchs, setMatchs] = React.useState<MatchDto[]>([]);
 	const match = {
 		scoreP1: 9,
 		scoreP2: 2,
@@ -30,11 +33,11 @@ const ProfilePlayer: React.FC<ProfilePlayerProps> = ({ pseudo, inviteGame, delet
 		gameType: GameType.multiplayer,
 	} as MatchDto;
 
-	const matchs: MatchDto[] = [];
-	for (let i = 0; i < 12; i++) {
-		matchs.push(match);
-		matchs.push(match2);
-	}
+	// const matchs1: MatchDto[] = [];
+	// for (let i = 0; i < 12; i++) {
+	// 	matchs.push(match);
+	// 	matchs.push(match2);
+	// }
 
 	function calculateStats(matchs: MatchDto[]) {
 		let wins = 0;
@@ -45,15 +48,24 @@ const ProfilePlayer: React.FC<ProfilePlayerProps> = ({ pseudo, inviteGame, delet
 		});
 		setWins(wins);
 		setLoses(loses);
+		if (wins + loses === 0) return setWinRate(0);
 		setWinRate((wins / (wins + loses)) * 100);
 	}
 	React.useEffect(() => {
-		calculateStats(matchs);
-	}, []);
+		if (!axios.auth.token) return;
+		axios.client
+			.get(`users/${pseudo}/matchs`)
+			.then((res: any) => {
+				setMatchs(res.data);
+				calculateStats(res.data);
+			})
+			.catch((err: any) => {
+				alert(err.response?.data?.message);
+			});
+	}, [axios.ready]);
 
 	const hue = winRate.toString(10);
 	const hsl = `hsl(${hue}, 87%, 45%)`;
-	console.log(hsl);
 	return (
 		<div className="divProfilePlayer">
 			<p>{pseudo}</p>

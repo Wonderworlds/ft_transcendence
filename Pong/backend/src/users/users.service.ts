@@ -89,16 +89,29 @@ export class UsersService {
     return user.ppImg;
   }
 
-  async getMatchHistory(pseudo: string): Promise<Array<Match>> | undefined {
-    const user = await this.userRepository.findOne({
-      where: { pseudo: pseudo },
-      relations: ['wins', 'loses'],
+  async getMatchHistory(pseudo: string): Promise<Array<MatchDto>> {
+
+    const user = await this.findUserByPseudo(pseudo);
+    if (!user) throw new BadRequestException('User Not Found');
+    const matchs = await this.matchRepository.find({
+      where: [{ winner: user }, { loser: user }],
+      relations: ['winner', 'loser'],
+      order: { createdAt: 'DESC' }
+  });
+  const ret: Array<MatchDto> = [];
+  matchs.forEach((match) => {
+    const won = match.winner.id === user.id;
+    ret.push({
+      P1: match.P1,
+      P2: match.P2,
+      scoreP1: match.scoreP1,
+      scoreP2: match.scoreP2,
+      gameType: match.gameType,
+      won: won,
     });
-    if (user) {
-      Array.prototype.push.apply(user.wins, user.loses);
-      return user.wins;
-    } else return;
-  }
+  });
+  return ret;
+}
 
   async createMatchDB(matchInfo: MatchDto) {
     const p1 = await this.findUserByPseudo(matchInfo.P1);
@@ -216,9 +229,9 @@ export class UsersService {
       );
     const friends: User[] = user.friends;
     friends.push(friend);
-    const res = await this.userRepository.save(user);
     const inversefriend: User[] = friend.friends;
     inversefriend.push(user);
+    const res = await this.userRepository.save(user);
     const res1 = await this.userRepository.save(friend);
     return res && res1 && this.cleanFriends(friend, user)
       ? { success: true }
@@ -264,24 +277,29 @@ export class UsersService {
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({ pseudo: pseudo }, ['friends'], ['friends', 'id']);
     if (!friend) throw new BadRequestException('Target Not Found');
+    if (friend.id === user.id)
       throw new BadRequestException("You can't delete yourself");
     if (!this.isUserInArray(friend, user.friends))
       throw new BadRequestException('This user is not your friend');
+    myDebug('deleteFriend', user, friend);
     const friends: User[] = user.friends;
-    friends.splice(friends.indexOf(friend), 1);
+    friends.splice(friends.map((e) =>e.id).indexOf(friend.id), 1);
     const res = await this.userRepository.save(user);
     const inversefriend: User[] = friend.friends;
-    inversefriend.splice(inversefriend.indexOf(user), 1);
+    inversefriend.splice(inversefriend.map((e) =>e.id).indexOf(user.id), 1);
     const res1 = await this.userRepository.save(friend);
     return res && res1 ? { success: true } : { success: false };
   }
 
   private async cleanFriends(pending: User, demand: User): Promise<Success> {
+  
+    const indexPending = pending.friendsPending.map((e) =>e.id).indexOf(demand.id);
+    const indexDemand = demand.friendsDemands.map((e) =>e.id).indexOf(pending.id);
     const friendsPending: User[] = pending.friendsPending;
-    friendsPending.splice(friendsPending.indexOf(demand), 1);
+    friendsPending.splice(indexPending, 1);
     const res = await this.userRepository.save(pending);
     const friendsDemands: User[] = demand.friendsDemands;
-    friendsDemands.splice(friendsDemands.indexOf(pending), 1);
+    friendsDemands.splice(indexDemand, 1);
     const res1 = await this.userRepository.save(demand);
     return res && res1 ? { success: true } : { success: false };
   }
@@ -312,10 +330,10 @@ export class UsersService {
     if (!this.isUserInArray(friend, user.blocked))
       throw new BadRequestException('This user is not blocked');
     const blocked: User[] = user.blocked;
-    blocked.splice(blocked.indexOf(friend), 1);
+    blocked.splice(blocked.map((e) =>e.id).indexOf(friend.id), 1);
     const res = await this.userRepository.save(user);
     const blockedBy: User[] = friend.blockedBy;
-    blockedBy.splice(blockedBy.indexOf(user), 1);
+    blockedBy.splice(blockedBy.map((e) =>e.id).indexOf(user.id), 1);
     const res1 = await this.userRepository.save(friend);
     return res && res1 ? { success: true } : { success: false };
   }
