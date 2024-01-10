@@ -83,16 +83,15 @@ export class PongGateway extends AGateway {
     @Body() body: inputLobbyDto,
   ) {
     if (body.input === EventGame.SPACE_KEY )
-		this.listGame.get(body.lobby).startGame();
+		this.listGame.get(body.lobby).startGame(client);
 	else
 		this.listGame.get(body.lobby).onInput(client, body.input);
-
     // this.listGame.get(body.lobby).onInput(client, body.input);
   }
 
   isClientinRoom(client: ValidSocket) {
     for (const [key, value] of this.listGame.entries()) {
-      console.info('isClientinRoom', value.listClients.keys(), client.name);
+      //console.info('isClientinRoom', value.listClients.keys(), client.name);
       if (value.listClients.has(client.name)) return key;
     }
     return '';
@@ -123,7 +122,7 @@ export class PongGateway extends AGateway {
     }
     this.listGame.get(body.lobby).addClient(client);
     this.server.to(client.id).emit('joinedLobby', { lobby: body.lobby });
-    console.info('lobbyList', this.listGame);
+    //console.info('lobbyList', this.listGame);
   }
 
   @SubscribeMessage('leaveLobby')
@@ -144,8 +143,8 @@ export class PongGateway extends AGateway {
 
   @SubscribeMessage('start')
   onStart(@ConnectedSocket() client: ValidSocket, @Body() body: lobbyIDDto) {
-    console.info('onStart', body);
-    this.listGame.get(body.lobby).startGame();
+//    console.info('onStart', body);
+    this.listGame.get(body.lobby).startGame(client);
   }
 
 }
