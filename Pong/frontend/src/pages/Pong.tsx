@@ -27,8 +27,8 @@ const Pong: React.FC = () => {
 	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
 	const [scorePLeft, setScorePLeft] = useState<number>(0);
 	const [scorePRight, setScorePRight] = useState<number>(0);
-
 	const pressedKeys = new Set<string>();
+	const [gameOver, setGameOver] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -46,10 +46,14 @@ const Pong: React.FC = () => {
 			if (!res.lobby) navigate(Pages.WaitingMatch);
 			else if (!socketContext.lobby) socketContext.setLobby(res.lobby);
 		});
+
 		socket.on('gameOver', (res: UpdateGameDto) => {
 			if (!res) return;
 			console.log("GAME OVER");
+			setGameOver(true);
 		});
+
+
 		socket.emit('joinLobby', { lobby: socketContext.lobby });
 
 		return () => {
@@ -58,6 +62,13 @@ const Pong: React.FC = () => {
 			socket.emit('leaveLobby', { lobby: socketContext.lobby });
 		};
 	}, [socket, socketContext.lobby]);
+
+
+	const handleQuit = () => {
+		socket.emit('input', { lobby: socketContext.lobby, input: EventGame.QUIT });
+		navigate(Pages.WaitingMatch);
+		return <Link to={Pages.WaitingMatch}></Link>;
+	}
 
 	const handleKeyDown = (e: KeyboardEvent) => {
 		pressedKeys.add(e.key);
@@ -68,7 +79,7 @@ const Pong: React.FC = () => {
 		if (e.key === ' ') {
 			sendInput(EventGame.SPACE_KEY);
 		}
-	};
+	}
 
 	const handleKeyPress = () => {
 		if (pressedKeys.has('ArrowUp')) {
@@ -128,6 +139,8 @@ const Pong: React.FC = () => {
 			<div className="PONG_TITLE">
 				<div className="GameArea">
 					<div className="PongDiv">
+						{gameOver && <div className="gameOver">GAME OVER</div>}
+						{gameOver && <button className="quit" onClick={handleQuit}>QUIT</button>}
 						<div className="score">
 							<div className="leftscore">{scorePLeft}</div>
 							<div className="rightscore">{scorePRight}</div>

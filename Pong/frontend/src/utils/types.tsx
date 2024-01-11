@@ -60,4 +60,6 @@ export enum EventGame {
 	W_KEY = 'W_KEY',
 	S_KEY = 'S_KEY',
 	SPACE_KEY = 'SPACE',
+	QUIT = 'QUIT',
+	RESTART = 'RESTART',
 }
