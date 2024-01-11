@@ -27,6 +27,7 @@ const Pong: React.FC = () => {
 	const [pRight, setPRight] = useState<Position>({ x: 98, y: 50 });
 	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
 	const pressedKeys = new Set<string>();
+	const [gameOver, setGameOver] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -43,6 +44,7 @@ const Pong: React.FC = () => {
 
 		return () => {
 			socket.off('updateGame');
+			socket.emit('leaveLobby', { lobby: socketContext.lobby });
 		};
 	}, [socketContext.lobby]);
 

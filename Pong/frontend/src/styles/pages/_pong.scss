@@ -83,12 +83,21 @@
 //	background-color: black;
 }
 
+.quit {
+	position: absolute;
+	top: 1.5rem;
+	right: 1.5rem;
+	color: white;
+	font-size: 3rem;
+	cursor: pointer;
+}
 
-
-
-
-
-
-
-
+.gameOver {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-size: 5rem;
+}
 
