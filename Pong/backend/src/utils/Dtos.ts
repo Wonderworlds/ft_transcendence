@@ -91,10 +91,10 @@ export class MatchDto {
 	scoreP2: number;
 
 	@IsString()
-	P1: string;
+	p1: string;
 
 	@IsString()
-	P2: string;
+	p2: string;
 
 	
 	@IsEnum(GameType)

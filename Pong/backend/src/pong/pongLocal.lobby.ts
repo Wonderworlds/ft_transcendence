@@ -1,5 +1,6 @@
 import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { UsersService } from 'src/users/users.service';
 import { EventGame, GameType, ValidSocket } from 'src/utils/types';
 import { GameState, LimitedUserDto } from './../utils/Dtos';
 import { Pong } from './Pong';
@@ -23,8 +24,9 @@ export class PongLobbyLocal extends PongLobby {
     server: Server,
     owner: ValidSocket,
     gameType: GameType,
+    protected readonly userService: UsersService,
   ) {
-    super(id, server, owner, gameType);
+    super(id, server, owner, gameType, userService);
     if (gameType === GameType.classicLocal) this.maxClients = 2;
   }
 
@@ -134,10 +136,7 @@ export class PongLobbyLocal extends PongLobby {
       this,
     );
     this.status = GameState.START;
-    const lobbyState = this.getUpdateLobbyDto(true);
-    this.server
-      .to(this.id)
-      .emit('updateLobby', lobbyState);
+    this.serverUpdateClients();
     this.server
       .to(this.owner.id)
       .emit('isPlayerReady');
@@ -148,24 +147,7 @@ export class PongLobbyLocal extends PongLobby {
     if (this.status !== GameState.START || !this.pongInstance) return;
     if (this.pongInstance.startMatch(this.pLeft.pseudo)) this.status = GameState.PLAYING;
     if (this.pongInstance.startMatch(this.pRight.pseudo)) this.status = GameState.PLAYING;
-    const lobbyState = this.getUpdateLobbyDto(true);
-    console.info('startMatch', this.gameType);
-    this.server
-      .to(this.id)
-      .emit('updateLobby', lobbyState);
-  }
-
-  public pongInstanceEnd(log: any) {
-    console.info('game over', this.gameType, this.status);
-    const matchLog = {
-      gameType: this.gameType,
-      ...log,
-    };
-    console.info('matchLog', matchLog);
-    this.status = GameState.GAMEOVER;
-    this.server
-      .to(this.id)
-      .emit('gameOver', matchLog);
+    this.serverUpdateClients();
   }
 
   pongInstancePause(pseudo: string) {
@@ -179,9 +161,9 @@ export class PongLobbyLocal extends PongLobby {
     this.pongInstance.pause();
   }
 
-  private inputGame(input: EventGame.UP | EventGame.DOWN, pseudo: string) {
+  private inputGame(input: EventGame.UP | EventGame.DOWN, pseudo: string, p1: boolean) {
     if (this.status !== GameState.PLAYING || !this.pongInstance) return;
-    this.pongInstance.onInput(input, pseudo);
+    p1 ? this.pongInstance.onInput(input, this.pLeft.pseudo) : this.pongInstance.onInput(input, this.pRight.pseudo);
   }
 
   override onInput(
@@ -192,13 +174,13 @@ export class PongLobbyLocal extends PongLobby {
     console.info('onInput', input, pseudo);
     switch (input) {
       case EventGame.ARROW_UP:
-        return this.inputGame(EventGame.UP, pseudo);
+        return this.inputGame(EventGame.UP, pseudo, false);
       case EventGame.ARROW_DOWN:
-        return this.inputGame(EventGame.DOWN, pseudo);
+        return this.inputGame(EventGame.DOWN, pseudo, false);
       case EventGame.W_KEY:
-        return this.inputGame(EventGame.UP, pseudo);
+        return this.inputGame(EventGame.UP, pseudo, true);
       case EventGame.S_KEY:
-        return this.inputGame(EventGame.DOWN, pseudo);
+        return this.inputGame(EventGame.DOWN, pseudo, true);
       case EventGame.START_MATCH:
         return this.startMatch(pseudo);
       case EventGame.START_TOURNAMENT:

@@ -66,9 +66,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 	const [gameState, setGameState] = React.useState<GameState>(GameState.INIT);
 
 	useEffect(() => {
-		console.log('useEffect GameContext', 'socket KO');
 		if (!socket) return;
-		console.log('useEffect GameContext', 'socket OK');
 		socket.on('joinedLobby', (res: LobbyDto) => {
 			if (!res.id) navigate(Pages.WaitingMatch);
 			else if (!socketContext.lobby) {
@@ -80,7 +78,6 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			}
 		});
 		const test = { lobby: socketContext.lobby, ...user.getUserLimited() };
-		console.log('useEffect GameContext', 'lobby OK', test);
 
 		socket.emit('joinLobby', test);
 

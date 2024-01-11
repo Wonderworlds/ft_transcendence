@@ -99,8 +99,8 @@ export class UsersService {
   matchs.forEach((match) => {
     const won = match.winner.id === user.id;
     ret.push({
-      P1: match.P1,
-      P2: match.P2,
+      p1: match.p1,
+      p2: match.p2,
       scoreP1: match.scoreP1,
       scoreP2: match.scoreP2,
       gameType: match.gameType,
@@ -111,9 +111,9 @@ export class UsersService {
 }
 
   async createMatchDB(matchInfo: MatchDto) {
-    const p1 = await this.findUserByPseudo(matchInfo.P1);
+    const p1 = await this.findUserByPseudo(matchInfo.p1);
     if (!p1) return;
-    const p2 = await this.findUserByPseudo(matchInfo.P2);
+    const p2 = await this.findUserByPseudo(matchInfo.p2);
     if (!p2) return;
     const newMatch = this.matchRepository.create({
       ...matchInfo,

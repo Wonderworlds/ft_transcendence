@@ -85,6 +85,6 @@ export abstract class AGateway
       );
       const user = await this.userService.findUserByUsername(client.name);
       const userDto = this.userService.userToDto(user);
-      this.server.to(client.id).emit('reconnect', {user: userDto});
+      this.websocketService.serverMessage('reconnect', client.id, {user: userDto});
   }
 }

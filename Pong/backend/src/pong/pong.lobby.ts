@@ -1,10 +1,12 @@
 import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { UsersService } from 'src/users/users.service';
 import { GameState, LimitedUserDto } from 'src/utils/Dtos';
 import { EventGame, GameType, ValidSocket } from 'src/utils/types';
 import { Pong } from './Pong';
 
 export class PongLobby {
+
   @WebSocketServer()
   server: Server;
   public listClients = new Map<string, ValidSocket>();
@@ -26,6 +28,7 @@ export class PongLobby {
     server: Server,
     owner: ValidSocket,
     gameType: GameType,
+    protected readonly userService: UsersService,
   ) {
     this.id = id;
     this.server = server;
@@ -131,14 +134,17 @@ export class PongLobby {
 	// }
   // }
 
-  
-  public pongInstanceEnd(log: any) {
-    console.info('game over', this.gameType, this.status);
+  public async pongInstanceEnd(log: any) {
     const matchLog = {
       gameType: this.gameType,
       ...log,
     };
-    console.info('matchLog', matchLog);
+    console.info('game over', matchLog, this.id);
+    this.status = GameState.GAMEOVER;
+    this.server
+    .to(this.id)
+    .emit('gameOver', matchLog);
+    return await this.userService.createMatchDB(matchLog);
   }
 
   public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame, pseudo: string) {
@@ -149,4 +155,6 @@ export class PongLobby {
   public getOwnerPseudo() {
     return this.OwnerUser.pseudo;
   }
+
+
 }

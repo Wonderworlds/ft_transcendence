@@ -16,10 +16,10 @@ export class Match {
 	loser: User;
 
 	@Column()
-	P1: string;
+	p1: string;
 
 	@Column()
-	P2: string;
+	p2: string;
 
 	@Column()
 	scoreP1: number;

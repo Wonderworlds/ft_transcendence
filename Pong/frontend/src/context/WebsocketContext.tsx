@@ -32,11 +32,15 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 			socket.on('disconnect', () => {
 				console.log('disconnect');
 			});
+
+			socket.on('error', (error: any) => {
+				alert(error);
+			});
 		}
 		return () => {
 			if (socket) {
 				socket.off('connect');
-				socket.off('disconnect');
+				socket.off('error');
 				socket.off('disconnect');
 			}
 		};

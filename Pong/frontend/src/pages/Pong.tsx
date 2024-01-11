@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getGame } from '../context/GameContext.tsx';
+import { getUser } from '../context/UserContext.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
 import { GameState } from '../utils/dtos.tsx';
 import { EventGame } from '../utils/types.tsx';
@@ -18,6 +19,7 @@ export type UpdateGameDto = {
 };
 
 const Pong: React.FC = () => {
+	const user = getUser();
 	const socketContext = getSocket();
 	const socket = socketContext.socket;
 	const gameContext = getGame();
@@ -53,7 +55,6 @@ const Pong: React.FC = () => {
 	};
 
 	const handleKeyPress = () => {
-		if (gameContext.gameState != GameState.PLAYING) return;
 		if (pressedKeys.has('ArrowUp')) {
 			sendInput(EventGame.ARROW_UP);
 		}
@@ -69,7 +70,7 @@ const Pong: React.FC = () => {
 	};
 
 	function sendInput(input: EventGame) {
-		socket.emit('input', { lobby: socketContext.lobby, input: input });
+		socket.emit('input', { lobby: socketContext.lobby, input: input, pseudo: user.pseudo });
 	}
 
 	window.requestAnimationFrame(gameLoop);

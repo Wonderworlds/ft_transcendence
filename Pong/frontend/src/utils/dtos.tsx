@@ -12,8 +12,8 @@ export type UserDto = {
 export type MatchDto = {
 	scoreP1: number;
 	scoreP2: number;
-	P1: string;
-	P2: string;
+	p1: string;
+	p2: string;
 	won: boolean;
 	gameType: GameType;
 };
