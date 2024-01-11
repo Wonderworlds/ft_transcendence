@@ -12,8 +12,8 @@ export type UserDto = {
 export type MatchDto = {
 	scoreP1: number;
 	scoreP2: number;
-	P1: string;
-	P2: string;
+	p1: string;
+	p2: string;
 	won: boolean;
 	gameType: GameType;
 };
@@ -32,7 +32,7 @@ export type UpdateGameDto = {
 	scorePRight: number;
 };
 
-export type lobbyIDDto = {
+export type LobbyIDDto = {
 	lobby: string;
 };
 
@@ -57,11 +57,19 @@ export type Success = {
 	success: boolean;
 };
 
+export enum GameState {
+	INIT = 'init',
+	START = 'waiting',
+	PLAYING = 'playing',
+	PAUSE = 'pause',
+	GAMEOVER = 'gameover',
+}
+
 export type LobbyDto = {
 	id: string;
 	owner: string;
 	gameType: GameType;
 	nbPlayers: number;
 	maxPlayers: number;
-	status: 'waiting' | 'playing';
+	status: GameState;
 };

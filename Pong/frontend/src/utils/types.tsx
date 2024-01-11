@@ -1,7 +1,9 @@
 export enum GameType {
-	classic = 'classic',
-	multiplayer = 'multiplayer',
-	tournament = 'Tournament',
+	classicLocal = 'Local classic',
+	tournamentLocal = 'Local Tournament',
+	classicOnline = 'Online classic',
+	multiplayerOnline = 'Online multiplayer',
+	tournamentOnline = 'Online Tournament',
 }
 
 export type Match = {
@@ -20,7 +22,7 @@ export type TypeMatch = {
 	type: string;
 	player: number;
 	tournament: number;
-}
+};
 
 export type User = {
 	pseudo: string;
@@ -32,7 +34,7 @@ export type Msg = {
 	pseudo: string;
 	text: string;
 	type: number;
-}
+};
 
 export enum Pages {
 	Root = '/',
@@ -62,5 +64,8 @@ export enum EventGame {
 	ARROW_DOWN = 'ARROW_DOWN',
 	W_KEY = 'W_KEY',
 	S_KEY = 'S_KEY',
-	SPACE_KEY = 'SPACE',
+	START_MATCH = 'START_MATCH',
+	START_TOURNAMENT = 'START_TOURNAMENT',
+	PAUSE = 'PAUSE',
+	NEXT = 'NEXT',
 }

@@ -1,7 +1,8 @@
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateGameDto } from 'src/utils/Dtos';
-import { EventGame, Pos, ValidSocket } from 'src/utils/types';
+import { EventGame, Pos } from 'src/utils/types';
+import { PongLobby } from './pong.lobby';
 
 class Ball {
   private position: Pos = { x: 50, y: 50 };
@@ -19,6 +20,7 @@ class Ball {
   private dist(a: number, b: number) {
     return Math.abs(b - a);
   }
+
   public move(p1: Player, p2: Player) {
     //check collision with walls
     if (this.position.x + 2 < 2) {
@@ -31,6 +33,20 @@ class Ball {
       return p1.addScore();
     }
 
+    this.checkColision(p1, p2);
+
+    if (this.position.y <= 0) {
+      this.direction.y = 1;
+    } else if (this.position.y + 2 >= 100) {
+      this.direction.y = -1;
+    }
+
+    this.setDirection(this.normalize(this.direction));
+    this.position.x += this.direction.x * this.speed;
+    this.position.y += this.direction.y * this.speed;
+  }
+
+  private checkColision(p1: Player, p2: Player) {
     //check collision with players
     const pos1 = p1.getPosition();
     const pos2 = p2.getPosition();
@@ -49,15 +65,7 @@ class Ball {
     ) {
       this.direction.x = -1;
     }
-
-    if (this.position.y <= 0) {
-      this.direction.y = 1;
-    } else if (this.position.y + 2 >= 100) {
-      this.direction.y = -1;
-    }
-    this.setDirection(this.normalize(this.direction));
-    this.position.x += this.direction.x * this.speed;
-    this.position.y += this.direction.y * this.speed;
+    return false;
   }
 
   public getPosition() {
@@ -89,12 +97,12 @@ class Player {
   private readonly speed = 2;
   private maxY = 88;
   private score = 0;
-  public client: ValidSocket;
+  public name: string;
   public isReady = false;
 
-  constructor(client: ValidSocket, pos: Pos) {
+  constructor(name: string, pos: Pos) {
     this.setPosition(pos);
-    this.client = client;
+    this.name = name;
   }
 
   public getPosition() {
@@ -137,16 +145,23 @@ export class Pong {
   protected server: Server;
   private ball = new Ball();
   private running: boolean = true;
-  private scoreEnd = 2;
-
-  p1: Player;
-  p2: Player;
-  constructor(id: string, server: Server, p1: ValidSocket, p2?: ValidSocket) {
+  private scoreEnd = 10;
+  private functionEnd: (log: any) => void;
+  private p1: Player;
+  private p2: Player;
+  private lobby: PongLobby;
+  constructor(
+    id: string,
+    server: Server,
+    p1: string,
+    p2: string,
+    lobby: PongLobby,
+  ) {
     this.id = id;
     this.server = server;
     this.p1 = new Player(p1, { x: 2, y: 50 });
-    this.p2 = new Player(p1, { x: 98, y: 50 });
-    this.loop();
+    this.p2 = new Player(p2, { x: 98, y: 50 });
+    this.lobby = lobby;
   }
 
   getStateOfGame() {
@@ -166,83 +181,76 @@ export class Pong {
       this.p2.getScore() < this.scoreEnd
     )
       return 0;
-    else if (this.p1.getScore() === this.scoreEnd) {
-      return 1;
-    } else if (this.p2.getScore() === this.scoreEnd) {
-      return 2;
-    }
+    return 1;
   }
 
   loop = () => {
-    if (!this.running) return;
-
     setTimeout(this.loop, 1000 / 48);
+    if (!this.running) return;
     this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
 
-    if (this.checkScore() !== 0) {
-      console.log('game over');
-      this.server.to(this.id).emit('gameOver', this.getStateOfGame());
-      this.stopLoop();
+    if (this.checkScore()) {
+      this.lobby.pongInstanceEnd(this.getMatchLog());
+      this.pause();
       return;
     }
   };
 
-  stopLoop() {
-    this.running = false;
+  public getPlayersReady() {
+    return {
+      p1: this.p1.isReady,
+      p2: this.p2.isReady,
+    };
   }
 
-  private UpdatePaddlePos(paddle: Player, input: EventGame) {}
+  
+  public getPlayersName() {
+    return {
+      p1: this.p1.name,
+      p2: this.p2.name,
+    };
+  }
 
-  public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame) {
-    //console.log(this.getStateOfGame());
-    if (!this.running) return;
+  
+  public setPlayersName(p1?: string, p2?: string) {
+      this.p1.name = p1 ? p1 : this.p1.name;
+      this.p2.name = p2 ? p2 : this.p2.name;
+  }
 
-    if (this.p1.client.id === this.p2.client.id) {
-      switch (input) {
-        case 'ARROW_UP':
-          return this.p2.changePos(EventGame.UP);
-        case 'ARROW_DOWN':
-          return this.p2.changePos(EventGame.DOWN);
-        case 'W_KEY':
-          return this.p1.changePos(EventGame.UP);
-        case 'S_KEY':
-          return this.p1.changePos(EventGame.DOWN);
-        default:
-          return console.info('the fuck');
-      }
-    } else {
-      if (client.id === this.p1.client.id) {
-        switch (input) {
-          case 'ARROW_UP':
-            return this.p1.changePos(EventGame.UP);
-          case 'ARROW_DOWN':
-            return this.p1.changePos(EventGame.DOWN);
-          case 'W_KEY':
-            return this.p1.changePos(EventGame.UP);
-          case 'S_KEY':
-            return this.p1.changePos(EventGame.DOWN);
-          case EventGame.SPACE_KEY:
-            return console.info('space p1');
-          default:
-            return console.info('the fuck');
-        }
-      } else {
-        switch (input) {
-          case 'ARROW_UP':
-            return this.p2.changePos(EventGame.UP);
-          case 'ARROW_DOWN':
-            return this.p2.changePos(EventGame.DOWN);
-          case 'W_KEY':
-            return this.p2.changePos(EventGame.UP);
-          case 'S_KEY':
-            return this.p2.changePos(EventGame.DOWN);
-          case EventGame.SPACE_KEY:
-            return console.info('space p2');
-          default:
-            return console.info('the fuck');
-        }
-      }
+  public pause() {
+    console.info('pause' );
+    this.running = !this.running;
+  }
+
+  public startMatch(pseudo: string) {
+    if (pseudo === this.p1.name) this.p1.isReady = true;
+    if (pseudo === this.p2.name) this.p2.isReady = true;
+    if (this.p1.isReady && this.p2.isReady) {
+      this.loop();
+      return true;
     }
+    return false;
+  }
+
+  public onInput(
+    @ConnectedSocket() input: EventGame.UP | EventGame.DOWN,
+    pseudo: string,
+  ) {
+    if (!this.running) return;
+    if (pseudo === this.p1.name) {
+      this.p1.changePos(input);
+    } else if (pseudo === this.p2.name) {
+      this.p2.changePos(input);
+    }
+  }
+
+  private getMatchLog() {
+    return {
+      p1: this.p1.name,
+      p2: this.p2.name,
+      scoreP1: this.p1.getScore(),
+      scoreP2: this.p2.getScore(),
+    };
   }
 }

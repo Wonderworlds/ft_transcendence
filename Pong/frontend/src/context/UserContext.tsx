@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { UserDto } from '../utils/dtos';
-import { Status } from '../utils/types';
+import { Status, User } from '../utils/types';
 
 type UserContextType = {
 	username: string;
@@ -17,6 +17,7 @@ type UserContextType = {
 	setStatus: React.Dispatch<React.SetStateAction<Status>>;
 	user: UserDto;
 	setUser: React.Dispatch<React.SetStateAction<UserDto>>;
+	getUserLimited(): User;
 };
 
 export const UserContext = createContext({} as UserContextType);
@@ -45,6 +46,14 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 		if (body.email && email != body.email) setEmail(body.email);
 	}
 
+	function getUserLimited(): User {
+		return {
+			pseudo: pseudo,
+			ppImg: ppImg,
+			status: status,
+		};
+	}
+
 	return (
 		<UserContext.Provider
 			value={{
@@ -62,6 +71,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
 				setStatus,
 				user,
 				setUser,
+				getUserLimited,
 			}}
 		>
 			{children}

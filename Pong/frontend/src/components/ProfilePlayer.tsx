@@ -40,6 +40,7 @@ const ProfilePlayer: React.FC<ProfilePlayerProps> = ({
 		axios.client
 			.get(`users/${pseudo}/matchs`)
 			.then((res: any) => {
+				console.log(res.data);
 				setMatchs(res.data);
 				calculateStats(res.data);
 			})

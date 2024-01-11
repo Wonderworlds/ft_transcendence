@@ -28,7 +28,10 @@ export enum EventGame {
 	ARROW_DOWN = 'ARROW_DOWN',
 	W_KEY = 'W_KEY',
 	S_KEY = 'S_KEY',
-	SPACE_KEY = 'SPACE',
+  START_MATCH = 'START_MATCH',
+  START_TOURNAMENT = 'START_TOURNAMENT',
+  PAUSE = 'PAUSE',
+  NEXT = 'NEXT',
 }
 
 
@@ -43,7 +46,9 @@ export type UserJwt = {
 }
 
 export enum GameType {
-	classic = 'classic',
-	multiplayer = 'multiplayer',
-	tournament = 'Tournament',
+	classicLocal = 'Local classic',
+	tournamentLocal = 'Local Tournament',
+	classicOnline = 'Online classic',
+	multiplayerOnline = 'Online multiplayer',
+	tournamentOnline = 'Online Tournament',
 }

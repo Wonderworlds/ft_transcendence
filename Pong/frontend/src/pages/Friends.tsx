@@ -3,10 +3,14 @@ import FriendsDemands from '../components/FriendsDemands.tsx';
 import FriendsInfo, { FriendsInfoProps } from '../components/FriendsInfo.tsx';
 import ProfilePlayer from '../components/ProfilePlayer.tsx';
 import { getAxios } from '../context/AxiosContext.tsx';
+import { getSocket } from '../context/WebsocketContext.tsx';
 import { User } from '../utils/types.tsx';
+import { getUser } from '../context/UserContext.tsx';
 
 const Friends: React.FC = () => {
 	const axios = getAxios();
+	const socket = getSocket().socket;
+	const user = getUser();
 	const [friendsDemands, setFriendsDemands] = React.useState<Array<User>>([]);
 	const [friendsList, setFriendsList] = React.useState<Array<User>>([]);
 	const [friendPseudo, setFriendPseudo] = React.useState<string>('');
@@ -95,7 +99,7 @@ const Friends: React.FC = () => {
 	});
 
 	const inviteGame = (pseudo: string) => {
-		console.log('invite game', pseudo);
+		socket.emit('customGame', { owner: user.pseudo, friend: pseudo });
 	};
 	const deleteFriend = (pseudo: string) => {
 		axios.client

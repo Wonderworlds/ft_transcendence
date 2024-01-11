@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { getGame } from '../context/GameContext.tsx';
+import { getUser } from '../context/UserContext.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
-import { lobbyIDDto } from '../utils/dtos.tsx';
-import { EventGame, Pages } from '../utils/types.tsx';
+import { GameState } from '../utils/dtos.tsx';
+import { EventGame } from '../utils/types.tsx';
 
 export type Position = {
 	x: number;
@@ -18,15 +19,13 @@ export type UpdateGameDto = {
 };
 
 const Pong: React.FC = () => {
-	const navigate = useNavigate();
+	const user = getUser();
 	const socketContext = getSocket();
 	const socket = socketContext.socket;
+	const gameContext = getGame();
 	const [pLeft, setPLeft] = useState<Position>({ x: 2, y: 50 });
 	const [pRight, setPRight] = useState<Position>({ x: 98, y: 50 });
 	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
-	const [scorePLeft, setScorePLeft] = useState<number>(0);
-	const [scorePRight, setScorePRight] = useState<number>(0);
-
 	const pressedKeys = new Set<string>();
 
 	useEffect(() => {
@@ -37,22 +36,15 @@ const Pong: React.FC = () => {
 				setPLeft(res.pLeft);
 				setPRight(res.pRight);
 				setBall(res.ball);
-				setScorePLeft(res.scorePLeft);
-				setScorePRight(res.scorePRight);
+				gameContext.setScorePLeft(res.scorePLeft);
+				gameContext.setScorePRight(res.scorePRight);
 			}
 		});
-		socket.on('joinedLobby', (res: lobbyIDDto) => {
-			if (!res.lobby) navigate(Pages.WaitingMatch);
-			else if (!socketContext.lobby) socketContext.setLobby(res.lobby);
-		});
-		socket.emit('joinLobby', { lobby: socketContext.lobby });
 
 		return () => {
 			socket.off('updateGame');
-			socket.off('joinedLobby');
-			socket.emit('leaveLobby', { lobby: socketContext.lobby });
 		};
-	}, [socket, socketContext.lobby]);
+	}, [socketContext.lobby]);
 
 	const handleKeyDown = (e: KeyboardEvent) => {
 		pressedKeys.add(e.key);
@@ -60,9 +52,6 @@ const Pong: React.FC = () => {
 
 	const handleKeyUp = (e: KeyboardEvent) => {
 		pressedKeys.delete(e.key);
-		if (e.key === ' ') {
-			sendInput(EventGame.SPACE_KEY);
-		}
 	};
 
 	const handleKeyPress = () => {
@@ -81,7 +70,8 @@ const Pong: React.FC = () => {
 	};
 
 	function sendInput(input: EventGame) {
-		socket.emit('input', { lobby: socketContext.lobby, input: input });
+		if (socket && socketContext.lobby && user.pseudo)
+			socket.emit('input', { lobby: socketContext.lobby, input: input, pseudo: user.pseudo });
 	}
 
 	window.requestAnimationFrame(gameLoop);
@@ -100,11 +90,8 @@ const Pong: React.FC = () => {
 			window.removeEventListener('keyup', handleKeyUp);
 			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, []);
+	}, [socketContext.lobby, user.pseudo]);
 
-	useEffect(() => {}, [pLeft, pRight, ball]);
-
-	const PongDivStyle = {};
 	const PleftStyle = { width: '1.2%', height: '12%', left: `${pLeft.x}%`, top: `${pLeft.y}%` };
 	const PrightStyle = {
 		width: '1.2%',
@@ -114,13 +101,47 @@ const Pong: React.FC = () => {
 	};
 	const BallStyle = { width: '15px', height: '15px', left: `${ball.x}%`, top: `${ball.y}%` };
 
+	const pongElement = (gameState: GameState) => {
+		switch (gameState) {
+			case GameState.INIT: {
+				return (
+					<>
+						<h1>INIT</h1>
+					</>
+				);
+			}
+			case GameState.START:
+				return (
+					<>
+						<h1>START</h1>;
+					</>
+				);
+			case GameState.PLAYING:
+				return (
+					<>
+						<div className="Pleft" style={PleftStyle}></div>
+						<div className="Pright" style={PrightStyle}></div>
+						<div className="Ball" style={BallStyle}></div>
+					</>
+				);
+			case GameState.PAUSE:
+				return (
+					<>
+						<h1>PAUSE</h1>;
+					</>
+				);
+			case GameState.GAMEOVER:
+				return (
+					<>
+						<h1>GAMEOVER</h1>;
+					</>
+				);
+		}
+	};
+
 	return (
 		<div className="GameArea">
-			<div className="PongDiv" style={PongDivStyle}>
-				<div className="Pleft" style={PleftStyle}></div>
-				<div className="Pright" style={PrightStyle}></div>
-				<div className="Ball" style={BallStyle}></div>
-			</div>
+			<div className="PongDiv">{pongElement(gameContext.gameState)}</div>
 		</div>
 	);
 };

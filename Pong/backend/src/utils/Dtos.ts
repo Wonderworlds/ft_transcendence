@@ -3,13 +3,21 @@ import { IsBoolean, IsEmail, IsEnum, IsNumber, IsOptional, IsString, IsStrongPas
 import { EventGame, GameType, Pos, Status } from "./types";
 
 
+export enum GameState {
+	INIT = "init",
+	START = "waiting",
+	PLAYING = "playing",
+	PAUSE = "pause",
+	GAMEOVER = "gameover",
+}
+
 export type LobbyDto = {
 	id: string;
 	owner: string;
 	gameType: GameType;
 	nbPlayers: number;
 	maxPlayers: number;
-	status: 'waiting' | 'playing';
+	status: GameState;
 };
 
 export class AuthDto  {
@@ -75,6 +83,14 @@ export class CreateLobbyDto {
 	@IsBoolean()
 	isLocal: boolean;
 }
+
+
+export class CreateCustomLobbyDto {
+	@IsString()
+	owner: string;
+	@IsString()
+	friend: string;
+}
 export class MatchDto {
 	@IsNumber()
 	scoreP1: number;
@@ -83,10 +99,10 @@ export class MatchDto {
 	scoreP2: number;
 
 	@IsString()
-	P1: string;
+	p1: string;
 
 	@IsString()
-	P2: string;
+	p2: string;
 
 	
 	@IsEnum(GameType)
@@ -97,18 +113,25 @@ export class MatchDto {
 	won?: boolean;
 }
 
-export class lobbyIDDto {
+export class LobbyIDDto {
 	@IsString()
 	lobby: string;
 }
 
-export class inputDto {
+export class AcceptDto {
+	@IsBoolean()
+	accept: boolean;
+}
+
+export class InputDto {
 	@IsEnum(EventGame)
 	input: EventGame;
 }
 
-export class inputLobbyDto extends IntersectionType(lobbyIDDto, inputDto) {};
-
+export class PseudoLobbyDto extends IntersectionType(LobbyIDDto, UserDtoPseudo) {};
+export class InputLobbyDto extends IntersectionType(InputDto, PseudoLobbyDto) {};
+export class UserLobbyDto extends IntersectionType(LobbyIDDto, LimitedUserDto) {};
+export class AcceptLobbyDto extends IntersectionType(LobbyIDDto, AcceptDto) {};
 export class UpdateGameDto {
   ball: Pos;
   pLeft: Pos;

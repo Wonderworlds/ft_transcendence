@@ -30,10 +30,11 @@ const WaitingMatch: React.FC = () => {
 		if (!socket) return console.log('socket not found');
 		const gameType =
 			playLocalCB === 'local0'
-				? GameType.classic
+				? GameType.classicLocal
 				: playLocalCB === 'local1'
-				? GameType.multiplayer
-				: GameType.tournament;
+				? GameType.classicLocal
+				: GameType.tournamentLocal;
+		console.info('gameType', gameType);
 		socket.emit('createLobby', { gameType: gameType, isLocal: true });
 	};
 
@@ -41,15 +42,16 @@ const WaitingMatch: React.FC = () => {
 		if (!socket) return console.log('socket not found');
 		const gameType =
 			playOnlineCB === 'online0'
-				? GameType.classic
+				? GameType.classicOnline
 				: playOnlineCB === 'online1'
-				? GameType.multiplayer
-				: GameType.tournament;
+				? GameType.multiplayerOnline
+				: GameType.tournamentOnline;
+
 		socket.emit('createLobby', { gameType: gameType, isLocal: false });
 	};
 
 	const playLocalProps: CreateLobbyProps = {
-		labels: ['2 Players', 'vs AI', 'Tournament'],
+		labels: ['classic', 'vs AI', 'Tournament'],
 		scores: ['local0', 'local1', 'local2'],
 		buttonSubmit: 'Play Local',
 		submit: playLocal,
@@ -58,7 +60,7 @@ const WaitingMatch: React.FC = () => {
 	};
 
 	const playOnlineProps: CreateLobbyProps = {
-		labels: [GameType.classic, GameType.multiplayer, GameType.tournament],
+		labels: ['classic', 'multiplayer', 'Tournament'],
 		scores: ['online0', 'online1', 'online2'],
 		buttonSubmit: 'Play Online',
 		submit: playOnline,
