@@ -9,11 +9,15 @@ interface MatchInfoProps {
 const MatchInfo: React.FC<MatchInfoProps> = ({ match }) => {
 	const gameTypeColor = () => {
 		switch (match.gameType) {
-			case GameType.classic:
-				return 'orange';
-			case GameType.multiplayer:
+			case GameType.classicLocal:
+				return 'yellow';
+			case GameType.multiplayerOnline:
 				return 'blue';
-			case GameType.tournament:
+			case GameType.tournamentLocal:
+				return 'orange';
+			case GameType.tournamentOnline:
+				return 'orange';
+			case GameType.classicOnline:
 				return 'yellow';
 		}
 	};

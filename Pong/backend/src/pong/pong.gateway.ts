@@ -6,14 +6,16 @@ import {
 } from '@nestjs/websockets';
 import {
   CreateLobbyDto,
+  InputLobbyDto,
   LobbyDto,
-  inputLobbyDto,
-  lobbyIDDto,
+  LobbyIDDto,
+  UserLobbyDto
 } from 'src/utils/Dtos';
-import { EventGame, GameType, ValidSocket } from 'src/utils/types';
+import { ValidSocket } from 'src/utils/types';
 import { AGateway } from 'src/websocket/Agateway';
 import { v4 as uuidv4 } from 'uuid';
 import { PongLobby } from './pong.lobby';
+import { PongLobbyLocal } from './pongLocal.lobby';
 
 @UsePipes(new ValidationPipe())
 @WebSocketGateway({
@@ -22,7 +24,7 @@ import { PongLobby } from './pong.lobby';
   },
 })
 export class PongGateway extends AGateway {
-  protected listGame: Map<string, PongLobby> = new Map<string, PongLobby>();
+  protected listGame: Map<string, PongLobby | PongLobbyLocal> = new Map<string, PongLobby | PongLobbyLocal>();
 
   isClientPlaying(@ConnectedSocket() client: ValidSocket) {
     let gameId = '';
@@ -67,12 +69,16 @@ export class PongGateway extends AGateway {
     @Body() body: CreateLobbyDto,
   ) {
     if (body.isLocal) {
-      const lobby = this.isClientOwner(client, body.gameType);
+      const lobby = this.isClientOwner(client);
       if (lobby !== '') this.listGame.delete(lobby);
     }
     console.info('createLobby', body);
     const id = uuidv4();
-    const lobby = new PongLobby(id, this.server, client, body.gameType, body.isLocal);
+    let lobby: PongLobby | PongLobbyLocal;
+    if (body.isLocal)
+      lobby = new PongLobbyLocal(id, this.server, client, body.gameType);
+    else
+      lobby = new PongLobby(id, this.server, client, body.gameType);
     this.listGame.set(id, lobby);
     this.server.to(client.id).emit('lobbyCreated', { lobby: id });
   }
@@ -80,55 +86,73 @@ export class PongGateway extends AGateway {
   @SubscribeMessage('input')
   onInputReceived(
     @ConnectedSocket() client: ValidSocket,
-    @Body() body: inputLobbyDto,
+    @Body() body: InputLobbyDto,
   ) {
-    if (body.input === EventGame.SPACE_KEY )
-		this.listGame.get(body.lobby).startGame(client);
-	else
-		this.listGame.get(body.lobby).onInput(client, body.input);
-    // this.listGame.get(body.lobby).onInput(client, body.input);
+    console.info('onInputReceived', body);
+    this.listGame.get(body.lobby).onInput(client, body.input, body.pseudo);
   }
+  
+    isClientOwner(client: ValidSocket) {
+      for (const [key, value] of this.listGame.entries()) {
+        if (value.getOwner().name === client.name) return key;
+      }
+      return '';
+    }
 
   isClientinRoom(client: ValidSocket) {
     for (const [key, value] of this.listGame.entries()) {
       //console.info('isClientinRoom', value.listClients.keys(), client.name);
       if (value.listClients.has(client.name)) return key;
     }
+    return this.isClientOwner(client);
     return '';
   }
 
-  isClientOwner(client: ValidSocket, gameType: GameType) {
-    for (const [key, value] of this.listGame.entries()) {
-      if (value.getOwner().name === client.name) return key;
-    }
-    return '';
+  private lobbyToLobbyDto(lobby: PongLobby | PongLobbyLocal): LobbyDto {
+    return {
+      id: lobby.id,
+      owner: lobby.getOwner().name,
+      nbPlayers: lobby.getSize(),
+      maxPlayers: lobby.maxClients,
+      gameType: lobby.gameType,
+      status: lobby.status,
+    };
+  }
+
+  @SubscribeMessage('addClientLocal')
+  onAddClientLocal(@ConnectedSocket() client: ValidSocket, @Body() body: UserLobbyDto) {
+    console.info('onAddClientLocal', body);
+    let {lobby, ...rest} = body;
+    const lobbyRoom = this.listGame.get(lobby);
+    if (!lobbyRoom) return;
+    lobbyRoom.addClient(client, rest);
   }
 
   @SubscribeMessage('joinLobby')
-  onJoinLobby(
+  async onJoinLobby(
     @ConnectedSocket() client: ValidSocket,
-    @Body() body: lobbyIDDto,
+    @Body() body: UserLobbyDto,
   ) {
     console.info('joinLobby', body);
-    if (body.lobby === '') {
-      const lobby = this.isClientinRoom(client);
+    let {lobby, ...rest} = body;
+    if (lobby === '') {
+      lobby = this.isClientinRoom(client);
       if (lobby !== '')
-        return this.server.to(client.id).emit('joinedLobby', { lobby: lobby });
-      return this.server.to(client.id).emit('joinedLobby', { lobby: '' });
+        return this.server.to(client.id).emit('joinedLobby', this.lobbyToLobbyDto(this.listGame.get(lobby)));
+      return this.server.to(client.id).emit('joinedLobby', { id: '' });
     }
-    if (!this.listGame.has(body.lobby)) {
-      this.server.to(client.id).emit('joinedLobby', { lobby: '' });
+    if (!this.listGame.has(lobby)) {
+      this.server.to(client.id).emit('joinedLobby', { id: '' });
       return;
     }
-    this.listGame.get(body.lobby).addClient(client);
-    this.server.to(client.id).emit('joinedLobby', { lobby: body.lobby });
-    //console.info('lobbyList', this.listGame);
+    this.listGame.get(lobby).addClient(client, rest);
+    this.server.to(client.id).emit('joinedLobby', this.lobbyToLobbyDto(this.listGame.get(lobby)));
   }
 
   @SubscribeMessage('leaveLobby')
   onLeaveLobby(
     @ConnectedSocket() client: ValidSocket,
-    @Body() body: lobbyIDDto,
+    @Body() body: LobbyIDDto,
   ) {
     console.info('leaveLobby', body);
     const lobby = this.listGame.get(body.lobby);
@@ -142,9 +166,9 @@ export class PongGateway extends AGateway {
   }
 
   @SubscribeMessage('start')
-  onStart(@ConnectedSocket() client: ValidSocket, @Body() body: lobbyIDDto) {
+  onStart(@ConnectedSocket() client: ValidSocket, @Body() body: LobbyIDDto) {
 //    console.info('onStart', body);
-    this.listGame.get(body.lobby).startGame(client);
+    // this.listGame.get(body.lobby).startGame(client);
   }
 
 }

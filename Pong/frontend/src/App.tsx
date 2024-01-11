@@ -11,6 +11,7 @@ import Stats from './pages/Stats.tsx';
 import WaitingMatch from './pages/WaitingMatch.tsx';
 import './styles/pages/index.scss';
 import { Pages } from './utils/types.tsx';
+import { GameContextProvider } from './context/GameContext.tsx';
 
 const App = () => {
 	return (
@@ -25,7 +26,14 @@ const App = () => {
 								<Route path={Pages.Settings} element={<Settings />} />
 								<Route path={Pages.Stats} element={<Stats />} />
 								<Route path={Pages.WaitingMatch} element={<WaitingMatch />} />
-								<Route path={Pages.Pong} element={<Game />} />
+								<Route
+									path={Pages.Pong}
+									element={
+										<GameContextProvider>
+											<Game />
+										</GameContextProvider>
+									}
+								/>
 								<Route path={Pages.Default} element={<Default />} />
 							</Routes>
 						</WebsocketProvider>

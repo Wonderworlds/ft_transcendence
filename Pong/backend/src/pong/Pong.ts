@@ -1,7 +1,8 @@
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateGameDto } from 'src/utils/Dtos';
-import { EventGame, Pos, ValidSocket } from 'src/utils/types';
+import { EventGame, Pos } from 'src/utils/types';
+import { PongLobby } from './pong.lobby';
 
 class Ball {
   private position: Pos = { x: 50, y: 50 };
@@ -32,8 +33,7 @@ class Ball {
       return p1.addScore();
     }
 
-
-	this.checkColision(p1, p2);
+    this.checkColision(p1, p2);
 
     if (this.position.y <= 0) {
       this.direction.y = 1;
@@ -41,9 +41,9 @@ class Ball {
       this.direction.y = -1;
     }
 
-	this.setDirection(this.normalize(this.direction));
-	this.position.x += this.direction.x * this.speed;
-	this.position.y += this.direction.y * this.speed;
+    this.setDirection(this.normalize(this.direction));
+    this.position.x += this.direction.x * this.speed;
+    this.position.y += this.direction.y * this.speed;
   }
 
   private checkColision(p1: Player, p2: Player) {
@@ -56,16 +56,16 @@ class Ball {
       this.position.y >= pos1.y &&
       this.position.y <= pos1.y + 12
     ) {
-		this.direction.x = 1;
+      this.direction.x = 1;
     } else if (
       this.position.x >= pos2.x - 2 &&
       this.dist(this.position.x, pos2.x - 2) < 1 &&
       this.position.y >= pos2.y &&
       this.position.y <= pos2.y + 12
     ) {
-		this.direction.x = -1;
+      this.direction.x = -1;
     }
-	return false;
+    return false;
   }
 
   public getPosition() {
@@ -97,12 +97,12 @@ class Player {
   private readonly speed = 2;
   private maxY = 88;
   private score = 0;
-  public client: ValidSocket;
+  public name: string;
   public isReady = false;
 
-  constructor(client: ValidSocket, pos: Pos) {
+  constructor(name: string, pos: Pos) {
     this.setPosition(pos);
-    this.client = client;
+    this.name = name;
   }
 
   public getPosition() {
@@ -146,16 +146,22 @@ export class Pong {
   private ball = new Ball();
   private running: boolean = true;
   private scoreEnd = 2;
-
-  p1: Player;
-  p2: Player;
-
-  constructor(id: string, server: Server, p1: ValidSocket, p2?: ValidSocket) {
+  private functionEnd: (log: any) => void;
+  private p1: Player;
+  private p2: Player;
+  private lobby: PongLobby;
+  constructor(
+    id: string,
+    server: Server,
+    p1: string,
+    p2: string,
+    lobby: PongLobby,
+  ) {
     this.id = id;
     this.server = server;
     this.p1 = new Player(p1, { x: 2, y: 50 });
     this.p2 = new Player(p2, { x: 98, y: 50 });
-	this.loop();
+    this.lobby = lobby;
   }
 
   getStateOfGame() {
@@ -175,84 +181,63 @@ export class Pong {
       this.p2.getScore() < this.scoreEnd
     )
       return 0;
-    else if (this.p1.getScore() === this.scoreEnd) {
-      return 1;
-    } else if (this.p2.getScore() === this.scoreEnd) {
-      return 2;
-    }
+    return 1;
   }
 
   loop = () => {
-    if (!this.running) return;
-
     setTimeout(this.loop, 1000 / 48);
+    if (!this.running) return;
     this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
 
-	if (this.checkScore()) {
-		console.log('game over');
-		this.server.to(this.id).emit('gameOver', this.getStateOfGame());
-		this.stopLoop();
-		return;
-	}
-
+    if (this.checkScore()) {
+      this.lobby.pongInstanceEnd(this.getMatchLog());
+      this.pause();
+      return;
+    }
   };
 
-  stopLoop() {
-    this.running = false;
+  public getPlayersReady() {
+    return {
+      p1: this.p1.isReady,
+      p2: this.p2.isReady,
+    };
+  }
+
+  public pause() {
+    this.running = !this.running;
+  }
+
+  public startMatch(pseudo: string) {
+    if (pseudo === this.p1.name) this.p1.isReady = true;
+    if (pseudo === this.p2.name) this.p2.isReady = true;
+    if (this.p1.isReady && this.p2.isReady) {
+      this.loop();
+      return true;
+    }
+    return false;
   }
 
   private UpdatePaddlePos(paddle: Player, input: EventGame) {}
 
-  public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame) {
-    //console.log(this.getStateOfGame());
+  public onInput(
+    @ConnectedSocket() input: EventGame.UP | EventGame.DOWN,
+    pseudo: string,
+  ) {
     if (!this.running) return;
-
-    if (this.p1.client.id === this.p2.client.id) {
-      switch (input) {
-        case 'ARROW_UP':
-          return this.p2.changePos(EventGame.UP);
-        case 'ARROW_DOWN':
-          return this.p2.changePos(EventGame.DOWN);
-        case 'W_KEY':
-          return this.p1.changePos(EventGame.UP);
-        case 'S_KEY':
-          return this.p1.changePos(EventGame.DOWN);
-        default:
-          return console.info('the fuck');
-      }
-    } else {
-      if (client.id === this.p1.client.id) {
-        switch (input) {
-          case 'ARROW_UP':
-            return this.p1.changePos(EventGame.UP);
-          case 'ARROW_DOWN':
-            return this.p1.changePos(EventGame.DOWN);
-          case 'W_KEY':
-            return this.p1.changePos(EventGame.UP);
-          case 'S_KEY':
-            return this.p1.changePos(EventGame.DOWN);
-          case EventGame.SPACE_KEY:
-            return console.info('space p1');
-          default:
-            return console.info('the fuck');
-        }
-      } else {
-        switch (input) {
-          case 'ARROW_UP':
-            return this.p2.changePos(EventGame.UP);
-          case 'ARROW_DOWN':
-            return this.p2.changePos(EventGame.DOWN);
-          case 'W_KEY':
-            return this.p2.changePos(EventGame.UP);
-          case 'S_KEY':
-            return this.p2.changePos(EventGame.DOWN);
-          case EventGame.SPACE_KEY:
-            return console.info('space p2');
-          default:
-            return console.info('the fuck');
-        }
-      }
+    if (pseudo === this.p1.name) {
+      this.p1.changePos(input);
+    } else if (pseudo === this.p2.name) {
+      this.p2.changePos(input);
     }
+  }
+
+  private getMatchLog() {
+    return {
+      p1: this.p1.name,
+      p2: this.p2.name,
+      scoreP1: this.p1.getScore(),
+      scoreP2: this.p2.getScore(),
+    };
   }
 }

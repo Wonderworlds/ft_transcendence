@@ -3,13 +3,21 @@ import { IsBoolean, IsEmail, IsEnum, IsNumber, IsOptional, IsString, IsStrongPas
 import { EventGame, GameType, Pos, Status } from "./types";
 
 
+export enum GameState {
+	INIT = "init",
+	START = "waiting",
+	PLAYING = "playing",
+	PAUSE = "pause",
+	GAMEOVER = "gameover",
+}
+
 export type LobbyDto = {
 	id: string;
 	owner: string;
 	gameType: GameType;
 	nbPlayers: number;
 	maxPlayers: number;
-	status: 'waiting' | 'playing';
+	status: GameState;
 };
 
 export class AuthDto  {
@@ -70,7 +78,6 @@ export class CodeDto {
 }
 
 export class CreateLobbyDto {
-	@IsEnum(GameType)
 	gameType: GameType;
 	@IsBoolean()
 	isLocal: boolean;
@@ -97,17 +104,19 @@ export class MatchDto {
 	won?: boolean;
 }
 
-export class lobbyIDDto {
+export class LobbyIDDto {
 	@IsString()
 	lobby: string;
 }
 
-export class inputDto {
+export class InputDto {
 	@IsEnum(EventGame)
 	input: EventGame;
 }
 
-export class inputLobbyDto extends IntersectionType(lobbyIDDto, inputDto) {};
+export class PseudoLobbyDto extends IntersectionType(LobbyIDDto, UserDtoPseudo) {};
+export class InputLobbyDto extends IntersectionType(InputDto, PseudoLobbyDto) {};
+export class UserLobbyDto extends IntersectionType(LobbyIDDto, LimitedUserDto) {};
 
 export class UpdateGameDto {
   ball: Pos;

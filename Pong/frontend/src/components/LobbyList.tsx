@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../context/WebsocketContext';
-import { LobbyDto } from '../utils/dtos';
+import { GameState, LobbyDto } from '../utils/dtos';
 import { Pages } from '../utils/types';
 
 const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<LobbyDto>> }> = ({
@@ -26,7 +26,7 @@ const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<L
 
 	const lobbyElement = (lobby: LobbyDto) => {
 		let statusStyle;
-		if (lobby.status === 'playing')
+		if (lobby.status !== GameState.INIT)
 			statusStyle = {
 				backgroundColor: '#1d1b40e8',
 				border: '3px solid #80008049',
@@ -40,14 +40,14 @@ const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<L
 				<p>
 					{lobby.nbPlayers} / {lobby.maxPlayers}
 				</p>
-				<div className={lobby.status === 'waiting' ? 'buttonJoin' : 'buttonSpectate'}>
+				<div className={lobby.status === GameState.INIT ? 'buttonJoin' : 'buttonSpectate'}>
 					<button
 						onClick={() => {
 							socketContext.setLobby(lobby.id);
 							navigate(Pages.Pong);
 						}}
 					>
-						{lobby.status === 'waiting' ? 'Join' : 'spectate'}
+						{lobby.status === GameState.INIT ? 'Join' : 'spectate'}
 					</button>
 				</div>
 			</div>
