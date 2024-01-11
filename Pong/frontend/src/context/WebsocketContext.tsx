@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 import { UserDto } from '../utils/dtos';
+import { Pages } from '../utils/types';
 import { getAxios } from './AxiosContext';
 import { getUser } from './UserContext';
-
 type WebSocketContextType = {
 	socket: Socket;
 	lobby: string;
@@ -15,6 +16,7 @@ export const WebsocketContext = createContext({} as WebSocketContextType);
 export const WebsocketProvider = ({ children }: { children: React.ReactNode }) => {
 	const axios = getAxios();
 	const user = getUser();
+	const navigate = useNavigate();
 	const [lobby, setLobby] = useState<string>('');
 	const url = `${import.meta.env.VITE_BURL}`;
 	const [socket, setSocket] = useState<Socket>();
@@ -34,14 +36,36 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 			});
 
 			socket.on('error', (error: any) => {
+				console.log(error);
 				alert(error);
 			});
+
+			socket.on(
+				'friendGame',
+				(response: { message?: string; lobby: string; sender: string; accept?: boolean }) => {
+					if (response.message) {
+						if (confirm(`${response.sender}: ${response.message}`)) {
+							setLobby(response.lobby);
+							navigate(Pages.Pong);
+							socket.emit('responseFriendGame', { lobby: response.lobby, accept: true });
+						} else {
+							socket.emit('responseFriendGame', { lobby: response.lobby, accept: false });
+						}
+					} else if (response.accept) {
+						setLobby(response.lobby);
+						navigate(Pages.Pong);
+					} else {
+						alert('Game declined');
+					}
+				}
+			);
 		}
 		return () => {
 			if (socket) {
 				socket.off('connect');
 				socket.off('error');
 				socket.off('disconnect');
+				socket.off('friendGame');
 			}
 		};
 	}, [socket]);

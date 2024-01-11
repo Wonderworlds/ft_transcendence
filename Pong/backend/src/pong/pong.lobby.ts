@@ -29,12 +29,14 @@ export class PongLobby {
     owner: ValidSocket,
     gameType: GameType,
     protected readonly userService: UsersService,
+    size?: number,
   ) {
     this.id = id;
     this.server = server;
     this.owner = owner;
     this.gameType = gameType;
     if (gameType === GameType.classicOnline) this.maxClients = 8;
+    size ? (this.maxClients = size) : null;
   }
 
   async addClient(
@@ -243,10 +245,10 @@ export class PongLobby {
   }
   
   pongInstancePause(pseudo: string) {
+    if (!this.pongInstance) return;
     if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
     if (
-      (this.status !== GameState.PLAYING && this.status !== GameState.PAUSE) ||
-      !this.pongInstance
+      this.status !== GameState.PLAYING && this.status !== GameState.PAUSE
     )
       return;
     this.status = GameState.PAUSE;

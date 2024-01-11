@@ -83,6 +83,14 @@ export class CreateLobbyDto {
 	@IsBoolean()
 	isLocal: boolean;
 }
+
+
+export class CreateCustomLobbyDto {
+	@IsString()
+	owner: string;
+	@IsString()
+	friend: string;
+}
 export class MatchDto {
 	@IsNumber()
 	scoreP1: number;
@@ -110,6 +118,11 @@ export class LobbyIDDto {
 	lobby: string;
 }
 
+export class AcceptDto {
+	@IsBoolean()
+	accept: boolean;
+}
+
 export class InputDto {
 	@IsEnum(EventGame)
 	input: EventGame;
@@ -118,7 +131,7 @@ export class InputDto {
 export class PseudoLobbyDto extends IntersectionType(LobbyIDDto, UserDtoPseudo) {};
 export class InputLobbyDto extends IntersectionType(InputDto, PseudoLobbyDto) {};
 export class UserLobbyDto extends IntersectionType(LobbyIDDto, LimitedUserDto) {};
-
+export class AcceptLobbyDto extends IntersectionType(LobbyIDDto, AcceptDto) {};
 export class UpdateGameDto {
   ball: Pos;
   pLeft: Pos;

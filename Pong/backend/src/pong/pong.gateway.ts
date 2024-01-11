@@ -5,13 +5,15 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 import {
+  AcceptLobbyDto,
+  CreateCustomLobbyDto,
   CreateLobbyDto,
   InputLobbyDto,
   LobbyDto,
   LobbyIDDto,
   UserLobbyDto,
 } from 'src/utils/Dtos';
-import { ValidSocket } from 'src/utils/types';
+import { GameType, ValidSocket } from 'src/utils/types';
 import { AGateway } from 'src/websocket/Agateway';
 import { v4 as uuidv4 } from 'uuid';
 import { PongLobby } from './pong.lobby';
@@ -33,6 +35,11 @@ export class PongGateway extends AGateway {
     PongLobbyLocal
   >();
 
+  protected listCustomGame: Map<string, PongLobby> = new Map<
+    string,
+    PongLobby
+  >();
+
   @SubscribeMessage('getLobbys')
   onGetLobbys(@ConnectedSocket() client: ValidSocket) {
     const lobbysDto: Array<LobbyDto> = [];
@@ -48,7 +55,7 @@ export class PongGateway extends AGateway {
       lobbysDto.push(this.lobbyToLobbyDto(value));
     }
     console.info('getLobbys', { lobbysDto }, lobbyLocal);
-    this.websocketService.serverMessage('lobbyList', client.id, {
+    this.websocketService.serverMessage('lobbyList', [client.id], {
       lobbys: lobbysDto,
       lobbyLocal: lobbyLocal,
     });
@@ -84,8 +91,63 @@ export class PongGateway extends AGateway {
       );
       this.listGameOnline.set(id, lobby);
     }
-    this.websocketService.serverMessage('lobbyCreated', client.id, {
+    this.websocketService.serverMessage('lobbyCreated', [client.id], {
       lobby: id,
+    });
+  }
+  private customGamePending: Array<{lobby: string, owner: string, receiver: string}> = [];
+
+  @SubscribeMessage('responseFriendGame')
+  refuseCustomGame(
+    @ConnectedSocket() client: ValidSocket,
+    @Body() body: AcceptLobbyDto,
+  ) {
+    console.info('refuseFriendGame', body);
+    const index = this.customGamePending.findIndex((e) => e.lobby === body.lobby);
+    const customGame = this.customGamePending[index];
+    if (!index) return this.websocketService.serverError([client.id], 'Lobby not found');
+    const socket1 = this.websocketService.getUser(customGame.owner);
+    if (body.accept) {
+      this.customGamePending.splice(index, 1);
+      const socket2 = this.websocketService.getUser(customGame.receiver);
+      this.websocketService.serverMessage('friendGame', [socket1.id, socket2.id], {accept: body.accept, lobby: body.lobby});
+    }
+    this.websocketService.serverMessage('friendGame', [socket1.id], {accept: body.accept, lobby: body.lobby});
+  }
+
+  @SubscribeMessage('customGame')
+  async onCustomGame(
+    @ConnectedSocket() client: ValidSocket,
+    @Body() body: CreateCustomLobbyDto,
+  ) {
+    console.info('customGame', body);
+    const FriendUser = await this.userService.findUserByPseudo(body.friend);
+    if (!FriendUser)
+      return this.websocketService.serverError([client.id], 'User not found');
+    const friend = this.websocketService.getUser(FriendUser.username);
+    if (!friend)
+      return this.websocketService.serverError([client.id], 'User not Online');
+    const id = uuidv4();
+    const lobby = new PongLobby(
+      id,
+      this.server,
+      client,
+      GameType.classicOnline,
+      this.userService,
+      2,
+    );
+    this.listCustomGame.set(id, lobby);
+    this.customGamePending.push({lobby: id, owner: client.name, receiver: friend.name});
+    setTimeout(() => {
+      if (lobby.getSize() !== 2) return;
+      this.listCustomGame.delete(id);
+      this.customGamePending.splice(this.customGamePending.findIndex((e) => e.lobby === id), 1);
+      console.info('customGameCB', 'Lobby deleted');
+    }, 1000 * 20);
+    this.websocketService.serverMessage('friendGame', [friend.id], {
+      message: 'Hey ! Wanna Play ?',
+      lobby: id,
+      sender: body.owner,
     });
   }
 
@@ -100,14 +162,15 @@ export class PongGateway extends AGateway {
       this.isClientOwner(client, this.listGameLocal) ||
       this.isClientinRoom(client);
     if (!lobbyRoomID)
-      return this.websocketService.serverMessage('joinedLobby', client.id, {
+      return this.websocketService.serverMessage('joinedLobby', [client.id], {
         id: '',
       });
     const lobbyRoom =
       this.listGameLocal.get(lobbyRoomID) ||
-      this.listGameOnline.get(lobbyRoomID);
+      this.listGameOnline.get(lobbyRoomID) ||
+      this.listCustomGame.get(lobbyRoomID);
     if (!lobbyRoom)
-      return this.websocketService.serverMessage('joinedLobby', client.id, {
+      return this.websocketService.serverMessage('joinedLobby', [client.id], {
         id: '',
       });
     const user = await this.userService.findOneUser(
@@ -116,13 +179,13 @@ export class PongGateway extends AGateway {
       ['pseudo', 'ppImg', 'status'],
     );
     if (!user)
-      return this.websocketService.serverMessage('joinedLobby', client.id, {
+      return this.websocketService.serverMessage('joinedLobby', [client.id], {
         id: '',
       });
     lobbyRoom.addClient(client, user);
     this.websocketService.serverMessage(
       'joinedLobby',
-      client.id,
+      [client.id],
       this.lobbyToLobbyDto(lobbyRoom),
     );
   }
@@ -133,7 +196,9 @@ export class PongGateway extends AGateway {
     @Body() body: InputLobbyDto,
   ) {
     const lobby =
-      this.listGameLocal.get(body.lobby) || this.listGameOnline.get(body.lobby);
+      this.listGameLocal.get(body.lobby) ||
+      this.listGameOnline.get(body.lobby) ||
+      this.listCustomGame.get(body.lobby);
     lobby.onInput(client, body.input, body.pseudo);
   }
 
@@ -175,8 +240,12 @@ export class PongGateway extends AGateway {
     const lobbyRoom = this.listGameLocal.get(lobby);
     if (!lobbyRoom) return;
     const user = await this.userService.findUserByPseudo(rest.pseudo);
-    console.log(user );
-    if (user) return this.websocketService.serverError(client.id, 'Pseudo already taken');
+    console.log(user);
+    if (user)
+      return this.websocketService.serverError(
+        [client.id],
+        'Pseudo already taken',
+      );
     lobbyRoom.addClient(client, rest);
   }
 
@@ -188,7 +257,8 @@ export class PongGateway extends AGateway {
     console.info('leaveLobby', body);
     const lobbyLocal = this.listGameLocal.get(body.lobby);
     const lobbyOnline = this.listGameOnline.get(body.lobby);
-    if (!lobbyLocal && !lobbyOnline) return;
+    const lobbyCustom = this.listCustomGame.get(body.lobby);
+    if (!lobbyLocal && !lobbyOnline && !lobbyCustom) return;
     if (lobbyLocal) {
       lobbyLocal.removeClient(client);
       setTimeout(() => {
@@ -196,12 +266,19 @@ export class PongGateway extends AGateway {
         console.info('leaveLobbyCB', 'Lobby deleted');
         this.listGameLocal.delete(body.lobby);
       }, 1000 * 20);
-    } else {
+    } else if (lobbyOnline) {
       lobbyOnline.removeClient(client);
       setTimeout(() => {
         if (lobbyOnline?.getSize() !== 0) return;
         console.info('leaveLobbyCB', 'Lobby deleted');
         this.listGameOnline.delete(body.lobby);
+      }, 1000 * 20);
+    } else if (lobbyCustom) {
+      lobbyCustom.removeClient(client);
+      setTimeout(() => {
+        if (lobbyCustom?.getSize() !== 0) return;
+        console.info('leaveLobbyCB', 'Lobby deleted');
+        this.listCustomGame.delete(body.lobby);
       }, 1000 * 20);
     }
   }

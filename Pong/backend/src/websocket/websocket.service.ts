@@ -40,7 +40,7 @@ export class WebsocketService {
       : user.broadcast.emit(event);
   }
   
-  public serverMessage(event: string, to?: string, messagePayload?: Object) {
+  public serverMessage(event: string, to?: string[], messagePayload?: Object) {
     console.info(`event [${event}]`);
     messagePayload
       ? to
@@ -49,7 +49,7 @@ export class WebsocketService {
       : this.server.emit(event);
   }
 
-  public serverError(to: string, message: string) {
+  public serverError(to: string[], message: string) {
     this.server.to(to).emit('error', message);
   }
 
