@@ -145,7 +145,7 @@ export class Pong {
   protected server: Server;
   private ball = new Ball();
   private running: boolean = true;
-  private scoreEnd = 2;
+  private scoreEnd = 10;
   private functionEnd: (log: any) => void;
   private p1: Player;
   private p2: Player;
@@ -204,7 +204,22 @@ export class Pong {
     };
   }
 
+  
+  public getPlayersName() {
+    return {
+      p1: this.p1.name,
+      p2: this.p2.name,
+    };
+  }
+
+  
+  public setPlayersName(p1?: string, p2?: string) {
+      this.p1.name = p1 ? p1 : this.p1.name;
+      this.p2.name = p2 ? p2 : this.p2.name;
+  }
+
   public pause() {
+    console.info('pause' );
     this.running = !this.running;
   }
 
@@ -217,8 +232,6 @@ export class Pong {
     }
     return false;
   }
-
-  private UpdatePaddlePos(paddle: Player, input: EventGame) {}
 
   public onInput(
     @ConnectedSocket() input: EventGame.UP | EventGame.DOWN,

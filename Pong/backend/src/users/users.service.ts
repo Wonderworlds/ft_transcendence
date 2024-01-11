@@ -120,6 +120,7 @@ export class UsersService {
       winner: matchInfo.scoreP1 > matchInfo.scoreP2 ? p1 : p2,
       loser: matchInfo.scoreP1 > matchInfo.scoreP2 ? p2 : p1,
     });
+    console.info('createMatchDB', newMatch);
     return await this.matchRepository.save(newMatch);
   }
 

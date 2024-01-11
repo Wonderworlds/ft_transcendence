@@ -57,44 +57,31 @@ export class PongLobbyLocal extends PongLobby {
     this.serverUpdateClients();
   }
 
-  serverUpdateClients() {
-    const lobbyState = this.getUpdateLobbyDto(true);
-    this.server
-      .to(this.id)
-      .emit('updateLobby', lobbyState);
-  }
-
   override updateClient(
     @ConnectedSocket() client: ValidSocket,
     oldClient: ValidSocket,
     user: LimitedUserDto,
   ) {
     this.ownerIsIn = true;
-    if (this.mapTimeout.has(client.name))
-    clearTimeout(this.mapTimeout.get(client.name));
+    let timeout = this.mapTimeout.get(client.name)
+    console.info('setCB ', timeout);
+    clearTimeout(timeout);
+    this.mapTimeout.delete(client.name);
+    timeout = null;
   if (oldClient.id !== client.id){
     oldClient.leave(this.id);
     this.OwnerUser === user;
     client.join(this.id);
     this.listClients.set(user.pseudo, client);}
+    this.pongInstancePause(this.OwnerUser.pseudo);
     this.serverUpdateClients();
     console.info('updateClientLocal', client.id, oldClient.id);
-  }
-
-  override removeClientCB(@ConnectedSocket() client: ValidSocket) {
-    client.leave(this.id);
-    this.listClients.delete(client.name);
-    if (this.mapTimeout.has(client.name)) this.mapTimeout.delete(client.name);
-    console.info('removeClientCB', client.id);
   }
 
   override removeClient(@ConnectedSocket() client: ValidSocket) {
     console.info('removeClientLocal', client.name);
     this.ownerIsIn = false;
-    const id = setTimeout(() => {
-      return this.removeClientCB(client);
-    }, 1000 * 15);
-    this.mapTimeout.set(client.name, id);
+    this.pongInstancePause(this.OwnerUser.pseudo);
   }
 
   initTournament() {
@@ -114,17 +101,6 @@ export class PongLobbyLocal extends PongLobby {
         return ; //TODO next match in bracket
     }
 
-  getUpdateLobbyDto(option: boolean): UpdateLobbyDto {
-    const pReady = this.pongInstance?.getPlayersReady();
-    return {
-      nbPlayer: this.listClients.size,
-      pLeftReady: pReady?.p1,
-      pRightReady: pReady?.p2,
-      gameState: this.status,
-      pLeft: option? this.pLeft : null,
-      pRight: option? this.pRight : null,
-    };
-  }
 
   initMatch(pleft: LimitedUserDto, pright: LimitedUserDto) {
     if (this.status !== GameState.INIT) return;
@@ -150,18 +126,8 @@ export class PongLobbyLocal extends PongLobby {
     this.serverUpdateClients();
   }
 
-  pongInstancePause(pseudo: string) {
-    if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
-    if (
-      (this.status !== GameState.PLAYING && this.status !== GameState.PAUSE) ||
-      !this.pongInstance
-    )
-      return;
-    this.status = GameState.PAUSE;
-    this.pongInstance.pause();
-  }
 
-  private inputGame(input: EventGame.UP | EventGame.DOWN, pseudo: string, p1: boolean) {
+  private inputGameLocal(input: EventGame.UP | EventGame.DOWN, pseudo: string, p1: boolean) {
     if (this.status !== GameState.PLAYING || !this.pongInstance) return;
     p1 ? this.pongInstance.onInput(input, this.pLeft.pseudo) : this.pongInstance.onInput(input, this.pRight.pseudo);
   }
@@ -171,16 +137,15 @@ export class PongLobbyLocal extends PongLobby {
     input: EventGame,
     pseudo: string,
   ) {
-    console.info('onInput', input, pseudo);
     switch (input) {
       case EventGame.ARROW_UP:
-        return this.inputGame(EventGame.UP, pseudo, false);
+        return this.inputGameLocal(EventGame.UP, pseudo, false);
       case EventGame.ARROW_DOWN:
-        return this.inputGame(EventGame.DOWN, pseudo, false);
+        return this.inputGameLocal(EventGame.DOWN, pseudo, false);
       case EventGame.W_KEY:
-        return this.inputGame(EventGame.UP, pseudo, true);
+        return this.inputGameLocal(EventGame.UP, pseudo, true);
       case EventGame.S_KEY:
-        return this.inputGame(EventGame.DOWN, pseudo, true);
+        return this.inputGameLocal(EventGame.DOWN, pseudo, true);
       case EventGame.START_MATCH:
         return this.startMatch(pseudo);
       case EventGame.START_TOURNAMENT:

@@ -27,7 +27,6 @@ const Pong: React.FC = () => {
 	const [pRight, setPRight] = useState<Position>({ x: 98, y: 50 });
 	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
 	const pressedKeys = new Set<string>();
-	const [gameOver, setGameOver] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -44,7 +43,6 @@ const Pong: React.FC = () => {
 
 		return () => {
 			socket.off('updateGame');
-			socket.emit('leaveLobby', { lobby: socketContext.lobby });
 		};
 	}, [socketContext.lobby]);
 
@@ -72,7 +70,8 @@ const Pong: React.FC = () => {
 	};
 
 	function sendInput(input: EventGame) {
-		socket.emit('input', { lobby: socketContext.lobby, input: input, pseudo: user.pseudo });
+		if (socket && socketContext.lobby && user.pseudo)
+			socket.emit('input', { lobby: socketContext.lobby, input: input, pseudo: user.pseudo });
 	}
 
 	window.requestAnimationFrame(gameLoop);
@@ -91,7 +90,7 @@ const Pong: React.FC = () => {
 			window.removeEventListener('keyup', handleKeyUp);
 			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, []);
+	}, [socketContext.lobby, user.pseudo]);
 
 	const PleftStyle = { width: '1.2%', height: '12%', left: `${pLeft.x}%`, top: `${pLeft.y}%` };
 	const PrightStyle = {

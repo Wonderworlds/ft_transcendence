@@ -51,6 +51,54 @@ const GameDisplay: React.FC = () => {
 		);
 	};
 
+	const dynamicElement = () => {
+		switch (gameContext.gameType) {
+			case GameType.classicLocal: {
+				return (
+					<>
+						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
+						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
+						{gameContext.gameState === GameState.INIT
+							? addClientLocal(gameContext.addClientLocal)
+							: null}
+					</>
+				);
+			}
+			case GameType.classicOnline: {
+				return (
+					<>
+						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
+						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
+					</>
+				);
+			}
+			case GameType.tournamentLocal: {
+				return (
+					<>
+						{gameContext.gameOver ? readyButton('Next Game', gameContext.nextMatch) : null}
+						{gameContext.tournamentIsReady
+							? readyButton('Start Tournament', gameContext.startTournament)
+							: null}
+						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
+						{gameContext.gameState === GameState.INIT
+							? addClientLocal(gameContext.addClientLocal)
+							: null}
+					</>
+				);
+			}
+			case GameType.tournamentOnline: {
+				return (
+					<>
+						{gameContext.tournamentIsReady
+							? readyButton('Start Tournament', gameContext.startTournament)
+							: null}
+						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
+					</>
+				);
+			}
+		}
+	};
+
 	return (
 		<div className="headerGameDisplay">
 			<div className="emptySpace"></div>
@@ -70,21 +118,7 @@ const GameDisplay: React.FC = () => {
 								</h1>
 							</div>
 						</div>
-						<div className="RightDisplayTypeGame">
-							{gameContext.gameState === GameState.GAMEOVER
-								? readyButton(
-										gameContext.gameType === GameType.tournamentLocal ? 'Next Game' : 'ReMatch',
-										gameContext.nextMatch
-								  )
-								: null}
-							{gameContext.tournamentIsReady
-								? readyButton('Start Tournament', gameContext.startTournament)
-								: null}
-							{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
-							{gameContext.gameState === GameState.INIT
-								? addClientLocal(gameContext.addClientLocal)
-								: null}
-						</div>
+						<div className="RightDisplayTypeGame">{dynamicElement()}</div>
 					</div>
 				</div>
 				<div className="divChat">

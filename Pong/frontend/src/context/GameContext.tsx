@@ -30,6 +30,8 @@ type GameContextType = {
 	setPlayerIsReady1: React.Dispatch<React.SetStateAction<boolean>>;
 	playerIsReady2: boolean;
 	setPlayerIsReady2: React.Dispatch<React.SetStateAction<boolean>>;
+	gameOver: boolean;
+	setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
 	nextMatch(): void;
 	startMatch(): void;
 	startTournament(): void;
@@ -64,7 +66,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 	const [playerIsReady2, setPlayerIsReady2] = React.useState<boolean>(false);
 	const [tournamentIsReady, setTournamentIsReady] = React.useState<boolean>(false);
 	const [gameState, setGameState] = React.useState<GameState>(GameState.INIT);
-
+	const [gameOver, setGameOver] = React.useState<boolean>(false);
 	useEffect(() => {
 		if (!socket) return;
 		socket.on('joinedLobby', (res: LobbyDto) => {
@@ -88,7 +90,6 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			setGameState(res.gameState);
 			res.pLeft && setPlayerLeft(res.pLeft);
 			res.pRight && setPlayerRight(res.pRight);
-			res.gameState === GameState.START && setPlayerReady(false);
 		});
 
 		socket.on('tournamentIsReady', () => {
@@ -99,9 +100,8 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			setPlayerReady(false);
 		});
 
-		socket.on('gameOver', (res) => {
-			console.log('gameOver', res);
-			setGameState(GameState.GAMEOVER);
+		socket.on('gameOver', () => {
+			setGameOver(true);
 		});
 
 		return () => {
@@ -148,6 +148,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			pseudo: user.pseudo,
 		};
 		socket.emit('input', payload);
+		setGameOver(false);
 	}
 
 	return (
@@ -181,6 +182,8 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 				playerIsReady2,
 				setPlayerIsReady2,
 				nextMatch,
+				gameOver,
+				setGameOver,
 			}}
 		>
 			{children}
