@@ -15,6 +15,7 @@ const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<L
 	React.useEffect(() => {
 		if (!socket) return;
 		socket.on('lobbyList', (res: { lobbys: LobbyDto[]; lobbyLocal: LobbyDto }) => {
+			console.log(res);
 			setLobbyList(res.lobbys);
 			setLobbyLocal(res.lobbyLocal);
 		});

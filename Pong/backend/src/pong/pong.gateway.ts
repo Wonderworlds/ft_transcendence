@@ -9,7 +9,7 @@ import {
   InputLobbyDto,
   LobbyDto,
   LobbyIDDto,
-  UserLobbyDto
+  UserLobbyDto,
 } from 'src/utils/Dtos';
 import { ValidSocket } from 'src/utils/types';
 import { AGateway } from 'src/websocket/Agateway';
@@ -24,63 +24,79 @@ import { PongLobbyLocal } from './pongLocal.lobby';
   },
 })
 export class PongGateway extends AGateway {
-  protected listGame: Map<string, PongLobby | PongLobbyLocal> = new Map<string, PongLobby | PongLobbyLocal>();
-
-  isClientPlaying(@ConnectedSocket() client: ValidSocket) {
-    let gameId = '';
-  }
+  protected listGameOnline: Map<string, PongLobby> = new Map<
+    string,
+    PongLobby
+  >();
+  protected listGameLocal: Map<string, PongLobbyLocal> = new Map<
+    string,
+    PongLobbyLocal
+  >();
 
   @SubscribeMessage('getLobbys')
   onGetLobbys(@ConnectedSocket() client: ValidSocket) {
-    if (this.listGame.size === 0)
-      return this.server.to(client.id).emit('lobbyList', { lobbys: [] });
     const lobbysDto: Array<LobbyDto> = [];
-    let lobbyLocal: LobbyDto;
-    for (const [key, value] of this.listGame.entries()) {
-      if (value.isLocal && value.getOwner().name === client.name) {
-        lobbyLocal = {
-          id: key,
-          owner: value.getOwner().name,
-          nbPlayers: value.getSize(),
-          maxPlayers: value.maxClients,
-          gameType: value.gameType,
-          status: value.status,
-        };
-        continue;
-      } else if (value.isLocal || value.getSize() >= value.maxClients) continue;
-      lobbysDto.push({
-        id: key,
-        owner: value.getOwner().name,
-        nbPlayers: value.getSize(),
-        maxPlayers: value.maxClients,
-        gameType: value.gameType,
-        status: value.status,
-      });
+    let lobbyLocal: LobbyDto = null;
+    for (const [key, value] of this.listGameLocal.entries()) {
+      if (value.getOwner().name === client.name) {
+        lobbyLocal = this.lobbyToLobbyDto(value);
+        break;
+      }
     }
-    console.info('getLobbys', { lobbysDto });
+    for (const [key, value] of this.listGameOnline.entries()) {
+      if (value.getSize() >= value.maxClients) continue;
+      lobbysDto.push(this.lobbyToLobbyDto(value));
+    }
+    console.info('getLobbys', { lobbysDto }, lobbyLocal);
     this.server
       .to(client.id)
       .emit('lobbyList', { lobbys: lobbysDto, lobbyLocal: lobbyLocal });
   }
 
   @SubscribeMessage('createLobby')
-  onCreateLobby(
+  async onCreateLobby(
     @ConnectedSocket() client: ValidSocket,
     @Body() body: CreateLobbyDto,
   ) {
     if (body.isLocal) {
-      const lobby = this.isClientOwner(client);
-      if (lobby !== '') this.listGame.delete(lobby);
+      const lobby = this.isClientOwner(client, this.listGameLocal);
+      if (lobby !== '') this.listGameLocal.delete(lobby);
     }
     console.info('createLobby', body);
     const id = uuidv4();
-    let lobby: PongLobby | PongLobbyLocal;
-    if (body.isLocal)
-      lobby = new PongLobbyLocal(id, this.server, client, body.gameType);
-    else
-      lobby = new PongLobby(id, this.server, client, body.gameType);
-    this.listGame.set(id, lobby);
+    if (body.isLocal) {
+      const lobby = new PongLobbyLocal(id, this.server, client, body.gameType);
+      this.listGameLocal.set(id, lobby);
+    } else {
+      const lobby = new PongLobby(id, this.server, client, body.gameType);
+      this.listGameOnline.set(id, lobby);
+    }
     this.server.to(client.id).emit('lobbyCreated', { lobby: id });
+  }
+
+  @SubscribeMessage('joinLobby')
+  async onJoinLobby(
+    @ConnectedSocket() client: ValidSocket,
+    @Body() body: LobbyIDDto,
+  ) {
+    console.info('joinLobby', body);
+    const lobbyRoomID =
+      body.lobby ||
+      this.isClientOwner(client, this.listGameLocal) ||
+      this.isClientinRoom(client);
+    if (!lobbyRoomID)
+      return this.server.to(client.id).emit('joinedLobby', { id: '' });
+    const lobbyRoom =
+      this.listGameLocal.get(lobbyRoomID) ||
+      this.listGameOnline.get(lobbyRoomID);
+    if (!lobbyRoom)
+      return this.server.to(client.id).emit('joinedLobby', { id: '' });
+    const user = await this.userService.findOneUser({username: client.name}, [], ['pseudo', 'ppImg', 'status']);
+    if (!user)  return this.server.to(client.id).emit('joinedLobby', { id: '' });
+    lobbyRoom.addClient(client, user);
+    this.server
+      .to(client.id)
+      .emit('joinedLobby', this.lobbyToLobbyDto(lobbyRoom));
   }
 
   @SubscribeMessage('input')
@@ -89,29 +105,31 @@ export class PongGateway extends AGateway {
     @Body() body: InputLobbyDto,
   ) {
     console.info('onInputReceived', body);
-    this.listGame.get(body.lobby).onInput(client, body.input, body.pseudo);
+    const lobby = this.listGameLocal.get(body.lobby) || this.listGameOnline.get(body.lobby);
+    lobby.onInput(client, body.input, body.pseudo);
   }
-  
-    isClientOwner(client: ValidSocket) {
-      for (const [key, value] of this.listGame.entries()) {
-        if (value.getOwner().name === client.name) return key;
-      }
-      return '';
+
+  isClientOwner(
+    client: ValidSocket,
+    array: Map<string, PongLobby | PongLobbyLocal>,
+  ) {
+    for (const [key, value] of array.entries()) {
+      if (value.getOwner().name === client.name) return key;
     }
+    return '';
+  }
 
   isClientinRoom(client: ValidSocket) {
-    for (const [key, value] of this.listGame.entries()) {
-      //console.info('isClientinRoom', value.listClients.keys(), client.name);
+    for (const [key, value] of this.listGameOnline.entries()) {
       if (value.listClients.has(client.name)) return key;
     }
-    return this.isClientOwner(client);
     return '';
   }
 
   private lobbyToLobbyDto(lobby: PongLobby | PongLobbyLocal): LobbyDto {
     return {
       id: lobby.id,
-      owner: lobby.getOwner().name,
+      owner: lobby.getOwnerPseudo(),
       nbPlayers: lobby.getSize(),
       maxPlayers: lobby.maxClients,
       gameType: lobby.gameType,
@@ -120,33 +138,15 @@ export class PongGateway extends AGateway {
   }
 
   @SubscribeMessage('addClientLocal')
-  onAddClientLocal(@ConnectedSocket() client: ValidSocket, @Body() body: UserLobbyDto) {
-    console.info('onAddClientLocal', body);
-    let {lobby, ...rest} = body;
-    const lobbyRoom = this.listGame.get(lobby);
-    if (!lobbyRoom) return;
-    lobbyRoom.addClient(client, rest);
-  }
-
-  @SubscribeMessage('joinLobby')
-  async onJoinLobby(
+  onAddClientLocal(
     @ConnectedSocket() client: ValidSocket,
     @Body() body: UserLobbyDto,
   ) {
-    console.info('joinLobby', body);
-    let {lobby, ...rest} = body;
-    if (lobby === '') {
-      lobby = this.isClientinRoom(client);
-      if (lobby !== '')
-        return this.server.to(client.id).emit('joinedLobby', this.lobbyToLobbyDto(this.listGame.get(lobby)));
-      return this.server.to(client.id).emit('joinedLobby', { id: '' });
-    }
-    if (!this.listGame.has(lobby)) {
-      this.server.to(client.id).emit('joinedLobby', { id: '' });
-      return;
-    }
-    this.listGame.get(lobby).addClient(client, rest);
-    this.server.to(client.id).emit('joinedLobby', this.lobbyToLobbyDto(this.listGame.get(lobby)));
+    console.info('onAddClientLocal', body);
+    let { lobby, ...rest } = body;
+    const lobbyRoom = this.listGameLocal.get(lobby);
+    if (!lobbyRoom) return;
+    lobbyRoom.addClient(client, rest);
   }
 
   @SubscribeMessage('leaveLobby')
@@ -155,20 +155,27 @@ export class PongGateway extends AGateway {
     @Body() body: LobbyIDDto,
   ) {
     console.info('leaveLobby', body);
-    const lobby = this.listGame.get(body.lobby);
-    if (!lobby) return;
-    lobby?.removeClient(client);
-    setTimeout(() => {
-      if (lobby?.getSize() !== 0) return;
-      this.listGame.delete(body.lobby);
-      console.info('leaveLobbyCB', 'Lobby deleted');
-    }, 1000 * 20);
+    const lobbyLocal =
+      this.listGameLocal.get(body.lobby);
+    const lobbyOnline = this.listGameOnline.get(body.lobby);
+    if (!lobbyLocal && !lobbyOnline) return;
+    if (lobbyLocal)
+    {
+      lobbyLocal.removeClient(client);
+      setTimeout(() => {
+        if (lobbyLocal?.isOwnerConnected() ) return;
+        console.info('leaveLobbyCB', 'Lobby deleted');
+        this.listGameLocal.delete(body.lobby);
+      }, 1000 * 20);
+    }
+    else
+    {
+      lobbyOnline.removeClient(client);
+      setTimeout(() => {
+        if (lobbyOnline?.getSize() !== 0) return;
+        console.info('leaveLobbyCB', 'Lobby deleted');
+        this.listGameOnline.delete(body.lobby);
+      }, 1000 * 20);
+    }
   }
-
-  @SubscribeMessage('start')
-  onStart(@ConnectedSocket() client: ValidSocket, @Body() body: LobbyIDDto) {
-//    console.info('onStart', body);
-    // this.listGame.get(body.lobby).startGame(client);
-  }
-
 }

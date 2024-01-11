@@ -19,7 +19,7 @@ export class PongLobby {
   public isLocal: boolean;
   public id: string;
   protected pongInstance: Pong;
-
+  protected OwnerUser: LimitedUserDto;
 
   constructor(
     id: string,
@@ -144,5 +144,9 @@ export class PongLobby {
   public onInput(@ConnectedSocket() client: ValidSocket, input: EventGame, pseudo: string) {
     // if (this.status !== GameState.PLAYING && client === this.pLeft || client === this.pRight) return;
 		//   this.pongInstance.onInput(client, input);
+  }
+
+  public getOwnerPseudo() {
+    return this.OwnerUser.pseudo;
   }
 }

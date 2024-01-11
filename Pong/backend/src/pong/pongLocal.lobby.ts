@@ -17,8 +17,7 @@ export type UpdateLobbyDto = {
 export class PongLobbyLocal extends PongLobby {
   @WebSocketServer()
   server: Server;
-
-  private OwnerUser: LimitedUserDto;
+  private ownerIsIn: boolean = false;
   constructor(
     id: string,
     server: Server,
@@ -34,10 +33,11 @@ export class PongLobbyLocal extends PongLobby {
     user: LimitedUserDto,
   ) {
     const oldClient = this.listClients.get(user.pseudo);
-    if (oldClient && user !== this.OwnerUser) return;
+    if (oldClient && user.pseudo !== this.OwnerUser.pseudo) return;
     if (oldClient) return this.updateClient(client, oldClient, user);
     if (this.listClients.size >= this.maxClients) return;
     if (this.listClients.size === 0) {
+      this.ownerIsIn = true;
       this.OwnerUser = user;
       client.join(this.id);
     }
@@ -50,7 +50,16 @@ export class PongLobbyLocal extends PongLobby {
     this.pLeft = this.OwnerUser;
       this.pRight = user;
       this.initMatch(this.pLeft, this.pRight);
+      return ;
     }
+    this.serverUpdateClients();
+  }
+
+  serverUpdateClients() {
+    const lobbyState = this.getUpdateLobbyDto(true);
+    this.server
+      .to(this.id)
+      .emit('updateLobby', lobbyState);
   }
 
   override updateClient(
@@ -58,13 +67,15 @@ export class PongLobbyLocal extends PongLobby {
     oldClient: ValidSocket,
     user: LimitedUserDto,
   ) {
+    this.ownerIsIn = true;
     if (this.mapTimeout.has(client.name))
-      clearTimeout(this.mapTimeout.get(client.name));
-    if (oldClient.id === client.id) return;
+    clearTimeout(this.mapTimeout.get(client.name));
+  if (oldClient.id !== client.id){
     oldClient.leave(this.id);
     this.OwnerUser === user;
     client.join(this.id);
-    this.listClients.set(user.pseudo, client);
+    this.listClients.set(user.pseudo, client);}
+    this.serverUpdateClients();
     console.info('updateClientLocal', client.id, oldClient.id);
   }
 
@@ -77,6 +88,7 @@ export class PongLobbyLocal extends PongLobby {
 
   override removeClient(@ConnectedSocket() client: ValidSocket) {
     console.info('removeClientLocal', client.name);
+    this.ownerIsIn = false;
     const id = setTimeout(() => {
       return this.removeClientCB(client);
     }, 1000 * 15);
@@ -89,6 +101,16 @@ export class PongLobbyLocal extends PongLobby {
     this.status = GameState.START;
     //initMatch();
   }
+  
+    nextMatch() {
+      if (this.status !== GameState.GAMEOVER) return;
+      this.status = GameState.INIT;
+      this.pongInstance = null;
+      if (this.gameType === GameType.classicLocal || this.gameType === GameType.classicOnline)
+        this.initMatch(this.pLeft, this.pRight);
+      else
+        return ; //TODO next match in bracket
+    }
 
   getUpdateLobbyDto(option: boolean): UpdateLobbyDto {
     const pReady = this.pongInstance?.getPlayersReady();
@@ -131,13 +153,6 @@ export class PongLobbyLocal extends PongLobby {
     this.server
       .to(this.id)
       .emit('updateLobby', lobbyState);
-  }
-
-  nextMatch() {
-    if (this.status !== GameState.GAMEOVER) return;
-    this.status = GameState.INIT;
-    this.pongInstance = null;
-    this.initMatch(this.pLeft, this.pRight);
   }
 
   public pongInstanceEnd(log: any) {
@@ -202,5 +217,9 @@ export class PongLobbyLocal extends PongLobby {
     }
     console.info('getPlayers', players);
     return players;
+  }
+
+  public isOwnerConnected(): boolean {
+    return this.ownerIsIn;
   }
 }

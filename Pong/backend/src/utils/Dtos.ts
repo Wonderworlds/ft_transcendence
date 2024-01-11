@@ -78,6 +78,7 @@ export class CodeDto {
 }
 
 export class CreateLobbyDto {
+	@IsEnum(GameType)
 	gameType: GameType;
 	@IsBoolean()
 	isLocal: boolean;
