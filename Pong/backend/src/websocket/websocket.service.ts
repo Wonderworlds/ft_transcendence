@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { ValidSocket } from 'src/utils/types';
+import { jwtConstants } from 'src/auth/utils';
+import { UserJwt, ValidSocket } from 'src/utils/types';
 
 @Injectable()
 export class WebsocketService {
   public server: Server;
   public users: Map<string, ValidSocket> = new Map<string, ValidSocket>();
 
+    constructor(private readonly jwtService: JwtService) {
+    console.info('WebsocketService');
+  }
   public getUser(username: string): ValidSocket | undefined {
     return this.users.get(username);
   }
@@ -62,4 +67,17 @@ export class WebsocketService {
   public getUsersSize(): number {
     return this.users.size;
   }
+
+  
+  async validateJWT(token: string): Promise<UserJwt> {
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret,
+      });
+      return { userId: payload.sub, username: payload.user as string };
+    } catch {
+      return undefined;
+    }
+  }
+
 }

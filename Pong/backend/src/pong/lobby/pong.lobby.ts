@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { GameState, LimitedUserDto } from 'src/utils/Dtos';
 import { EventGame, GameType, ValidSocket } from 'src/utils/types';
-import { Pong } from './Pong';
+import { Pong } from '../Pong';
 import { UpdateLobbyDto } from './pongLocal.lobby';
 
 export class PongLobby {
