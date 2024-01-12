@@ -25,7 +25,6 @@ const Settings: React.FC = () => {
 					<button
 						onClick={() => {
 							navigate(Pages.Root);
-							window.location.reload();
 						}}
 					>
 						<p>Disconnect</p>

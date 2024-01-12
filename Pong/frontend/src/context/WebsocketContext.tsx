@@ -40,6 +40,15 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 				alert(error);
 			});
 
+			socket.on('forcedDisconnect', (res) => {
+				axios.setAuth({ username: '', token: '' });
+				socket.disconnect();
+				navigate(Pages.Root);
+				if (res?.message) {
+					alert(res.message);
+				}
+			});
+
 			socket.on(
 				'friendGame',
 				(response: { message?: string; lobby: string; sender: string; accept?: boolean }) => {
@@ -63,6 +72,7 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 		return () => {
 			if (socket) {
 				socket.off('connect');
+				socket.off('forcedDisconnect');
 				socket.off('error');
 				socket.off('disconnect');
 				socket.off('friendGame');

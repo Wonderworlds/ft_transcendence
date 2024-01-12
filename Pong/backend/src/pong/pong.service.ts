@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import {
-	AcceptLobbyDto,
-	CreateCustomLobbyDto,
-	CreateLobbyDto,
-	InputLobbyDto,
-	LobbyDto,
-	LobbyIDDto,
-	UserLobbyDto,
+  AcceptLobbyDto,
+  CreateCustomLobbyDto,
+  CreateLobbyDto,
+  InputLobbyDto,
+  LobbyDto,
+  LobbyIDDto,
+  UserLobbyDto,
 } from 'src/utils/Dtos';
 import { GameType, ValidSocket } from 'src/utils/types';
 import { WebsocketService } from 'src/websocket/websocket.service';
@@ -33,6 +33,7 @@ export class PongService {
   >();
 
   constructor(public userService: UsersService) {
+    console.info('PongService', 'Service created');
   }
 
   getLobbys(client: ValidSocket): {
@@ -101,13 +102,19 @@ export class PongService {
       (e) => e.lobby === body.lobby,
     );
     const customGame = this.customGamePending[index];
-    if (!index)
+    if (index === -1)
       return {
         event: 'error',
         to: [client.id],
         messagePayload: 'Lobby not found',
       };
     const socket1 = websocketService.getUser(customGame.owner);
+    if (!socket1)
+      return {
+        event: 'error',
+        to: [client.id],
+        messagePayload: 'User not Online',
+      };
     if (body.accept) {
       this.customGamePending.splice(index, 1);
       return {
@@ -168,6 +175,7 @@ export class PongService {
       );
       console.info('customGameCB', 'Lobby deleted');
     }, 1000 * 20);
+    console.info('customGameCreate', this.customGamePending);
     return {
       event: 'friendGame',
       to: [friend.id],
@@ -206,7 +214,7 @@ export class PongService {
     const user = await this.userService.findOneUser(
       { username: client.name },
       [],
-      ['pseudo', 'ppImg', 'status'],
+      ['pseudo', 'ppImg', 'status', 'id'],
     );
     if (!user)
       return {

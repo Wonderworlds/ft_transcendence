@@ -53,6 +53,7 @@ export class AuthService {
       user = await this.userService.findUserByUsername(userToLog.username);
     }
     if (!user) throw new BadRequestException('User not found');
+    if (user.status !== Status.Offline) throw new BadRequestException('User already connected');
     const passwordValid = await bcrypt.compare(
       userToLog.password,
       user.password,

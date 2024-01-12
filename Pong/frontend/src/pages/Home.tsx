@@ -1,4 +1,5 @@
 import React from 'react';
+import Chat from '../components/Chat.tsx';
 import NavBar from '../components/NavBar.tsx';
 import PlayBig from '../components/PlayBig.tsx';
 
@@ -10,6 +11,7 @@ const Home: React.FC = () => {
 			</div>
 			<div className="divPlayMid">
 				<PlayBig />
+				<Chat />
 			</div>
 		</div>
 	);

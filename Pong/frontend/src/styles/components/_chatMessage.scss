@@ -1,0 +1,68 @@
+.divChatMessage {
+	background-color: gray;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	height: auto;
+	img {
+		border-radius: 50%;
+		height: 50px;
+		width: 50px;
+	}
+
+	p {
+		color: #fff;
+	}
+	
+	border-radius: 2rem;
+
+}
+
+.divMessage {
+	margin-left: 5px;
+}
+
+.divChatFrom {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 2rem;
+}
+
+.chatBotMessageElement {
+	width: 100%;
+	background-color: #318a13;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 2rem;
+}
+
+.chatServerMessageElement{
+	width: 100%;
+	background-color: #a31d1d;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 2rem;
+}
+
+.chatStandardMessageElement {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 2rem;
+}
+
+.chatPrivateMessageElement {
+	width: 100%;
+	background-color: #2f64c0;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	border-radius: 2rem;
+}
+

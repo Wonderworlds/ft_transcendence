@@ -7,6 +7,15 @@ export enum Status {
   Busy = 'Busy',
 }
 
+export enum ChatMessageType {
+  STANDARD = 'STANDARD',
+  PRIVATE = 'PRIVATE',
+  COMMAND = 'COMMAND',
+  BOT = 'BOT',
+  SERVER = 'SERVER',
+  UNDEFINED = 'UNDEFINED',
+}
+
 export type Success = {
   success: boolean;
 };

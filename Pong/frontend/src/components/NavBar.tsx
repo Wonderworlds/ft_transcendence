@@ -55,7 +55,6 @@ const NavBar: React.FC = () => {
 						className="gg-log-off"
 						onClick={() => {
 							navigate(Pages.Root);
-							window.location.reload();
 						}}
 					></div>
 				</div>

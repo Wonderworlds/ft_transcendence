@@ -28,7 +28,7 @@ export class PongGateway {
 
   constructor(
     public websocketService: WebsocketService,
-    private readonly pongService: PongService,
+    public pongService: PongService,
   ) {
   }
 
@@ -63,7 +63,7 @@ export class PongGateway {
     @ConnectedSocket() client: ValidSocket,
     @Body() body: AcceptLobbyDto,
   ) {
-    console.info('refuseFriendGame', body);
+    console.info('responseFriendGame', body);
     const res = this.pongService.responseFriendGame(
       client,
       body,

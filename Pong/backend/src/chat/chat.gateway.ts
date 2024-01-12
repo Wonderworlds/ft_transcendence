@@ -1,9 +1,9 @@
 import { Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { messageLobbyDto } from 'src/utils/Dtos';
-import { ValidSocket } from 'src/utils/types';
+import { ChatMessageType, ValidSocket } from 'src/utils/types';
 import { WebsocketService } from 'src/websocket/websocket.service';
-import { ChatMessageType, ChatService } from './chat.service';
+import { ChatService } from './chat.service';
 
 @UsePipes(new ValidationPipe())
 @WebSocketGateway({
@@ -24,10 +24,20 @@ export class ChatGateway{
     switch (typeMessage) {
       case ChatMessageType.STANDARD: return this.chatService.sendMessageRoom(client, payload);
       case ChatMessageType.PRIVATE: return this.chatService.sendPrivateMessage(client, payload);
-      case ChatMessageType.COMMAND:
-      case ChatMessageType.BOT:
-      case ChatMessageType.UNDEFINED:
+      case ChatMessageType.COMMAND: return this.chatService.sendCommandMessage(client, payload);
     }
-    
+  }
+
+  
+  @SubscribeMessage('messageChatTest')
+  handleMessageTest(@ConnectedSocket() client: ValidSocket, @Body() payload: string) {
+    client.join('lobby1');
+    const newpayload = {message: payload, lobby: 'lobby1'};
+    const typeMessage = this.chatService.getMessageType(newpayload.message);
+    switch (typeMessage) {
+      case ChatMessageType.STANDARD: return this.chatService.sendMessageRoom(client, newpayload);
+      case ChatMessageType.PRIVATE: return this.chatService.sendPrivateMessage(client, newpayload);
+      case ChatMessageType.COMMAND: return this.chatService.sendCommandMessage(client, newpayload);
+    }
   }
 }

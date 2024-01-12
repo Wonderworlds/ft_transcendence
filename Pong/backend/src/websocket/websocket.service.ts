@@ -3,29 +3,20 @@ import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { jwtConstants } from 'src/auth/utils';
-import { UsersService } from 'src/users/users.service';
 import { UserJwt, ValidSocket } from 'src/utils/types';
 
 @Injectable()
 export class WebsocketService {
   public server: Server;
   public users: Map<string, ValidSocket> = new Map<string, ValidSocket>();
+  public usersJWT: Map<string, NodeJS.Timeout> = new Map<string, NodeJS.Timeout>();
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userService: UsersService,
   ) {}
 
   public getUser(username: string): ValidSocket | undefined {
     return this.users.get(username);
-  }
-
-  public popUser(): ValidSocket {
-    if (this.users.size == 0) return null;
-    const iterator = this.users.values();
-    let user = iterator.next().value;
-    this.removeUser(user);
-    return user;
   }
 
   public addUser(@ConnectedSocket() newUser: ValidSocket): void {
@@ -45,15 +36,8 @@ export class WebsocketService {
       : this.server.emit(event);
   }
 
-
   public serverError(to: string[], message: string) {
     this.server.to(to).emit('error', message);
-  }
-
-  public updateUser(user: ValidSocket) {
-    const old = this.users.get(user.name);
-    if (old) old.disconnect();
-    this.users.set(user.name, user);
   }
 
   public getUsersSize(): number {
@@ -65,6 +49,16 @@ export class WebsocketService {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
+      const exp = payload.exp - (new Date().getTime() / 1000);
+      const id = setTimeout(() => {
+        const user = this.users.get(payload.user);
+        if (!user) return;
+          this.serverMessage('forcedDisconnect', [user.id], { message: 'JWT Expired' });
+          this.usersJWT.delete(payload.user);
+      }, 1000 * (exp + 1));
+      const old = this.usersJWT.get(payload.user);
+      if (old) clearTimeout(old);
+      this.usersJWT.set(payload.user, id);
       return { userId: payload.sub, username: payload.user as string };
     } catch {
       return undefined;

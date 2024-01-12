@@ -155,31 +155,31 @@ export class UsersService {
     }
   }
   async getFriends(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['friends'], ['friends']);
+    const user = await this.findOneUser({ id: id }, ['friends'], ['friends', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.friends);
   }
 
   async getFriendsPending(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['friendsPending'], ['friendsPending']);
+    const user = await this.findOneUser({ id: id }, ['friendsPending'], ['friendsPending', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.friendsPending);
   }
 
   async getFriendsDemands(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['friendsDemands'], ['friendsDemands']);
+    const user = await this.findOneUser({ id: id }, ['friendsDemands'], ['friendsDemands', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.friendsDemands);
   }
 
   async getBlockList(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['blocked'], ['blocked']);
+    const user = await this.findOneUser({ id: id }, ['blocked'], ['blocked', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.blocked);
   }
 
   async getBlockByList(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['blockedBy'], ['blockedBy']);
+    const user = await this.findOneUser({ id: id }, ['blockedBy'], ['blockedBy', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.blockedBy);
   }
@@ -337,7 +337,7 @@ export class UsersService {
   }
 
   async getBlockedBy(username: string): Promise<Array<string>> {
-    const user = await this.findOneUser({ username: username }, ['blockedBy'], ['blockedBy']);
+    const user = await this.findOneUser({ username: username }, ['blockedBy'], ['blockedBy', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     const blockedBy = user.blockedBy.map((e) => {return e.username});
     return blockedBy;

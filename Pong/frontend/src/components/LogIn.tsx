@@ -14,7 +14,10 @@ const LogIn: React.FC = () => {
 	const axios = getAxios();
 
 	React.useEffect(() => {
-		sessionStorage.clear();
+		if (sessionStorage.getItem('username')) {
+			user.setUsername('');
+			sessionStorage.clear();
+		}
 	}, []);
 
 	const twoFAElement = () => {

@@ -6,6 +6,15 @@ export enum GameType {
 	tournamentOnline = 'Online Tournament',
 }
 
+export enum ChatMessageType {
+	STANDARD = 'STANDARD',
+	PRIVATE = 'PRIVATE',
+	COMMAND = 'COMMAND',
+	BOT = 'BOT',
+	SERVER = 'SERVER',
+	UNDEFINED = 'UNDEFINED',
+}
+
 export type Match = {
 	me: User;
 	adversary: User;
