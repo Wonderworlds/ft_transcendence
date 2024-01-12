@@ -7,7 +7,6 @@ import { Pages } from '../utils/types.tsx';
 
 const Settings: React.FC = () => {
 	const navigate = useNavigate();
-
 	return (
 		<div className="headerProfile">
 			<div className="divNav">
@@ -25,6 +24,7 @@ const Settings: React.FC = () => {
 					<button
 						onClick={() => {
 							navigate(Pages.Root);
+							window.location.reload();
 						}}
 					>
 						<p>Disconnect</p>

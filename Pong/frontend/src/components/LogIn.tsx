@@ -10,15 +10,21 @@ const LogIn: React.FC = () => {
 	const [code, setCode] = React.useState<string>('');
 	const [error, setError] = React.useState<string>('');
 	const user = getUser();
-	const navigate = useNavigate();
 	const axios = getAxios();
+	const navigate = useNavigate();
 
 	React.useEffect(() => {
-		if (sessionStorage.getItem('username')) {
-			user.setUsername('');
-			sessionStorage.clear();
-		}
+		sessionStorage.clear();
+		user.username = '';
+		axios.setAuth({ token: '', username: '' });
 	}, []);
+
+	React.useEffect(() => {
+		if (axios.ready) {
+			axios.setReady(false);
+			navigate(Pages.Home);
+		}
+	}, [axios.ready]);
 
 	const twoFAElement = () => {
 		return (
@@ -103,7 +109,6 @@ const LogIn: React.FC = () => {
 				user.setUsername(res.data.username);
 				if (!res.data.twoFA) {
 					axios.setAuth({ token: res.data.access_token, username: res.data.username });
-					navigate(Pages.Home);
 				} else {
 					alert('2FA enabled: Enter code received by email at ' + res.data.email);
 				}
@@ -118,7 +123,6 @@ const LogIn: React.FC = () => {
 			.post('auth/twoFA', { username: username, password: password, code: code })
 			.then((res) => {
 				axios.setAuth({ token: res.data.access_token, username: res.data.username });
-				navigate(Pages.Home);
 			})
 			.catch((err: any) => {
 				setError(err.response?.data?.message);

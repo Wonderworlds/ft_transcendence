@@ -19,6 +19,7 @@ export class ChatGateway{
 
   @SubscribeMessage('messageChat')
   handleMessage(@ConnectedSocket() client: ValidSocket, @Body() payload: messageLobbyDto) {
+    if (payload.message.length > 120) return this.websocketService.serverError([client.id], 'message too long > 120');
     const typeMessage = this.chatService.getMessageType(payload.message);
     if (!this.chatService.isClientInLobby(client, payload.lobby)) return this.websocketService.serverError([client.id], 'you are not in this lobby');
     switch (typeMessage) {
@@ -32,7 +33,9 @@ export class ChatGateway{
   @SubscribeMessage('messageChatTest')
   handleMessageTest(@ConnectedSocket() client: ValidSocket, @Body() payload: string) {
     client.join('lobby1');
+
     const newpayload = {message: payload, lobby: 'lobby1'};
+    if (newpayload.message.length > 120) return this.websocketService.serverError([client.id], 'message too long > 120');
     const typeMessage = this.chatService.getMessageType(newpayload.message);
     switch (typeMessage) {
       case ChatMessageType.STANDARD: return this.chatService.sendMessageRoom(client, newpayload);

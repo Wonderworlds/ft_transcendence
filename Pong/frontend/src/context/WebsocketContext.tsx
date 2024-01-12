@@ -41,7 +41,9 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 			});
 
 			socket.on('forcedDisconnect', (res) => {
-				axios.setAuth({ username: '', token: '' });
+				sessionStorage.clear();
+				user.username = '';
+				axios.setAuth({ token: '', username: '' });
 				socket.disconnect();
 				navigate(Pages.Root);
 				if (res?.message) {

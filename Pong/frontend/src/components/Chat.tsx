@@ -28,6 +28,7 @@ const Chat: React.FC = () => {
 	}, [socket]);
 
 	const handleClick = () => {
+		if (message === '') return;
 		socket.emit('messageChatTest', message);
 		setMessage('');
 	};
@@ -51,10 +52,10 @@ const Chat: React.FC = () => {
 	};
 
 	return (
-		<div>
+		<div className="divChat">
 			<div className="chatBox">
-				<div>
-					{chatMessages()}
+				{chatMessages()}
+				<div className="divChatInput">
 					<input
 						className="chatInput"
 						type="text"
