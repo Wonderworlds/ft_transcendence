@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { jwtConstants } from 'src/auth/utils';
+import { UsersService } from 'src/users/users.service';
 import { UserJwt, ValidSocket } from 'src/utils/types';
 
 @Injectable()
@@ -10,9 +11,11 @@ export class WebsocketService {
   public server: Server;
   public users: Map<string, ValidSocket> = new Map<string, ValidSocket>();
 
-    constructor(private readonly jwtService: JwtService) {
-    console.info('WebsocketService');
-  }
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UsersService,
+  ) {}
+
   public getUser(username: string): ValidSocket | undefined {
     return this.users.get(username);
   }
@@ -33,18 +36,6 @@ export class WebsocketService {
     this.users.delete(user.name);
   }
 
-  public sendMessage(
-    @ConnectedSocket() user: ValidSocket,
-    event: string,
-    to?: string,
-    messagePayload?: Object,
-  ) {
-    console.info(`event [${event}]`);
-    messagePayload
-      ? user.broadcast.emit(event, messagePayload)
-      : user.broadcast.emit(event);
-  }
-  
   public serverMessage(event: string, to?: string[], messagePayload?: Object) {
     console.info(`event [${event}]`);
     messagePayload
@@ -53,6 +44,7 @@ export class WebsocketService {
         : this.server.emit(event, messagePayload)
       : this.server.emit(event);
   }
+
 
   public serverError(to: string[], message: string) {
     this.server.to(to).emit('error', message);
@@ -68,7 +60,6 @@ export class WebsocketService {
     return this.users.size;
   }
 
-  
   async validateJWT(token: string): Promise<UserJwt> {
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -79,5 +70,4 @@ export class WebsocketService {
       return undefined;
     }
   }
-
 }

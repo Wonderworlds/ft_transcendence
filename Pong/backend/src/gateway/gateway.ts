@@ -39,6 +39,7 @@ export class Gateway
     this.chatGateway.websocketService = this.websocketService;
     this.websocketService.server = this.server;
     this.pongGateway.server = this.server;
+    this.chatGateway.chatService.websocketService = this.websocketService;
   }
   
   async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {

@@ -250,8 +250,8 @@ export class UsersService {
     return this.cleanFriends(friend, user);
   }
 
-  async sendFriendDemand(id: number, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ id: id }, ['friends', 'friendsPending'], ['friends', 'friendsPending', 'id']);
+  async sendFriendDemand(username: string, pseudo: string): Promise<Success> {
+    const user = await this.findOneUser({ username: username}, ['friends', 'friendsPending'], ['friends', 'friendsPending', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({ pseudo: pseudo }, [
       'friendsDemands',
@@ -302,8 +302,8 @@ export class UsersService {
     return res && res1 ? { success: true } : { success: false };
   }
 
-  async blockUser(id: number, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ id: id }, ['blocked'], ['blocked', 'id']);
+  async blockUser(username: string, pseudo: string): Promise<Success> {
+    const user = await this.findOneUser({ username: username }, ['blocked'], ['blocked', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({ pseudo: pseudo }, ['blockedBy'], ['blockedBy', 'id']);
     if (!friend) throw new BadRequestException('Target Not Found');
@@ -320,8 +320,8 @@ export class UsersService {
     return res && res1 ? { success: true } : { success: false };
   }
 
-  async unblockUser(id: number, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ id: id }, ['blocked'], ['blocked', 'id']);
+  async unblockUser(username: string, pseudo: string): Promise<Success> {
+    const user = await this.findOneUser({ username: username }, ['blocked'], ['blocked', 'id']);
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser({ pseudo: pseudo }, ['blockedBy'], ['blockedBy', 'id']);
     if (!friend) throw new BadRequestException('Target Not Found');
@@ -334,5 +334,12 @@ export class UsersService {
     blockedBy.splice(blockedBy.map((e) =>e.id).indexOf(user.id), 1);
     const res1 = await this.userRepository.save(friend);
     return res && res1 ? { success: true } : { success: false };
+  }
+
+  async getBlockedBy(username: string): Promise<Array<string>> {
+    const user = await this.findOneUser({ username: username }, ['blockedBy'], ['blockedBy']);
+    if (!user) throw new BadRequestException('User Not Found');
+    const blockedBy = user.blockedBy.map((e) => {return e.username});
+    return blockedBy;
   }
 }

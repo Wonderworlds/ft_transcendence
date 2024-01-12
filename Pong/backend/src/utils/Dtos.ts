@@ -128,6 +128,22 @@ export class InputDto {
 	input: EventGame;
 }
 
+export class messageLobbyDto {
+	@IsString()
+	message: string;
+	@IsString()
+	lobby: string;
+}
+
+export class privateMessageLobbyDto {
+	@IsString()
+	message: string;
+	@IsString()
+	lobby: string;
+	@IsString()
+	to: string;
+}
+
 export class PseudoLobbyDto extends IntersectionType(LobbyIDDto, UserDtoPseudo) {};
 export class InputLobbyDto extends IntersectionType(InputDto, PseudoLobbyDto) {};
 export class UserLobbyDto extends IntersectionType(LobbyIDDto, LimitedUserDto) {};
@@ -139,3 +155,9 @@ export class UpdateGameDto {
   scorePLeft: number;
   scorePRight: number;
 };
+
+export class clientMessageLobbyDto {
+	message: string;
+  	from: LimitedUserDto;
+  	isPrivate: boolean;
+}
