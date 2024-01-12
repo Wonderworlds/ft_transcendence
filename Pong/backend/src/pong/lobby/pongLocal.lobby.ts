@@ -2,8 +2,8 @@ import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { EventGame, GameType, ValidSocket } from 'src/utils/types';
-import { GameState, LimitedUserDto } from './../utils/Dtos';
-import { Pong } from './Pong';
+import { GameState, LimitedUserDto } from '../../utils/Dtos';
+import { Pong } from '../Pong';
 import { PongLobby } from './pong.lobby';
 
 export type UpdateLobbyDto = {
@@ -168,5 +168,9 @@ export class PongLobbyLocal extends PongLobby {
 
   public isOwnerConnected(): boolean {
     return this.ownerIsIn;
+  }
+
+  public isPseudoTaken(pseudo: string): boolean {
+    return this.listClients.has(pseudo);
   }
 }

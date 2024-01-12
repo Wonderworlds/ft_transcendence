@@ -15,6 +15,8 @@ import { Match } from './typeorm/entities/Match';
 import { Otp } from './typeorm/entities/Otp';
 import { User } from './typeorm/entities/User';
 import { UsersModule } from './users/users.module';
+import { ChatModule } from './chat/chat.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -63,6 +65,8 @@ import { UsersModule } from './users/users.module';
     ]),
     AuthModule,
     OtpModule,
+    ChatModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_GUARD, useClass: ThrottlerGuard}],

@@ -2,7 +2,7 @@ import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateGameDto } from 'src/utils/Dtos';
 import { EventGame, Pos } from 'src/utils/types';
-import { PongLobby } from './pong.lobby';
+import { PongLobby } from './lobby/pong.lobby';
 
 class Ball {
   private position: Pos = { x: 50, y: 50 };

@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -10,32 +9,42 @@ import {
   WebSocketServer
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { jwtConstants } from 'src/auth/utils';
+import { ChatGateway } from 'src/chat/chat.gateway';
+import { PongGateway } from 'src/pong/pong.gateway';
 import { UsersService } from 'src/users/users.service';
-import { Status, UserJwt, ValidSocket } from 'src/utils/types';
-import { WebsocketService } from './websocket.service';
+import { Status, ValidSocket } from 'src/utils/types';
+import { WebsocketService } from 'src/websocket/websocket.service';
 
-@Injectable()
-@WebSocketGateway()
-export abstract class AGateway
+@UsePipes(new ValidationPipe())
+@WebSocketGateway({
+  cors: {
+    origin: [process.env.FRONT_URL],
+  },
+})
+export class Gateway
   implements OnGatewayInit, OnGatewayDisconnect, OnGatewayConnection
 {
   @WebSocketServer() server: Server;
 
   constructor(
     protected readonly websocketService: WebsocketService,
-    private readonly jwtService: JwtService,
     protected readonly userService: UsersService,
-  ) {}
-
-  afterInit(server: Server) {
-    this.websocketService.server = this.server;
+    private readonly pongGateway: PongGateway,
+    private readonly chatGateway: ChatGateway,
+  ) {
   }
 
+  afterInit(server: Server) {
+    this.pongGateway.websocketService = this.websocketService;
+    this.chatGateway.websocketService = this.websocketService;
+    this.websocketService.server = this.server;
+    this.pongGateway.server = this.server;
+  }
+  
   async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
     
     user.name = user.handshake.query.name as string;
-    const validUser = await this.validateJWT(
+    const validUser = await this.websocketService.validateJWT(
       user.handshake.query['Authorization'] as string,
     );
     if (!validUser) {
@@ -66,22 +75,11 @@ export abstract class AGateway
     });
   }
 
-  private async validateJWT(token: string): Promise<UserJwt> {
-    try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret,
-      });
-      return { userId: payload.sub, username: payload.user as string };
-    } catch {
-      return undefined;
-    }
-  }
-
   
   @SubscribeMessage('handshake')
   async handleHandshake(@ConnectedSocket() client: ValidSocket) {
       console.info(
-        `User ${client.name} | Connected to PongGateway | wsID: ${client.id}`,
+        `User ${client.name} | Connected to Gateway | wsID: ${client.id}`,
       );
       const user = await this.userService.findUserByUsername(client.name);
       const userDto = this.userService.userToDto(user);

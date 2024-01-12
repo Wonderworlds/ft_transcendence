@@ -1,11 +1,10 @@
-import { Global, Module } from '@nestjs/common';
-import { UsersModule } from 'src/users/users.module';
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { WebsocketService } from './websocket.service';
 
-@Global()
 @Module({
   providers: [WebsocketService],
   exports: [WebsocketService],
-  imports: [UsersModule],
+  imports: [JwtModule],
 })
 export class WebsocketModule {}
