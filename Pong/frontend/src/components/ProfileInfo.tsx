@@ -12,32 +12,22 @@ const ProfileInfo: React.FC<UserChatInfoProps> = ({pseudo, text, type}) => {
 	if (type == 1)
 		return (
 			<div className="headerProfileInfo">
-				<div className="profileInfoBox">
-					<div className="divName">
-							<ExtendCheckProfile pseudo={pseudo}/>
-					</div>
-					<div className="divTransi">
-						<p>:</p>
-					</div>
-					<div className="divMsg">
-						<p> {text}</p>
-					</div>
+				<div className="NameChatBox">
+					<ExtendCheckProfile pseudo={pseudo}/>
+				</div>
+				<div className="textChatBox">
+					<p>:{text}</p>
 				</div>
 			</div>
 		);
 	else
 		return (
 			<div className="headerWhispProfileInfo">
-				<div className="whispProfileInfoBox">
-					<div className="whispDivName">
-							<ExtendCheckProfile pseudo={pseudo}/>
-					</div>
-					<div className="whispDivTransi">
-						<p>:</p>
-					</div>
-					<div className="whispDivMsg">
-						<p> {text}</p>
-					</div>
+				<div className="whispNameChatBox">
+					<ExtendCheckProfile pseudo={pseudo}/>
+				</div>
+				<div className="whisperTextChatBox">
+					<p>:{text}</p>
 				</div>
 			</div>
 	);

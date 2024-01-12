@@ -6,9 +6,29 @@ import SystemInfo from './SystemInfo.tsx';
 const ChatInGame: React.FC = () => {
 	let FriendsList = new Array<{ key: Number; msg: Msg }>();
 	let p1 = { pseudo: 'Tao', text: 'test', type: 1 } as Msg;
-	let p2 = { pseudo: 'sneaky Tao', text: 'test', type: 2 } as Msg;
+	let p2 = { pseudo: 'WhispTao', text: 'test', type: 2 } as Msg;
 	let p3 = { pseudo: 'system', text: 'get ready for next pong', type: 0 } as Msg;
 
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p3,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
 	FriendsList.push({
 		key: FriendsList.length,
 		msg: p1,
@@ -45,7 +65,11 @@ const ChatInGame: React.FC = () => {
 
 	return (
 		<div className="headerChatInGame">
-			<div className="divTabChat"></div>
+			<div className="divTabChat">
+				<button className="">Pong</button>
+				<button>{p1.pseudo}</button>
+				<button>Bracket</button>
+			</div>
 			<div className="divChatInGame">{chatElement}</div>
 			<div className="divTypeMessage">
 				<div className="divInputMsg">
