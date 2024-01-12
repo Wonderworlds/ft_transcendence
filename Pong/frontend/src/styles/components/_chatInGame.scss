@@ -19,14 +19,13 @@
 	.divChatInGame {
 
 		display: flex;
-		width: 98%;
-		height: 80%;
 		flex-direction: column;
+		height: 80%;
+		width: 100%;
 		overflow-y: scroll;
 
 		p {
 
-			display: flex;
 			color: white;
 			font-family: "Inter";
 			

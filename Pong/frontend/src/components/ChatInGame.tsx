@@ -5,10 +5,90 @@ import SystemInfo from './SystemInfo.tsx';
 
 const ChatInGame: React.FC = () => {
 	let FriendsList = new Array<{ key: Number; msg: Msg }>();
-	let p1 = { pseudo: 'Tao', text: 'test', type: 1 } as Msg;
-	let p2 = { pseudo: 'sneaky Tao', text: 'test', type: 2 } as Msg;
+	let p1 = { pseudo: 'Taottttt', text: 'test', type: 1 } as Msg;
+	let p2 = { pseudo: 'sneakyT', text: 'test', type: 2 } as Msg;
 	let p3 = { pseudo: 'system', text: 'get ready for next pong', type: 0 } as Msg;
 
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p3,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p3,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p3,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p3,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p1,
+	});
+	FriendsList.push({
+		key: FriendsList.length,
+		msg: p2,
+	});
 	FriendsList.push({
 		key: FriendsList.length,
 		msg: p1,

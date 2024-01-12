@@ -8,16 +8,10 @@ interface UserChatInfoProps
 const SystemInfo: React.FC<UserChatInfoProps> = ({text}) => {
 	return (
 		<div className="headerSystemInfo">
-					<div className="divSystemName">
-						<p>system</p>
-					</div>
-					<div className="divSystemTransi">
-						<p>:</p>
-					</div>
-					<div className="divSystemMsg">
-						<p> {text}</p>
-					</div>
-				</div>
+			<div className="divMSgSystemInfo">
+				<p>system: {text}</p>
+			</div>
+		</div>
 	);
 };
 
