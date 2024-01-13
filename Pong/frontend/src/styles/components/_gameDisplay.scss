@@ -4,22 +4,8 @@
 	width: 100%;
 	height: 100%;
 	flex-direction: row;
+	background-color: rgba(0, 0, 0, 0.612);
 
-	.emptySpace {
-
-		display: flex;
-		width: 2%;
-		height: 100%;
-
-	}
-
-	.divDisplayGame {
-
-		display: flex;
-		width: 96%;
-		height: 100%;
-		background-color: rgba($color: #000000, $alpha: 0.85);
-		border-radius: 1rem;
 		.display {
 
 			display: flex;
@@ -36,130 +22,82 @@
 			width: 100%;
 			height: 85%;
 			background-color: black;
+			border-bottom: 2px solid white;
 			
-			border-color: white;
-			border-style: solid solid solid solid;
 
 		}
 
-		.displayTypeGame {
 
+		.divGameInfo {
 			display: flex;
 			width: 100%;
 			height: 15%;
-
 			flex-direction: row;
+			min-width: 900px;
+		}
+		.displayTypeGame {
 
+			display: flex;
+			width: 30%;
+			height: 100%;
+
+			flex-direction: column;
+			align-items: start;
+			justify-content: space-around;
+			margin-left: 1%;
 			h1 {
 
 				font-family: "inter";
 				color: white;
-				font-size: 4vh;
+				font-size: clamp(10px, 2vw, 30px);
 			}
-
-			.leftDisplayTypeGame {
-
-				display: flex;
-				width: 50%;
-				height: 100%;
-				flex-direction: column;
-
-				.divType {
-
-					display: flex;
-					width: 100%;
-					height: 50%;
-
-					justify-content: center;
-					align-items: center;
-
-				}
-
-				.divNbPlayer {
-
-					display: flex;
-					width: 100%;
-					height: 50%;
-
-					justify-content: center;
-					align-items: center;
-
-				}
-
-			}
-
+		}
 			.RightDisplayTypeGame {
-
+				
 				display: flex;
-				width: 50%;
+				width: 70%;
 				height: 100%;
-				flex-direction: column;
+				align-items: center;
+				justify-content: space-around;
+				flex-direction: row;
 
+			}
 				.divTitleReady {
 
 					display: flex;
 					width: 100%;
 					height: 50%;
-					justify-content: center;
-					align-items: center;
-
+					align-self: center;
 					> p {
-
-						font-family: "Inter";
+						font-family: Inter;
 						color: white;
-						font-size: 4vh;
-
-					}
-
-				}
-
-				.divButtonReady {
-
-					display: flex;
-					width: 100%;
-					height: 50%;
-
-					justify-content: center;
-					align-items: center;
-
-					button {
-					
-						color: white;
-						font-family: "Inter";
-						font-size: large;
-						background-color: rgba($color: #000000, $alpha: 0.8);
-						border-color: white;
-						cursor: pointer;
-						font-size: 4vh;
-						width: 50%;
-						height: 50%;
-		
-						display: flex;
-						justify-content: center;
-						align-items: center;
-
-						&:active {
-
-							background-color: rgba($color: red, $alpha: 0.8);
-							border-color: brown;
-	
-						}
-
+						font-size: clamp(20px, 5vw, 40px);
 					}
 				}
+
+
+		#buttonGamePong {
+
+			color: white;
+			font-family: "Inter";
+			font-size: clamp(10px, 2vw, 20px);
+			width: auto;
+			height: auto;
+			background-color: rgba(0, 0, 0, 0.612);
+			border: 2px solid white;
+			&:active {
+
+				background-color: rgba($color: red, $alpha: 0.8);
+				border-color: brown;
+
 			}
 
 		}
-
 		.divChat {
 
 			display: flex;
-			width: 29%;
+			width: 30%;
 			height: 100%;
-
-
+			border-left: 2px solid white;
 		}
-
 	}
-
-}

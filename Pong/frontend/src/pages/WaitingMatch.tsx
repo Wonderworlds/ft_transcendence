@@ -12,6 +12,7 @@ const WaitingMatch: React.FC = () => {
 	const socket = socketContext.socket;
 	const navigate = useNavigate();
 	const [lobbyLocal, setLobbyLocal] = React.useState<LobbyDto>({} as LobbyDto);
+	const [lobbyRejoin, setLobbyRejoin] = React.useState<LobbyDto>({} as LobbyDto);
 	const [playLocalCB, setPlayLocalCB] = React.useState<string>('local0');
 	const [playOnlineCB, setPlayOnlineCB] = React.useState<string>('online0');
 
@@ -32,7 +33,7 @@ const WaitingMatch: React.FC = () => {
 			playLocalCB === 'local0'
 				? GameType.classicLocal
 				: playLocalCB === 'local1'
-				? GameType.classicLocal
+				? GameType.multiplayerLocal
 				: GameType.tournamentLocal;
 		console.info('gameType', gameType);
 		socket.emit('createLobby', { gameType: gameType, isLocal: true });
@@ -51,7 +52,7 @@ const WaitingMatch: React.FC = () => {
 	};
 
 	const playLocalProps: CreateLobbyProps = {
-		labels: ['classic', 'vs AI', 'Tournament'],
+		labels: ['classic', 'multiplayer', 'Tournament'],
 		scores: ['local0', 'local1', 'local2'],
 		buttonSubmit: 'Play Local',
 		submit: playLocal,
@@ -78,22 +79,34 @@ const WaitingMatch: React.FC = () => {
 					<p>Create Lobby</p>
 					<CreateLobby {...playLocalProps} />
 					<CreateLobby {...playOnlineProps} />
-
-					{lobbyLocal ? (
-						<div className="divLobbyLocal">
-							<button
-								onClick={() => {
-									navigate(Pages.Pong);
-								}}
-							>
-								Lobby Local
-							</button>
-						</div>
-					) : null}
+					<div className="divSpecialLobby">
+						{lobbyLocal ? (
+							<div className="divLobbyLocal">
+								<button
+									onClick={() => {
+										navigate(Pages.Pong);
+									}}
+								>
+									Lobby Local
+								</button>
+							</div>
+						) : null}
+						{lobbyRejoin ? (
+							<div className="divLobbyRejoin">
+								<button
+									onClick={() => {
+										navigate(Pages.Pong);
+									}}
+								>
+									Lobby Rejoin
+								</button>
+							</div>
+						) : null}
+					</div>
 				</div>
 				<div className="divFindLobby">
 					<p>Lobby List</p>
-					<LobbyList setLobbyLocal={setLobbyLocal} />
+					<LobbyList setLobbyLocal={setLobbyLocal} setLobbyRejoin={setLobbyRejoin} />
 				</div>
 			</div>
 		</div>

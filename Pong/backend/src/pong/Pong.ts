@@ -4,20 +4,20 @@ import { UpdateGameDto } from 'src/utils/Dtos';
 import { EventGame, Pos } from 'src/utils/types';
 import { PongLobby } from './lobby/pong.lobby';
 
-class Ball {
-  private position: Pos = { x: 50, y: 50 };
-  private direction: Pos;
-  private readonly speed = 0.8;
+export class Ball {
+  protected position: Pos = { x: 50, y: 50 };
+  protected direction: Pos;
+  protected readonly speed = 0.8;
 
   constructor() {
-    this.setDirection(this.getRandomDirection());
+    this.setDirection(this.normalize(this.getRandomDirection()));
   }
 
   public setDirection(newDir: Pos) {
     this.direction = newDir;
   }
 
-  private dist(a: number, b: number) {
+  protected dist(a: number, b: number) {
     return Math.abs(b - a);
   }
 
@@ -25,28 +25,27 @@ class Ball {
     //check collision with walls
     if (this.position.x + 2 < 2) {
       this.position = { x: 50, y: 50 };
-      this.direction = this.getRandomDirection();
+      this.direction = this.normalize(this.getRandomDirection());
       return p2.addScore();
     } else if (this.position.x > 99) {
       this.position = { x: 50, y: 50 };
-      this.direction = this.getRandomDirection();
+      this.direction = this.normalize(this.getRandomDirection());
       return p1.addScore();
     }
 
     this.checkColision(p1, p2);
 
     if (this.position.y <= 0) {
-      this.direction.y = 1;
-    } else if (this.position.y + 2 >= 100) {
-      this.direction.y = -1;
-    }
-
-    this.setDirection(this.normalize(this.direction));
+      this.direction.y += 1;
+  } else if (this.position.y + 2 >= 100) {
+      this.direction.y += -1;
+  }
+    
     this.position.x += this.direction.x * this.speed;
     this.position.y += this.direction.y * this.speed;
   }
 
-  private checkColision(p1: Player, p2: Player) {
+  protected checkColision(p1: Player, p2: Player) {
     //check collision with players
     const pos1 = p1.getPosition();
     const pos2 = p2.getPosition();
@@ -72,7 +71,7 @@ class Ball {
     return this.position;
   }
 
-  private getRandomDirection() {
+  protected getRandomDirection() {
     let x = Math.random() * 2 - 1;
     let y = Math.random() * 2 - 1;
     while (Math.abs(x) < 0.2) {
@@ -84,7 +83,7 @@ class Ball {
     return { x, y };
   }
 
-  private normalize(dir: Pos): Pos {
+  protected normalize(dir: Pos): Pos {
     const norme = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
     return { x: dir.x / norme, y: dir.y / norme };
   }
@@ -92,17 +91,27 @@ class Ball {
   public onCollision() {}
 }
 
-class Player {
-  private position: Pos;
-  private readonly speed = 2;
-  private maxY = 88;
-  private score = 0;
+export class Player {
+  protected position: Pos;
+  protected readonly speed = 2;
+  protected maxY = 88;
+  protected score = 0;
+  private scoreToWin = 2;
+  private handleWin: () => void;
   public name: string;
   public isReady = false;
-
-  constructor(name: string, pos: Pos) {
+  constructor(
+    name: string,
+    pos: Pos,
+    handleWin?: () => void,
+    scoreToWin?: number,
+  ) {
     this.setPosition(pos);
     this.name = name;
+    if (scoreToWin)
+      this.scoreToWin = scoreToWin;
+    if (handleWin)
+      this.handleWin = handleWin;
   }
 
   public getPosition() {
@@ -115,9 +124,12 @@ class Player {
 
   public addScore() {
     this.score++;
+    if (this.score >= this.scoreToWin) {
+      this.handleWin();
+    }
   }
 
-  private setPosition(newPos: Pos) {
+  protected setPosition(newPos: Pos) {
     this.position = newPos;
   }
 
@@ -144,23 +156,22 @@ export class Pong {
 
   protected server: Server;
   private ball = new Ball();
-  private running: boolean = true;
-  private scoreEnd = 10;
-  private functionEnd: (log: any) => void;
-  private p1: Player;
-  private p2: Player;
-  private lobby: PongLobby;
+  protected running: boolean = true;
+  protected scoreEnd = 2;
+  protected p1: Player;
+  protected p2: Player;
+  protected lobby: PongLobby;
   constructor(
+    lobby: PongLobby,
     id: string,
     server: Server,
-    p1: string,
-    p2: string,
-    lobby: PongLobby,
+    p1?: string,
+    p2?: string,
   ) {
     this.id = id;
     this.server = server;
-    this.p1 = new Player(p1, { x: 2, y: 50 });
-    this.p2 = new Player(p2, { x: 98, y: 50 });
+    this.p1 = new Player(p1, { x: 2, y: 50 },  this.handleWin.bind(this),this.scoreEnd);
+    this.p2 = new Player(p2, { x: 98, y: 50 },  this.handleWin.bind(this), this.scoreEnd);
     this.lobby = lobby;
   }
 
@@ -175,13 +186,9 @@ export class Pong {
     return stateOfGame;
   }
 
-  checkScore() {
-    if (
-      this.p1.getScore() < this.scoreEnd &&
-      this.p2.getScore() < this.scoreEnd
-    )
-      return 0;
-    return 1;
+  handleWin() {
+    this.lobby.pongInstanceEnd(this.getMatchLog());
+    this.pause();
   }
 
   loop = () => {
@@ -189,12 +196,6 @@ export class Pong {
     if (!this.running) return;
     this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
-
-    if (this.checkScore()) {
-      this.lobby.pongInstanceEnd(this.getMatchLog());
-      this.pause();
-      return;
-    }
   };
 
   public getPlayersReady() {
@@ -204,7 +205,6 @@ export class Pong {
     };
   }
 
-  
   public getPlayersName() {
     return {
       p1: this.p1.name,
@@ -212,14 +212,13 @@ export class Pong {
     };
   }
 
-  
-  public setPlayersName(p1?: string, p2?: string) {
-      this.p1.name = p1 ? p1 : this.p1.name;
-      this.p2.name = p2 ? p2 : this.p2.name;
+  public setPlayersName(p1?: string, p2?: string, p3?: string, p4?: string) {
+    this.p1.name = p1 ? p1 : this.p1.name;
+    this.p2.name = p2 ? p2 : this.p2.name;
   }
 
   public pause() {
-    console.info('pause' );
+    console.info('pause');
     this.running = !this.running;
   }
 
@@ -234,18 +233,16 @@ export class Pong {
   }
 
   public onInput(
-    @ConnectedSocket() input: EventGame.UP | EventGame.DOWN,
+    @ConnectedSocket()
+    input: EventGame.UP | EventGame.DOWN,
     pseudo: string,
   ) {
     if (!this.running) return;
-    if (pseudo === this.p1.name) {
-      this.p1.changePos(input);
-    } else if (pseudo === this.p2.name) {
-      this.p2.changePos(input);
-    }
+    if (this.p1.name === pseudo) return this.p1.changePos(input);
+    this.p2.changePos(input);
   }
 
-  private getMatchLog() {
+  getMatchLog() {
     return {
       p1: this.p1.name,
       p2: this.p2.name,

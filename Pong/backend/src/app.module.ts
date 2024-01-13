@@ -10,13 +10,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
+import { ChatModule } from './chat/chat.module';
+import { GatewayModule } from './gateway/gateway.module';
 import { PongModule } from './pong/pong.module';
 import { Match } from './typeorm/entities/Match';
 import { Otp } from './typeorm/entities/Otp';
 import { User } from './typeorm/entities/User';
 import { UsersModule } from './users/users.module';
-import { ChatModule } from './chat/chat.module';
-import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -45,12 +45,12 @@ import { GatewayModule } from './gateway/gateway.module';
       {
         name: 'veryShort',
         ttl: 200,
-        limit: 1,
+        limit: 3,
       },
       {
         name: 'short',
         ttl: 1000,
-        limit: 3,
+        limit: 5,
       },
       {
         name: 'medium',

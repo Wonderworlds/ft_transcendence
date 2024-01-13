@@ -132,7 +132,7 @@ export class UserController {
   @Post('/friends/:pseudo') // friend demand
   async sendFriendDemand(@Req() req: any, @Param() params: UserDtoPseudo) {
     myDebug('sendFriendDemand', req.user, params);
-    return await this.userService.sendFriendDemand(req.user.userId, params.pseudo);
+    return await this.userService.sendFriendDemand(req.user.username, params.pseudo);
   }
   
   @Delete('/friends/:pseudo')
@@ -144,13 +144,13 @@ export class UserController {
   @Post('/block/:pseudo')
   async blockUser(@Req() req: any, @Param() params: UserDtoPseudo) {
     myDebug('blockUser', req.user, params);
-    return await this.userService.blockUser(req.user.userId, params.pseudo);
+    return await this.userService.blockUser(req.user.username, params.pseudo);
   }
 
   @Delete('/block/:pseudo')
   async unblockUser(@Req() req: any, @Param() params: UserDtoPseudo) {
     myDebug('unblockUser', req.user, params);
-    return await this.userService.unblockUser(req.user.userId, params.pseudo);
+    return await this.userService.unblockUser(req.user.username, params.pseudo);
   }
 
   @Get('/block')

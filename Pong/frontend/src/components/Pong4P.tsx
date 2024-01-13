@@ -1,35 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { getGame } from '../context/GameContext.tsx';
-import { getUser } from '../context/UserContext.tsx';
-import { getSocket } from '../context/WebsocketContext.tsx';
-import { GameState, UpdateGameDto } from '../utils/dtos.tsx';
-import { EventGame } from '../utils/types.tsx';
+import { getGame } from '../context/GameContext';
+import { getUser } from '../context/UserContext';
+import { getSocket } from '../context/WebsocketContext';
+import { Position } from '../pages/Pong';
+import { GameState } from '../utils/dtos';
+import { EventGame } from '../utils/types';
 
-export type Position = {
-	x: number;
-	y: number;
+type UpdateGameDtoConfirmed = {
+	pLeft: Position;
+	pRight: Position;
+	pTop: Position;
+	pBot: Position;
+	ball: Position;
+	scorePLeft: number;
+	scorePRight: number;
+	scorePTop: number;
+	scorePBot: number;
 };
 
-const Pong: React.FC = () => {
+const Pong4P: React.FC = () => {
 	const user = getUser();
 	const socketContext = getSocket();
 	const socket = socketContext.socket;
 	const gameContext = getGame();
 	const [pLeft, setPLeft] = useState<Position>({ x: 2, y: 50 });
 	const [pRight, setPRight] = useState<Position>({ x: 98, y: 50 });
+	const [pTop, setPTop] = useState<Position>({ x: 50, y: 2 });
+	const [pBot, setPBot] = useState<Position>({ x: 50, y: 98 });
 	const [ball, setBall] = useState<Position>({ x: 50, y: 50 });
 	const pressedKeys = new Set<string>();
 
 	useEffect(() => {
 		if (!socket) return;
-		socket.on('updateGame', (res: UpdateGameDto) => {
-			//console.log(res);
+		socket.on('updateGame', (res: UpdateGameDtoConfirmed) => {
 			if (res) {
 				setPLeft(res.pLeft);
 				setPRight(res.pRight);
+				setPTop(res.pTop);
+				setPBot(res.pBot);
 				setBall(res.ball);
 				gameContext.setScorePLeft(res.scorePLeft);
 				gameContext.setScorePRight(res.scorePRight);
+				gameContext.setScorePTop(res.scorePTop);
+				gameContext.setScorePBot(res.scorePBot);
 			}
 		});
 
@@ -58,6 +71,18 @@ const Pong: React.FC = () => {
 		}
 		if (pressedKeys.has('w')) {
 			sendInput(EventGame.W_KEY);
+		}
+		if (pressedKeys.has('ArrowLeft')) {
+			sendInput(EventGame.ARROW_LEFT);
+		}
+		if (pressedKeys.has('ArrowRight')) {
+			sendInput(EventGame.ARROW_RIGHT);
+		}
+		if (pressedKeys.has('d')) {
+			sendInput(EventGame.D_KEY);
+		}
+		if (pressedKeys.has('a')) {
+			sendInput(EventGame.A_KEY);
 		}
 	};
 
@@ -91,6 +116,8 @@ const Pong: React.FC = () => {
 		left: `${pRight.x - 1.2}%`,
 		top: `${pRight.y}%`,
 	};
+	const PtopStyle = { width: '12%', height: '1.2%', left: `${pTop.x}%`, top: `${pTop.y}%` };
+	const PbotStyle = { width: '12%', height: '1.2%', left: `${pBot.x}%`, top: `${pBot.y}%` };
 	const BallStyle = { width: '15px', height: '15px', left: `${ball.x}%`, top: `${ball.y}%` };
 
 	const pongElement = (gameState: GameState) => {
@@ -111,8 +138,10 @@ const Pong: React.FC = () => {
 			case GameState.PLAYING:
 				return (
 					<>
-						<div className="Pleft" style={PleftStyle}></div>
-						<div className="Pright" style={PrightStyle}></div>
+						{gameContext.scorePLeft ? <div className="Pleft" style={PleftStyle}></div> : null}
+						{gameContext.scorePRight ? <div className="Pright" style={PrightStyle}></div> : null}
+						{gameContext.scorePTop ? <div className="Ptop" style={PtopStyle}></div> : null}
+						{gameContext.scorePBot ? <div className="Pbot" style={PbotStyle}></div> : null}
 						<div className="Ball" style={BallStyle}></div>
 					</>
 				);
@@ -130,12 +159,11 @@ const Pong: React.FC = () => {
 				);
 		}
 	};
-
 	return (
-		<div className="GameArea">
-			<div className="PongDiv">{pongElement(gameContext.gameState)}</div>
+		<div className="GameArea4P">
+			<div className="PongDiv4P">{pongElement(gameContext.gameState)}</div>
 		</div>
 	);
 };
 
-export default Pong;
+export default Pong4P;

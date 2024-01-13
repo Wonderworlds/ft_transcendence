@@ -5,7 +5,8 @@ type AxiosContextType = {
 	client: AxiosInstance;
 	auth: { token: string; username: string };
 	setAuth: React.Dispatch<React.SetStateAction<{ token: string; username: string }>>;
-	ready: Boolean;
+	ready: boolean;
+	setReady: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const axiosContext = createContext({} as AxiosContextType);
@@ -27,6 +28,7 @@ export const AxiosContextProvider = ({ children }: { children: React.ReactNode }
 			setReady(true);
 			sessionStorage.setItem('username', auth.username);
 			sessionStorage.setItem('JWTtoken', auth.token);
+			console.log('AxiosContext: Authenticated');
 		} else setReady(false);
 	}, [auth]);
 
@@ -36,7 +38,7 @@ export const AxiosContextProvider = ({ children }: { children: React.ReactNode }
 		if (username && token) setAuth({ token: token, username: username });
 	}, []);
 	return (
-		<axiosContext.Provider value={{ client, auth, setAuth, ready }}>
+		<axiosContext.Provider value={{ client, auth, setAuth, ready, setReady }}>
 			{children}
 		</axiosContext.Provider>
 	);

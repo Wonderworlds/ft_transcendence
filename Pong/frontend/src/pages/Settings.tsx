@@ -7,7 +7,6 @@ import { Pages } from '../utils/types.tsx';
 
 const Settings: React.FC = () => {
 	const navigate = useNavigate();
-
 	return (
 		<div className="headerProfile">
 			<div className="divNav">

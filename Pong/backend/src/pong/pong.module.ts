@@ -7,6 +7,6 @@ import { PongService } from './pong.service';
 @Module({
   imports: [WebsocketModule, UsersModule],
   providers: [PongGateway, PongService],
-  exports: [PongGateway],
+  exports: [PongGateway, PongService],
 })
 export class PongModule {}

@@ -28,17 +28,18 @@ export class PongGateway {
 
   constructor(
     public websocketService: WebsocketService,
-    private readonly pongService: PongService,
+    public pongService: PongService,
   ) {
   }
 
   @SubscribeMessage('getLobbys')
   onGetLobbys(@ConnectedSocket() client: ValidSocket) {
-    const { lobbysDto, lobbyLocal } = this.pongService.getLobbys(client);
-    console.info('getLobbys', { lobbysDto }, lobbyLocal);
+    const { lobbysDto, lobbyLocal, lobbyRejoin } = this.pongService.getLobbys(client);
+    console.info('getLobbys', { lobbysDto }, lobbyLocal, lobbyRejoin);
     this.websocketService.serverMessage('lobbyList', [client.id], {
       lobbys: lobbysDto,
       lobbyLocal: lobbyLocal,
+      lobbyRejoin: lobbyRejoin,
     });
   }
 
@@ -63,7 +64,7 @@ export class PongGateway {
     @ConnectedSocket() client: ValidSocket,
     @Body() body: AcceptLobbyDto,
   ) {
-    console.info('refuseFriendGame', body);
+    console.info('responseFriendGame', body);
     const res = this.pongService.responseFriendGame(
       client,
       body,

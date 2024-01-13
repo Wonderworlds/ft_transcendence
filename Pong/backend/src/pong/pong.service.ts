@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import {
-	AcceptLobbyDto,
-	CreateCustomLobbyDto,
-	CreateLobbyDto,
-	InputLobbyDto,
-	LobbyDto,
-	LobbyIDDto,
-	UserLobbyDto,
+  AcceptLobbyDto,
+  CreateCustomLobbyDto,
+  CreateLobbyDto,
+  GameState,
+  InputLobbyDto,
+  LobbyDto,
+  LobbyIDDto,
+  UserLobbyDto,
 } from 'src/utils/Dtos';
 import { GameType, ValidSocket } from 'src/utils/types';
 import { WebsocketService } from 'src/websocket/websocket.service';
@@ -33,11 +34,13 @@ export class PongService {
   >();
 
   constructor(public userService: UsersService) {
+    console.info('PongService', 'Service created');
   }
 
   getLobbys(client: ValidSocket): {
     lobbysDto: LobbyDto[];
     lobbyLocal: LobbyDto;
+    lobbyRejoin: LobbyDto;
   } {
     const lobbysDto: Array<LobbyDto> = [];
     let lobbyLocal: LobbyDto = null;
@@ -51,7 +54,11 @@ export class PongService {
       if (value.getSize() >= value.maxClients) continue;
       lobbysDto.push(this.lobbyToLobbyDto(value));
     }
-    return { lobbysDto, lobbyLocal };
+    const index = this.isClientinRoom(client);
+    let lobbyRejoin = null;
+    if (index)
+      lobbyRejoin = this.lobbyToLobbyDto(this.listGameOnline.get(index));
+    return { lobbysDto, lobbyLocal, lobbyRejoin };
   }
 
   createLobby(
@@ -101,17 +108,23 @@ export class PongService {
       (e) => e.lobby === body.lobby,
     );
     const customGame = this.customGamePending[index];
-    if (!index)
+    if (index === -1)
       return {
         event: 'error',
         to: [client.id],
         messagePayload: 'Lobby not found',
       };
     const socket1 = websocketService.getUser(customGame.owner);
-    if (body.accept) {
-      this.customGamePending.splice(index, 1);
+    if (!socket1)
       return {
-        event: 'friendGame',
+        event: 'error',
+        to: [client.id],
+        messagePayload: 'User not Online',
+      };
+    this.customGamePending.splice(index, 1);
+    if (body.accept) {
+      return {
+        event: 'responseFriendGame',
         to: [socket1.id, client.id],
         messagePayload: { accept: body.accept, lobby: body.lobby },
       };
@@ -130,12 +143,24 @@ export class PongService {
     server: Server,
     websocketService: WebsocketService,
   ): Promise<{ event: string; to: string[]; messagePayload: Object }> {
+    if (this.customGamePending.find((e) => e.owner === client.name))
+      return {
+        event: 'error',
+        to: [client.id],
+        messagePayload: 'You already have a pending game',
+      };
     const FriendUser = await this.userService.findUserByPseudo(body.friend);
     if (!FriendUser)
       return {
         event: 'error',
         to: [client.id],
-        messagePayload: 'User not found',
+        messagePayload: 'Target not found',
+      };
+    if (FriendUser.username === client.name)
+      return {
+        event: 'error',
+        to: [client.id],
+        messagePayload: "You can't play with yourself",
       };
     const friend = websocketService.getUser(FriendUser.username);
     if (!friend)
@@ -160,14 +185,17 @@ export class PongService {
       receiver: friend.name,
     });
     setTimeout(() => {
-      if (lobby.getSize() !== 2) return;
+      console.info('customGameCB', 'Lobby size', lobby.getSize());
+      if (lobby.getSize() === 2) return;
+      websocketService.serverError([client.id], 'Game declined');
       this.listCustomGame.delete(id);
       this.customGamePending.splice(
         this.customGamePending.findIndex((e) => e.lobby === id),
         1,
       );
-      console.info('customGameCB', 'Lobby deleted');
+      console.info('customGameCB', 'Lobby deleted', id);
     }, 1000 * 20);
+    console.info('customGameCreate', this.customGamePending);
     return {
       event: 'friendGame',
       to: [friend.id],
@@ -206,7 +234,7 @@ export class PongService {
     const user = await this.userService.findOneUser(
       { username: client.name },
       [],
-      ['pseudo', 'ppImg', 'status'],
+      ['pseudo', 'ppImg', 'status', 'id'],
     );
     if (!user)
       return {
@@ -223,26 +251,52 @@ export class PongService {
   }
 
   inputReceived(client: ValidSocket, body: InputLobbyDto) {
-	const lobby =
-	  this.listGameLocal.get(body.lobby) ||
-	  this.listGameOnline.get(body.lobby) ||
-	  this.listCustomGame.get(body.lobby);
-	lobby.onInput(client, body.input, body.pseudo);
+    const lobby =
+      this.listGameLocal.get(body.lobby) ||
+      this.listGameOnline.get(body.lobby) ||
+      this.listCustomGame.get(body.lobby);
+    if (!lobby) return;
+    lobby.onInput(client, body.input, body.pseudo);
   }
 
-  addClientLocal(client: ValidSocket, body: UserLobbyDto) : {to: string[]; messagePayload: string} {
-	let { lobby, ...rest } = body;
+  addClientLocal(
+    client: ValidSocket,
+    body: UserLobbyDto,
+  ): { to: string[]; messagePayload: string } {
+    let { lobby, ...rest } = body;
     const lobbyRoom = this.listGameLocal.get(lobby);
     if (!lobbyRoom) return;
     const isTaken = lobbyRoom.isPseudoTaken(rest.pseudo);
-	if (isTaken)
-		return {to: [client.id], messagePayload: 'Pseudo already taken'};
+    if (isTaken)
+      return { to: [client.id], messagePayload: 'Pseudo already taken' };
     lobbyRoom.addClient(client, rest);
-	return {to: [client.id], messagePayload: rest.pseudo + ' joined'};
+    return { to: [client.id], messagePayload: rest.pseudo + ' joined' };
+  }
+
+  private leaveLobbyOnline(
+    client: ValidSocket,
+    lobbyOnline: PongLobby,
+    body: LobbyIDDto,
+  ) {
+    lobbyOnline.removeClient(client);
+    if (lobbyOnline.getSize() === 0) {
+      console.info('leaveLobbyCB', 'Lobby deleted');
+      return this.listGameOnline.delete(body.lobby);
+    }
+    setTimeout(() => {
+      if (
+        lobbyOnline?.gameType === GameType.classicOnline &&
+        lobbyOnline?.status === GameState.INIT
+      )
+        return;
+      lobbyOnline?.forcedLeave();
+      if (this.listGameOnline.delete(body.lobby))
+        console.info('leaveLobbyCB', 'Lobby deleted');
+    }, 1000 * 20);
   }
 
   leaveLobby(client: ValidSocket, body: LobbyIDDto) {
-	const lobbyLocal = this.listGameLocal.get(body.lobby);
+    const lobbyLocal = this.listGameLocal.get(body.lobby);
     const lobbyOnline = this.listGameOnline.get(body.lobby);
     const lobbyCustom = this.listCustomGame.get(body.lobby);
     if (!lobbyLocal && !lobbyOnline && !lobbyCustom) return;
@@ -253,21 +307,15 @@ export class PongService {
         console.info('leaveLobbyCB', 'Lobby deleted');
         this.listGameLocal.delete(body.lobby);
       }, 1000 * 20);
-    } else if (lobbyOnline) {
-      lobbyOnline.removeClient(client);
-      setTimeout(() => {
-        if (lobbyOnline?.getSize() !== 0) return;
-        console.info('leaveLobbyCB', 'Lobby deleted');
-        this.listGameOnline.delete(body.lobby);
-      }, 1000 * 20);
     } else if (lobbyCustom) {
       lobbyCustom.removeClient(client);
       setTimeout(() => {
-        if (lobbyCustom?.getSize() !== 0) return;
-        console.info('leaveLobbyCB', 'Lobby deleted');
+        if (lobbyCustom?.getSize() === 2) return;
+        lobbyCustom?.forcedLeave();
         this.listCustomGame.delete(body.lobby);
+        console.info('leaveLobbyCB', 'Lobby deleted');
       }, 1000 * 20);
-    }
+    } else this.leaveLobbyOnline(client, lobbyOnline, body);
   }
 
   private isClientOwner(

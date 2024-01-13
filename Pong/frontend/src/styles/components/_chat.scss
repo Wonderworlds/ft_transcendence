@@ -1,17 +1,51 @@
-.chatButton {
-		
-	display: flex;
-	background-color: transparent;
-	border: none;
-	cursor: pointer;
-}
-
 .icon {
-	font-size: 1.75vw;
+	position: relative;
+	transform: translateX(-30%);
+	font-size: clamp(20px, 3vw, 30px);
 	background-color: rgba(0, 0, 0, 0.155);
 	color: purple;
-
 	&:hover {
 		color: #ff00aa99;
+	}
+}
+.divChat {
+	width: 100%;
+	height: 100%;
+}
+
+.chatBox {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	min-width: 400px;
+	.divChatMessages {
+		display: flex;
+		flex-direction: column-reverse;
+		width: 100%;
+		height: 100%;
+		overflow-y: auto;
+		overflow-x: hidden;
+		max-height: 600px;
+		margin-left: 1px;
+	}
+
+	.divChatInput {
+		width: 100%;
+		height: 8%;
+		display: flex;
+		flex-direction: row;
+		border: 2px solid white;
+		> input {
+			width: 85%;
+			height: auto;
+		}
+
+		> button {
+			width: 15%;
+			height: auto;
+			cursor: pointer;
+		}
 	}
 }

@@ -1,0 +1,64 @@
+.divChatMessage {
+	background-color: rgb(128, 128, 128, 0.4);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 99%;
+	height: auto;
+	img {
+		border-radius: 50%;
+		height: 50px;
+		width: 50px;
+	}
+
+	p {
+		color: #fff;
+		font-family: "Inter";
+	}
+	
+
+}
+
+.divMessage {
+	margin-left: 5px;
+}
+
+.divChatFrom {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.chatBotMessageElement {
+	width: 100%;
+	background-color: rgb(49, 138, 19,0.4);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.chatServerMessageElement{
+	width: 100%;
+	background-color: rgb(163, 29, 29, 0.4);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.chatStandardMessageElement {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+}
+
+.chatPrivateMessageElement {
+	width: 100%;
+	background-color: rgba(47, 100, 192, 0.4);
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+

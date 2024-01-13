@@ -36,36 +36,44 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 			});
 
 			socket.on('error', (error: any) => {
-				console.log(error);
 				alert(error);
 			});
 
-			socket.on(
-				'friendGame',
-				(response: { message?: string; lobby: string; sender: string; accept?: boolean }) => {
-					if (response.message) {
-						if (confirm(`${response.sender}: ${response.message}`)) {
-							setLobby(response.lobby);
-							navigate(Pages.Pong);
-							socket.emit('responseFriendGame', { lobby: response.lobby, accept: true });
-						} else {
-							socket.emit('responseFriendGame', { lobby: response.lobby, accept: false });
-						}
-					} else if (response.accept) {
-						setLobby(response.lobby);
-						navigate(Pages.Pong);
-					} else {
-						alert('Game declined');
-					}
+			socket.on('forcedLeave', (res) => {
+				navigate(Pages.Home);
+				if (res?.message) {
+					alert(res.message);
 				}
-			);
+			});
+
+			socket.on('forcedDisconnect', (res) => {
+				sessionStorage.clear();
+				user.setUsername('');
+				axios.setAuth({ token: '', username: '' });
+				navigate(Pages.Root);
+				socket.disconnect();
+				if (res?.message) {
+					alert(res.message);
+				}
+			});
+
+			socket.on('responseFriendGame', (response: { lobby: string; accept: boolean }) => {
+				if (response.accept) {
+					setLobby(response.lobby);
+					navigate(Pages.Pong);
+				} else {
+					alert('Game declined');
+				}
+			});
 		}
 		return () => {
 			if (socket) {
 				socket.off('connect');
+				socket.off('forcedDisconnect');
+				socket.off('forcedLeave');
 				socket.off('error');
 				socket.off('disconnect');
-				socket.off('friendGame');
+				socket.off('responseFriendGame');
 			}
 		};
 	}, [socket]);

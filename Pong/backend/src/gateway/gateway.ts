@@ -11,6 +11,7 @@ import {
 import { Server } from 'socket.io';
 import { ChatGateway } from 'src/chat/chat.gateway';
 import { PongGateway } from 'src/pong/pong.gateway';
+import { PongService } from 'src/pong/pong.service';
 import { UsersService } from 'src/users/users.service';
 import { Status, ValidSocket } from 'src/utils/types';
 import { WebsocketService } from 'src/websocket/websocket.service';
@@ -31,6 +32,7 @@ export class Gateway
     protected readonly userService: UsersService,
     private readonly pongGateway: PongGateway,
     private readonly chatGateway: ChatGateway,
+    private readonly pongService: PongService,
   ) {
   }
 
@@ -39,6 +41,9 @@ export class Gateway
     this.chatGateway.websocketService = this.websocketService;
     this.websocketService.server = this.server;
     this.pongGateway.server = this.server;
+    this.chatGateway.chatService.websocketService = this.websocketService;
+    this.chatGateway.chatService.pongService = this.pongService;
+    this.pongGateway.pongService = this.pongService;
   }
   
   async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
@@ -51,11 +56,6 @@ export class Gateway
       user.disconnect();
       return;
     }
-    const oldUser = this.websocketService.getUser(user.name);
-    if (oldUser?.connected) {
-      this.websocketService.addUser(user);
-      oldUser.disconnect();
-    } else
     this.websocketService.addUser(user);
     this.userService.updateUserById(validUser.userId, {
         status: Status.Online,
@@ -63,13 +63,10 @@ export class Gateway
   }
 
   async handleDisconnect(@ConnectedSocket() user: ValidSocket) {
-    const oldUser = this.websocketService.getUser(user.name);
-    if (user !== oldUser)
-      return console.info(`User ${user.name} | Forced Disconnect`);
-    console.info(`User ${user.name} | Disconnected`);
-    setTimeout(() => {
+    console.info(
+      `User ${user.name} | Disconnected to Gateway | wsID: ${user.id}`,
+      );
       this.websocketService.removeUser(user);
-    }, 1000 * 30);
     this.userService.updateUserByUsername(user.name, {
       status: Status.Offline,
     });
@@ -84,5 +81,6 @@ export class Gateway
       const user = await this.userService.findUserByUsername(client.name);
       const userDto = this.userService.userToDto(user);
       this.websocketService.serverMessage('reconnect', [client.id], {user: userDto});
+      this.websocketService.users.forEach((user) => {console.info(user.name, user.connected);} );
   }
 }
