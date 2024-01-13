@@ -16,7 +16,7 @@ import {
   UserDtoTwoFA,
   UserDtoUsername,
 } from 'src/utils/Dtos';
-import { Success } from 'src/utils/types';
+import { GameType, Success } from 'src/utils/types';
 import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
@@ -101,56 +101,68 @@ export class UsersService {
     });
     const ret: Array<MatchDto> = [];
     matchs.forEach((match) => {
-      const won = match.winner.id === user.id;
-      ret.push({
+      const tmp: MatchDto = {
         p1: match.p1,
         p2: match.p2,
         scoreP1: match.scoreP1,
         scoreP2: match.scoreP2,
         gameType: match.gameType,
-        won: won,
-      });
+        date: match.createdAt,
+        winner: match.winner.pseudo,
+      };
+      console.log(match, match.winner.pseudo);
+      if (match.p3 && match.p4) {
+        tmp.p3 = match.p3;
+        tmp.p4 = match.p4;
+        tmp.scoreP3 = match.scoreP3;
+        tmp.scoreP4 = match.scoreP4;
+      }
+      ret.push(tmp);
     });
     return ret;
   }
 
   async createMatchDB(matchInfo: MatchDto) {
+    console.info('createMatchDB', matchInfo);
     const p1 = await this.findUserByPseudo(matchInfo.p1);
     if (!p1) return;
     const p2 = await this.findUserByPseudo(matchInfo.p2);
     if (!p2) return;
-    const p3 = await this.findUserByPseudo(matchInfo.p3);
-    const p4 = await this.findUserByPseudo(matchInfo.p4);
-    if (p3 || p4) {
-      if (!p3 || !p4) return;
-      const winner =
-        matchInfo.scoreP1 > matchInfo.scoreP2
-          ? matchInfo.scoreP1 > matchInfo.scoreP3
-            ? matchInfo.scoreP1 > matchInfo.scoreP4
-              ? p1
-              : p4
-            : matchInfo.scoreP3 > matchInfo.scoreP4
-              ? p3
-              : p4
-          : matchInfo.scoreP2 > matchInfo.scoreP3
-            ? matchInfo.scoreP2 > matchInfo.scoreP4
-              ? p2
-              : p4
-            : matchInfo.scoreP3 > matchInfo.scoreP4
-              ? p3
-              : p4;
-      let losers;
-      if (winner === p1) losers = [p2, p3, p4];
-      else if (winner === p2) losers = [p1, p3, p4];
-      else if (winner === p3) losers = [p1, p2, p4];
-      else losers = [p1, p2, p3];
-      const newMatch = this.matchRepository.create({
-        ...matchInfo,
-        winner: winner,
-        loser: losers,
-      });
-      console.info('createMatchDB', newMatch);
-      return await this.matchRepository.save(newMatch);
+    if (matchInfo.gameType === GameType.multiplayerOnline) {
+      const p3 = await this.findUserByPseudo(matchInfo.p3);
+      const p4 = await this.findUserByPseudo(matchInfo.p4);
+      console.info('createMatchDB', p1.username, p2.username, p3, p4);
+      if (p3 || p4) {
+        if (!p3 || !p4) return;
+        const winner =
+          matchInfo.scoreP1 > matchInfo.scoreP2
+            ? matchInfo.scoreP1 > matchInfo.scoreP3
+              ? matchInfo.scoreP1 > matchInfo.scoreP4
+                ? p1
+                : p4
+              : matchInfo.scoreP3 > matchInfo.scoreP4
+                ? p3
+                : p4
+            : matchInfo.scoreP2 > matchInfo.scoreP3
+              ? matchInfo.scoreP2 > matchInfo.scoreP4
+                ? p2
+                : p4
+              : matchInfo.scoreP3 > matchInfo.scoreP4
+                ? p3
+                : p4;
+        let losers;
+        if (winner === p1) losers = [p2, p3, p4];
+        else if (winner === p2) losers = [p1, p3, p4];
+        else if (winner === p3) losers = [p1, p2, p4];
+        else losers = [p1, p2, p3];
+        const newMatch = this.matchRepository.create({
+          ...matchInfo,
+          winner: winner,
+          loser: losers,
+        });
+        console.info('createMatchDB', newMatch);
+        return await this.matchRepository.save(newMatch);
+      }
     } else {
       const winner = matchInfo.scoreP1 > matchInfo.scoreP2 ? p1 : p2;
       const loser: User[] = matchInfo.scoreP1 > matchInfo.scoreP2 ? [p2] : [p1];

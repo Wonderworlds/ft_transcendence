@@ -1,6 +1,7 @@
 import { IntersectionType, PickType } from '@nestjs/mapped-types';
 import {
   IsBoolean,
+  IsDate,
   IsEmail,
   IsEnum,
   IsNumber,
@@ -120,6 +121,11 @@ export class MatchDto {
   @IsNumber()
   scoreP4?: number;
   
+  
+  @IsOptional()
+  @IsDate()
+  date?: Date;
+
   @IsString()
   p1: string;
 
@@ -137,9 +143,9 @@ export class MatchDto {
   @IsEnum(GameType)
   gameType: GameType;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  won?: boolean;
+  winner?: string;
 }
 
 export class LobbyIDDto {

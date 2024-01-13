@@ -23,7 +23,7 @@ const NavBar: React.FC = () => {
 	React.useEffect(() => {
 		if (!socket) return;
 		socket.on('friendGame', (response: { message: string; lobby: string; sender: string }) => {
-			alert(response.message);
+			console.log(response.message);
 			setInvites((inv) => {
 				const newInv = [...inv];
 				const index = newInv.findIndex((i) => i.pseudo === response.sender);

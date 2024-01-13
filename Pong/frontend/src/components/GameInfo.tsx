@@ -81,6 +81,14 @@ const GameInfo: React.FC = () => {
 					</>
 				);
 			}
+			case GameType.multiplayerOnline: {
+				return (
+					<>
+						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
+						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
+					</>
+				);
+			}
 			case GameType.tournamentLocal: {
 				return (
 					<>

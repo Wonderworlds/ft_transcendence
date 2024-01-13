@@ -53,8 +53,11 @@ export class ChatService {
       });
     const socketTo = this.websocketService.users.get(toUser.username);
     if (!socketTo || !socketTo.rooms.has(body.lobby))
-    return this.responseServer(user, 'error: ' + to + ' not connected to the lobby');
-      
+      return this.responseServer(
+        user,
+        'error: ' + to + ' not connected to the lobby',
+      );
+
     this.websocketService.server.to(socketTo.id).emit('messageLobby', {
       message: body.message,
       from: { pseudo: userDB.pseudo, ppImg: userDB.ppImg },
@@ -167,16 +170,20 @@ export class ChatService {
     );
     if (!userDB || !friendDB)
       return this.responseServer(user, 'error: user not found');
-    console.info("here");
+    console.info('here');
     const res = await this.pongService.customGame(
       user,
-      { owner: userDB.pseudo, friend: friendDB.pseudo},
+      { owner: userDB.pseudo, friend: friendDB.pseudo },
       this.websocketService.server,
       this.websocketService,
     );
-    res.event === 'error' ?
-      this.websocketService.serverError(res.to, res.messagePayload as string) :
-      this.websocketService.serverMessage(res.event, res.to, res.messagePayload);
+    res.event === 'error'
+      ? this.websocketService.serverError(res.to, res.messagePayload as string)
+      : this.websocketService.serverMessage(
+          res.event,
+          res.to,
+          res.messagePayload,
+        );
   }
 
   private async commandAddFriend(
@@ -199,7 +206,8 @@ export class ChatService {
       console.info(this.websocketService.users);
       if (res.success) {
         this.responseServer(user, 'demand sent');
-        if (friendID) this.responseServer(friendID, 'you have a new friend demand');
+        if (friendID)
+          this.responseServer(friendID, 'you have a new friend demand');
         return;
       }
       return this.responseServer(user, 'error: demand failed');
@@ -208,21 +216,23 @@ export class ChatService {
     }
   }
 
-  private async commandProfile(@ConnectedSocket() user: ValidSocket, pseudo: string) {
+  private async commandProfile(
+    @ConnectedSocket() user: ValidSocket,
+    pseudo: string,
+  ) {
     console.info(`event [commandProfile]`, user.name, pseudo);
     if (pseudo[0] !== '@')
       return this.responseServer(user, 'error: invalid pseudo: missing @');
     pseudo = pseudo.slice(1);
-      const friend = await this.userService.findUserByPseudo(pseudo);
-      if (!friend)
-        return this.responseServer(user, `error: ${pseudo} not found`);
-      const friendID = this.websocketService.users.get(friend.username);
-      if (!friendID)
-        return this.responseServer(user, `error: ${pseudo} not connected`);
-        return this.websocketService.server.to(user.id).emit('messageLobby', {
-          message: pseudo,
-          type: ChatMessageType.PROFILE,
-        });
+    const friend = await this.userService.findUserByPseudo(pseudo);
+    if (!friend) return this.responseServer(user, `error: ${pseudo} not found`);
+    const friendID = this.websocketService.users.get(friend.username);
+    if (!friendID)
+      return this.responseServer(user, `error: ${pseudo} not connected`);
+    return this.websocketService.server.to(user.id).emit('messageLobby', {
+      message: pseudo,
+      type: ChatMessageType.PROFILE,
+    });
   }
 
   public sendCommandMessage(
@@ -242,8 +252,14 @@ export class ChatService {
         return this.commandBlock(user, msgSplit[1]);
       case 'unblock':
         return this.commandUnblock(user, msgSplit[1]);
-      case 'invite':
-        return this.commandInvite(user, msgSplit[1]);
+      case 'invite': {
+        if (body.lobby !== 'chat')
+          return this.responseServer(
+            user,
+            'error: you can only invite in the main chat lobby',
+          );
+        else return this.commandInvite(user, msgSplit[1]);
+      }
       case 'addFriend':
         return this.commandAddFriend(user, msgSplit[1]);
       case 'profile':

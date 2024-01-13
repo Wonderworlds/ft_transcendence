@@ -11,7 +11,6 @@
 .divChat {
 	width: 100%;
 	height: 100%;
-	min-width: 400px;
 }
 
 .chatBox {
@@ -20,12 +19,12 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-	
+	min-width: 400px;
 	.divChatMessages {
 		display: flex;
 		flex-direction: column-reverse;
 		width: 100%;
-		height: auto;
+		height: 100%;
 		overflow-y: auto;
 		overflow-x: hidden;
 		max-height: 600px;

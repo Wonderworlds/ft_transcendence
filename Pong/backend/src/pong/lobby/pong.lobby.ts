@@ -18,7 +18,7 @@ export class PongLobby {
   public status: GameState = GameState.INIT;
   protected owner: ValidSocket;
   protected pLeft: LimitedUserDto = null;
-  protected pRight: LimitedUserDto= null;
+  protected pRight: LimitedUserDto = null;
   protected pBot: LimitedUserDto = null;
   protected pTop: LimitedUserDto = null;
   public isLocal: boolean;
@@ -61,7 +61,13 @@ export class PongLobby {
       this.listClients.size >= 2 &&
       this.gameType === GameType.classicOnline
     ) {
-      this.initMatchClassicOnline();
+      this.initMatchStart();
+    }
+    if (
+      this.listClients.size >= 4 &&
+      this.gameType === GameType.multiplayerOnline
+    ) {
+      this.initMatchStart();
     }
   }
 
@@ -113,6 +119,7 @@ export class PongLobby {
   removeClient(@ConnectedSocket() client: ValidSocket): void | boolean {
     console.info('removeClient', client.id);
     client.leave(this.id);
+    if (this.status === GameState.GAMEOVER) return this.forcedLeave();
     if (this.listClients.size === 1)
       return this.listClients.delete(client.name);
     const id = setTimeout(() => {
@@ -140,11 +147,16 @@ export class PongLobby {
     if (this.status !== GameState.GAMEOVER) return;
     this.status = GameState.INIT;
     this.pongInstance = null;
+    this.server.to(this.id).emit('gameOver', false);
     if (
       this.gameType === GameType.classicLocal ||
       this.gameType === GameType.classicOnline
     )
       this.initMatch(this.pLeft, this.pRight);
+    else if (this.gameType === (GameType.multiplayerOnline || GameType.multiplayerLocal))
+    {
+      this.initMatch(this.pLeft, this.pRight, this.pTop, this.pBot);
+    }
     else return; //TODO next match in bracket
   }
 
@@ -153,43 +165,49 @@ export class PongLobby {
     return this.listClients.get(name);
   }
 
-  initMatchClassicOnline() {
-    this.server.to(this.id).emit('isPlayerReady');
-    this.serverUpdateClients();
+  initMatchStart() {
+    const iterator = this.userMap.entries();
+    this.pLeft = iterator.next().value[1];
+    this.pRight = iterator.next().value[1];
+    if (this.gameType === GameType.multiplayerOnline) {
+      this.pTop = iterator.next().value[1];
+      this.pBot = iterator.next().value[1];
+    }
+    this.initMatch(this.pLeft, this.pRight, this.pTop, this.pBot);
   }
 
-  initMatch(pleft: LimitedUserDto, pright: LimitedUserDto) {
-    if (this.status !== GameState.INIT) return;
-    this.pongInstance = new Pong(
-      this,
-      this.id,
-      this.server,
-      pleft.pseudo,
-      pright.pseudo,
-    );
+  initMatch(
+    pleft: LimitedUserDto,
+    pright: LimitedUserDto,
+    ptop?: LimitedUserDto,
+    pbot?: LimitedUserDto,
+  ) {
+    if (this.gameType === GameType.classicOnline) {
+      this.pongInstance = new Pong(
+        this,
+        this.id,
+        this.server,
+        pleft.pseudo,
+        pright.pseudo,
+      );
+    } else if (this.gameType === GameType.multiplayerOnline) {
+      this.pongInstance = new Pong4p(
+        this,
+        this.id,
+        this.server,
+        pleft.pseudo,
+        pright.pseudo,
+        ptop.pseudo,
+        pbot.pseudo,
+      );
+    }
     this.status = GameState.START;
     this.serverUpdateClients();
-    const pLeftSocket = this.getSocketFromPseudo(pleft.pseudo);
-    const pRightSocket = this.getSocketFromPseudo(pright.pseudo);
-    this.server.to([pLeftSocket.id, pRightSocket.id]).emit('isPlayerReady');
+    this.server.to(this.id).emit('isPlayerReady');
   }
 
   startMatch(pseudo: string) {
-    if (
-      this.gameType === GameType.classicOnline &&
-      this.status === GameState.INIT
-    ) {
-      const user = this.userMap.get(pseudo);
-      console.info('startMatch', user);
-      if (!user) return;
-      if (this.pLeft && this.pRight) return;
-      !this.pLeft ? (this.pLeft = user) : (this.pRight = user);
-      if (this.pLeft && this.pRight) {
-        console.info('startMatch', this.pLeft, this.pRight);
-        this.initMatch(this.pLeft, this.pRight);
-        this.serverUpdateClients();
-      }
-    } else if (this.pongInstance) {
+    if (this.pongInstance) {
       this.pongInstance.startMatch(pseudo)
         ? (this.status = GameState.PLAYING)
         : null;
@@ -201,6 +219,14 @@ export class PongLobby {
     if (this.status !== GameState.PLAYING || !this.pongInstance) return;
     if (pseudo === this.pLeft.pseudo || pseudo === this.pRight.pseudo) {
       this.pongInstance.onInput(input, pseudo);
+    }
+  }
+
+  private inputGame4P(input: EventGame.LEFT | EventGame.RIGHT, pseudo: string) {
+    if (this.status !== GameState.PLAYING || !this.pongInstance) return;
+    if (pseudo === this.pRight.pseudo || pseudo === this.pBot.pseudo) {
+      const pong4p = this.pongInstance as Pong4p;
+      pong4p.onInput(input, pseudo);
     }
   }
 
@@ -218,6 +244,14 @@ export class PongLobby {
         return this.inputGame(EventGame.UP, pseudo);
       case EventGame.S_KEY:
         return this.inputGame(EventGame.DOWN, pseudo);
+      case EventGame.ARROW_LEFT:
+        return this.inputGame4P(EventGame.LEFT, pseudo);
+      case EventGame.ARROW_RIGHT:
+        return this.inputGame4P(EventGame.RIGHT, pseudo);
+      case EventGame.A_KEY:
+        return this.inputGame4P(EventGame.LEFT, pseudo);
+      case EventGame.D_KEY:
+        return this.inputGame4P(EventGame.RIGHT, pseudo);
       case EventGame.START_MATCH:
         return this.startMatch(pseudo);
       case EventGame.START_TOURNAMENT:
@@ -255,7 +289,10 @@ export class PongLobby {
       pLeft: this.pLeft,
       pRight: this.pRight,
     };
-    if (this.gameType === GameType.classicOnline || this.gameType === GameType.classicLocal)
+    if (
+      this.gameType === GameType.classicOnline ||
+      this.gameType === GameType.classicLocal
+    )
       return ret;
     return {
       ...ret,

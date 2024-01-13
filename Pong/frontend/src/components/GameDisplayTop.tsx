@@ -52,14 +52,14 @@ const GameDisplayTop: React.FC = () => {
 				</div>
 				<div className="divInfoPBottom">
 					<img src={gameContext.playerBot.ppImg} />
-					<h1 style={{ color: gameContext.playerIsReady3 ? 'green' : 'red' }}>
+					<h1 style={{ color: gameContext.playerIsReady4 ? 'green' : 'red' }}>
 						{gameContext.playerBot.pseudo}
 					</h1>
 					<h1>{gameContext.scorePBot}</h1>
 				</div>
 				<div className="divInfoPRight">
 					<img src={gameContext.playerRight.ppImg} />
-					<h1 style={{ color: gameContext.playerIsReady4 ? 'green' : 'red' }}>
+					<h1 style={{ color: gameContext.playerIsReady2 ? 'green' : 'red' }}>
 						{gameContext.playerRight.pseudo}
 					</h1>
 					<h1>{gameContext.scorePRight}</h1>

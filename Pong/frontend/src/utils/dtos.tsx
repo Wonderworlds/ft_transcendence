@@ -12,9 +12,14 @@ export type UserDto = {
 export type MatchDto = {
 	scoreP1: number;
 	scoreP2: number;
+	scoreP3?: number;
+	scoreP4?: number;
 	p1: string;
 	p2: string;
-	won: boolean;
+	p3?: string;
+	p4?: string;
+	date: Date;
+	winner: string;
 	gameType: GameType;
 };
 

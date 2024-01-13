@@ -135,8 +135,9 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			setPlayerReady(false);
 		});
 
-		socket.on('gameOver', () => {
-			setGameOver(true);
+		socket.on('gameOver', (res: boolean) => {
+			if (res) setGameOver(true);
+			else setGameOver(false);
 		});
 
 		return () => {
