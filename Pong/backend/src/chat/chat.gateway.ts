@@ -29,4 +29,19 @@ export class ChatGateway{
       case ChatMessageType.COMMAND: return this.chatService.sendCommandMessage(client, payload);
     }
   }
+
+  @SubscribeMessage('joinChat')
+  handleJoinChat(@ConnectedSocket() client: ValidSocket) {
+    console.info(`event [joinLobby]`, client.name);
+    client.join('Mainchat');
+    this.websocketService.serverMessage('onJoinChat', [client.id], 'Mainchat');
+    this.chatService.sendWelcomeMessage(client);
+
+  }
+
+  @SubscribeMessage('leaveChat')
+  handleLeaveChat(@ConnectedSocket() client: ValidSocket) {
+    console.info(`event [joinLobby]`, client.name);
+    client.leave('Mainchat');
+  }
 }

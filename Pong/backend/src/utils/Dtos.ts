@@ -147,6 +147,10 @@ export class MatchDto {
   @IsString()
   @IsOptional()
   winner?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  won?: boolean;
 }
 
 export class LobbyIDDto {

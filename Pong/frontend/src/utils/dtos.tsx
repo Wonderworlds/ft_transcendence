@@ -20,6 +20,7 @@ export type MatchDto = {
 	p4?: string;
 	date: Date;
 	winner: string;
+	won: boolean;
 	gameType: GameType;
 };
 

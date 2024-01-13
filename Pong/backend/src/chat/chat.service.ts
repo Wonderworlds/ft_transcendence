@@ -111,6 +111,13 @@ export class ChatService {
     });
   }
 
+  public sendWelcomeMessage(@ConnectedSocket() user: ValidSocket) {
+    return this.websocketService.server.to(user.id).emit('messageLobby', {
+      message: 'welcome to the chat lobby',
+      type: ChatMessageType.BOT,
+    });
+  }
+
   private async commandBlock(
     @ConnectedSocket() user: ValidSocket,
     pseudo: string,

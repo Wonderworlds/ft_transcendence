@@ -109,6 +109,7 @@ export class UsersService {
         gameType: match.gameType,
         date: match.createdAt,
         winner: match.winner.pseudo,
+        won: match.winner.username === user.username,
       };
       console.log(match, match.winner.pseudo);
       if (match.p3 && match.p4) {

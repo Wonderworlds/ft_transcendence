@@ -15,6 +15,8 @@ export enum ChatMessageType {
 	SERVER = 'SERVER',
 	UNDEFINED = 'UNDEFINED',
 	PROFILE = 'PROFILE',
+	DEMAND = 'DEMAND',
+	INVITE = 'INVITE',
 }
 
 export type Match = {

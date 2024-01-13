@@ -49,14 +49,14 @@ const NavBar: React.FC = () => {
 	}, [socket]);
 
 	const playElement = () => {
-		return location.pathname.toLowerCase() == '/home' ? (
-			<div></div>
-		) : (
-			<Link to={Pages.WaitingMatch}>
-				<div className="navPlay">
-					<Play />
-				</div>
-			</Link>
+		return (
+			<>
+				<Link to={Pages.WaitingMatch}>
+					<div className="navPlay">
+						<Play />
+					</div>
+				</Link>
+			</>
 		);
 	};
 
@@ -85,7 +85,6 @@ const NavBar: React.FC = () => {
 				>
 					<PongTitle />
 				</div>
-				{invites ? null : playElement()}
 				<div className="navInviteMatch">
 					{invites.map((invite, index) => {
 						return (
