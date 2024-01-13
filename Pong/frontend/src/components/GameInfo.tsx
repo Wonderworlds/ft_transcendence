@@ -38,6 +38,7 @@ const GameInfo: React.FC = () => {
 					<button
 						id="buttonGamePong"
 						onClick={() => {
+							setPseudo('');
 							handleClick(pseudo);
 						}}
 					>
@@ -51,6 +52,17 @@ const GameInfo: React.FC = () => {
 	const dynamicElement = () => {
 		switch (gameContext.gameType) {
 			case GameType.classicLocal: {
+				return (
+					<>
+						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
+						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
+						{gameContext.gameState === GameState.INIT
+							? addClientLocal(gameContext.addClientLocal)
+							: null}
+					</>
+				);
+			}
+			case GameType.multiplayerLocal: {
 				return (
 					<>
 						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}

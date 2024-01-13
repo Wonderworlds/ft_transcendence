@@ -5,6 +5,7 @@ import { GameState, LimitedUserDto } from 'src/utils/Dtos';
 import { EventGame, GameType, ValidSocket } from 'src/utils/types';
 import { Pong } from '../Pong';
 import { UpdateLobbyDto } from './pongLocal.lobby';
+import { Pong4p } from '../Pong4p';
 
 export class PongLobby {
   @WebSocketServer()
@@ -18,9 +19,11 @@ export class PongLobby {
   protected owner: ValidSocket;
   protected pLeft: LimitedUserDto;
   protected pRight: LimitedUserDto;
+  protected pBot: LimitedUserDto;
+  protected pTop: LimitedUserDto;
   public isLocal: boolean;
   public id: string;
-  protected pongInstance: Pong;
+  protected pongInstance: Pong | Pong4p;
   protected OwnerUser: LimitedUserDto;
 
   constructor(

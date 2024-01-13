@@ -1,0 +1,113 @@
+
+
+.GameArea4P {
+	display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+	width: 100%;
+	height: 100%;
+	border: 0.5px solid white;
+}
+
+.PongDiv4P {
+	width: 100%;
+	height: 100%;
+	background-color: rgb(0, 0, 0);
+	position: relative;
+	> h1 {
+		width: 100%;
+		height: auto;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: white;
+		font-size: clamp(2rem, 5vw, 5rem);
+	}
+}
+
+
+.Pleft {
+	background-color: white;
+	position: absolute;
+}
+
+
+.Pright {
+	background-color: white;
+	position: absolute;
+}
+
+.Ptop {
+	background-color: white;
+	position: absolute;
+}
+
+.Pbot {
+	background-color: white;
+	position: absolute;
+}
+
+
+.Ball {
+	width: 20px;
+	height: 20px;
+	background-color: white;
+	position: absolute;
+}
+
+
+.score {
+	position: absolute;
+	color: white;
+	top: 1.5rem;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 3rem;
+
+	.leftscore {
+		position: absolute;
+		transform: translateX(-5rem) translateX(-50%);
+	}
+	.rightscore {
+		position: absolute;
+		transform: translateX(5rem) translateX(-50%);
+	}
+}
+
+.sepline {
+	position: absolute;
+	width: 8px;
+	height: 100%;
+	left: 50%;
+	background-image: repeating-linear-gradient(
+		transparent,
+		transparent 8px,
+		white 8px,
+		white 16px
+	);
+//	transform: translateX(-50%);
+//	border-left: 10px dotted white;
+//	background-repeat: repeat-y;
+//	background-size: 1px 3px;
+//	background-color: black;
+}
+
+.quit {
+	position: absolute;
+	top: 1.5rem;
+	right: 1.5rem;
+	color: white;
+	font-size: 3rem;
+	cursor: pointer;
+}
+
+.gameOver {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-size: 5rem;
+}
+
