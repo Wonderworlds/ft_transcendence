@@ -48,12 +48,12 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 
 			socket.on('forcedDisconnect', (res) => {
 				sessionStorage.clear();
-				socket.disconnect();
 				user.setUsername('');
 				axios.setAuth({ token: '', username: '' });
 				navigate(Pages.Root);
+				socket.disconnect();
 				if (res?.message) {
-					console.log(res.message);
+					alert(res.message);
 				}
 			});
 

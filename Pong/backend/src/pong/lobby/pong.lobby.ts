@@ -4,8 +4,8 @@ import { UsersService } from 'src/users/users.service';
 import { GameState, LimitedUserDto } from 'src/utils/Dtos';
 import { EventGame, GameType, ValidSocket } from 'src/utils/types';
 import { Pong } from '../Pong';
-import { UpdateLobbyDto } from './pongLocal.lobby';
 import { Pong4p } from '../Pong4p';
+import { UpdateLobbyDto } from './pongLocal.lobby';
 
 export class PongLobby {
   @WebSocketServer()
@@ -17,15 +17,15 @@ export class PongLobby {
   public gameType: GameType;
   public status: GameState = GameState.INIT;
   protected owner: ValidSocket;
-  protected pLeft: LimitedUserDto;
-  protected pRight: LimitedUserDto;
-  protected pBot: LimitedUserDto;
-  protected pTop: LimitedUserDto;
+  protected pLeft: LimitedUserDto = null;
+  protected pRight: LimitedUserDto= null;
+  protected pBot: LimitedUserDto = null;
+  protected pTop: LimitedUserDto = null;
   public isLocal: boolean;
   public id: string;
   protected pongInstance: Pong | Pong4p;
   protected OwnerUser: LimitedUserDto;
-
+  public isMultiplayer: boolean = false;
   constructor(
     id: string,
     server: Server,
@@ -244,15 +244,25 @@ export class PongLobby {
     return this.OwnerUser.pseudo;
   }
 
-  getUpdateLobbyDto(option: boolean): UpdateLobbyDto {
-    const pReady = this.pongInstance?.getPlayersReady();
-    return {
+  getUpdateLobbyDto(): UpdateLobbyDto {
+    const pong4p = this.pongInstance as Pong4p;
+    const pReady = pong4p?.getPlayersReady();
+    let ret = {
       nbPlayer: this.listClients.size,
       pLeftReady: pReady?.p1,
       pRightReady: pReady?.p2,
       gameState: this.status,
-      pLeft: option ? this.pLeft : null,
-      pRight: option ? this.pRight : null,
+      pLeft: this.pLeft,
+      pRight: this.pRight,
+    };
+    if (this.gameType === GameType.classicOnline || this.gameType === GameType.classicLocal)
+      return ret;
+    return {
+      ...ret,
+      pTop: this.pTop,
+      pBot: this.pBot,
+      pTopReady: pReady?.p3,
+      pBotReady: pReady?.p4,
     };
   }
 
@@ -266,7 +276,7 @@ export class PongLobby {
   }
 
   serverUpdateClients() {
-    const lobbyState = this.getUpdateLobbyDto(true);
+    const lobbyState = this.getUpdateLobbyDto();
     this.server.to(this.id).emit('updateLobby', lobbyState);
   }
   public forcedLeave() {

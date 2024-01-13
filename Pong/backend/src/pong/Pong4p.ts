@@ -184,14 +184,14 @@ export class Pong4p extends Pong {
   public override getStateOfGame() {
     const stateOfGame: UpdateGameDto = {
       ball: this.ball4p.getPosition(),
-      pLeft: this.p1.getPosition(),
-      pRight: this.p2.getPosition(),
-      scorePLeft: this.p1.getScore(),
-      scorePRight: this.p2.getScore(),
+      pLeft: this.pLeft.getPosition(),
+      pRight: this.pRight.getPosition(),
       pTop: this.pTop.getPosition(),
       pBot: this.pBot.getPosition(),
-      scorePTop: this.pTop.getScore(),
-      scorePBot: this.pBot.getScore(),
+      scorePLeft: this.pLeft.lives,
+      scorePRight: this.pRight.lives,
+      scorePTop: this.pTop.lives,
+      scorePBot: this.pBot.lives,
     };
     return stateOfGame;
   }

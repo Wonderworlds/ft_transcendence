@@ -33,7 +33,6 @@ const Pong4P: React.FC = () => {
 	useEffect(() => {
 		if (!socket) return;
 		socket.on('updateGame', (res: UpdateGameDtoConfirmed) => {
-			//console.log(res);
 			if (res) {
 				setPLeft(res.pLeft);
 				setPRight(res.pRight);
@@ -139,10 +138,10 @@ const Pong4P: React.FC = () => {
 			case GameState.PLAYING:
 				return (
 					<>
-						<div className="Pleft" style={PleftStyle}></div>
-						<div className="Pright" style={PrightStyle}></div>
-						<div className="Ptop" style={PtopStyle}></div>
-						<div className="Pbot" style={PbotStyle}></div>
+						{gameContext.scorePLeft ? <div className="Pleft" style={PleftStyle}></div> : null}
+						{gameContext.scorePRight ? <div className="Pright" style={PrightStyle}></div> : null}
+						{gameContext.scorePTop ? <div className="Ptop" style={PtopStyle}></div> : null}
+						{gameContext.scorePBot ? <div className="Pbot" style={PbotStyle}></div> : null}
 						<div className="Ball" style={BallStyle}></div>
 					</>
 				);

@@ -11,9 +11,13 @@ export type UpdateLobbyDto = {
   nbPlayer: number;
   pLeftReady: boolean;
   pRightReady: boolean;
+  pTopReady?: boolean;
+  pBotReady?: boolean;
   gameState: GameState;
   pLeft: LimitedUserDto;
   pRight: LimitedUserDto;
+  pTop?: LimitedUserDto;
+  pBot?: LimitedUserDto;
 };
 
 export class PongLobbyLocal extends PongLobby {
@@ -158,7 +162,7 @@ export class PongLobbyLocal extends PongLobby {
   }
 
   startMatch(pseudo: string) {
-    if (this.gameType === GameType.classicOnline) {
+    if (this.gameType === GameType.classicLocal) {
       if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
       if (this.status !== GameState.START || !this.pongInstance) return;
       if (this.pongInstance.startMatch(this.pLeft.pseudo))

@@ -30,6 +30,10 @@ type GameContextType = {
 	setPlayerIsReady1: React.Dispatch<React.SetStateAction<boolean>>;
 	playerIsReady2: boolean;
 	setPlayerIsReady2: React.Dispatch<React.SetStateAction<boolean>>;
+	playerIsReady3: boolean;
+	setPlayerIsReady3: React.Dispatch<React.SetStateAction<boolean>>;
+	playerIsReady4: boolean;
+	setPlayerIsReady4: React.Dispatch<React.SetStateAction<boolean>>;
 	gameOver: boolean;
 	setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
 	tab: string[];
@@ -56,11 +60,14 @@ export type UpdateLobbyDto = {
 	nbPlayer: number;
 	pLeftReady: boolean;
 	pRightReady: boolean;
+	pTopReady?: boolean;
+	pBotReady?: boolean;
 	gameState: GameState;
-	pLeft?: User;
-	pRight?: User;
+	pLeft: User;
+	pRight: User;
+	pTop?: User;
+	pBot?: User;
 };
-
 export const GameContext = createContext({} as GameContextType);
 
 export const GameContextProvider = ({ children }: { children: React.ReactNode }) => {
@@ -82,6 +89,8 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 	const [playerReady, setPlayerReady] = React.useState<boolean>(true);
 	const [playerIsReady1, setPlayerIsReady1] = React.useState<boolean>(false);
 	const [playerIsReady2, setPlayerIsReady2] = React.useState<boolean>(false);
+	const [playerIsReady3, setPlayerIsReady3] = React.useState<boolean>(false);
+	const [playerIsReady4, setPlayerIsReady4] = React.useState<boolean>(false);
 	const [tournamentIsReady, setTournamentIsReady] = React.useState<boolean>(false);
 	const [gameState, setGameState] = React.useState<GameState>(GameState.INIT);
 	const [gameOver, setGameOver] = React.useState<boolean>(false);
@@ -110,8 +119,12 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			setPlayerIsReady1(res.pLeftReady);
 			setPlayerIsReady2(res.pRightReady);
 			setGameState(res.gameState);
+			if (res.pTopReady !== undefined) setPlayerIsReady3(res.pTopReady);
+			if (res.pBotReady !== undefined) setPlayerIsReady4(res.pBotReady);
 			res.pLeft && setPlayerLeft(res.pLeft);
 			res.pRight && setPlayerRight(res.pRight);
+			res.pTop && setPlayerTop(res.pTop);
+			res.pBot && setPlayerBot(res.pBot);
 		});
 
 		socket.on('tournamentIsReady', () => {
@@ -220,6 +233,10 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 				setScorePTop,
 				scorePBot,
 				setScorePBot,
+				playerIsReady3,
+				setPlayerIsReady3,
+				playerIsReady4,
+				setPlayerIsReady4,
 			}}
 		>
 			{children}

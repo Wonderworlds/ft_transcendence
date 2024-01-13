@@ -25,9 +25,10 @@
 	.divDisplayTop {
 
 		display: flex;
-		width: 75%;
+		width: 100%;
 		height: 10%;
-		align-self: flex-start;
+		align-self: center;
+		justify-content: center;
 		padding-left: 5%;
 	}
 

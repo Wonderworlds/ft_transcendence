@@ -10,7 +10,7 @@ export class Ball {
   protected readonly speed = 0.8;
 
   constructor() {
-    this.setDirection(this.getRandomDirection());
+    this.setDirection(this.normalize(this.getRandomDirection()));
   }
 
   public setDirection(newDir: Pos) {

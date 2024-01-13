@@ -123,7 +123,6 @@ export class UsersService {
     const p4 = await this.findUserByPseudo(matchInfo.p4);
     if (p3 || p4) {
       if (!p3 || !p4) return;
-
       const winner =
         matchInfo.scoreP1 > matchInfo.scoreP2
           ? matchInfo.scoreP1 > matchInfo.scoreP3

@@ -17,7 +17,6 @@ import { Pages } from './utils/types.tsx';
 const App = () => {
 	const axios = getAxios();
 	let isAuthenticated = axios.auth?.token ? true : false;
-	console.log('App', isAuthenticated);
 	if (!isAuthenticated && sessionStorage.getItem('JWTtoken')) isAuthenticated = true;
 	return (
 		<div className="App">
