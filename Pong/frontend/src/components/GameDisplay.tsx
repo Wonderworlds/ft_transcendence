@@ -1,8 +1,10 @@
 import React from 'react';
 import { getGame } from '../context/GameContext.tsx';
 import Pong from '../pages/Pong.tsx';
+import { GameType } from '../utils/types.tsx';
 import ChatInGame from './ChatInGame';
 import GameInfo from './GameInfo.tsx';
+import Pong4P from './Pong4P.tsx';
 import ProfilePlayer from './ProfilePlayer.tsx';
 
 const GameDisplay: React.FC = () => {
@@ -11,7 +13,12 @@ const GameDisplay: React.FC = () => {
 	const switchTab = () => {
 		switch (gameContext.onTab) {
 			case 0:
-				return <Pong />;
+				return gameContext.gameType === GameType.multiplayerOnline ||
+					gameContext.gameType === GameType.multiplayerLocal ? (
+					<Pong4P />
+				) : (
+					<Pong />
+				);
 			case 1:
 				return <ProfilePlayer pseudo={gameContext.pseudo} isClicked={gameContext.onTab} />;
 		}

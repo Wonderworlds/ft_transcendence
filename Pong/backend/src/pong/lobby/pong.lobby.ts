@@ -158,11 +158,11 @@ export class PongLobby {
   initMatch(pleft: LimitedUserDto, pright: LimitedUserDto) {
     if (this.status !== GameState.INIT) return;
     this.pongInstance = new Pong(
+      this,
       this.id,
       this.server,
       pleft.pseudo,
       pright.pseudo,
-      this,
     );
     this.status = GameState.START;
     this.serverUpdateClients();

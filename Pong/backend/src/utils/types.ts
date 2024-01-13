@@ -33,11 +33,17 @@ export enum lobbyProtection {
 
 export enum EventGame {
 	UP = 'UP',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
 	DOWN = 'DOWN',
 	ARROW_UP = 'ARROW_UP',
 	ARROW_DOWN = 'ARROW_DOWN',
+  ARROW_LEFT = 'ARROW_LEFT',
+  ARROW_RIGHT = 'ARROW_RIGHT',
 	W_KEY = 'W_KEY',
 	S_KEY = 'S_KEY',
+  A_KEY = 'A_KEY',
+  D_KEY = 'D_KEY',
   START_MATCH = 'START_MATCH',
   START_TOURNAMENT = 'START_TOURNAMENT',
   PAUSE = 'PAUSE',
@@ -57,6 +63,7 @@ export type UserJwt = {
 
 export enum GameType {
 	classicLocal = 'Local classic',
+	multiplayerLocal = 'Local multiplayer',
 	tournamentLocal = 'Local Tournament',
 	classicOnline = 'Online classic',
 	multiplayerOnline = 'Online multiplayer',

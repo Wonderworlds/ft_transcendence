@@ -53,7 +53,7 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 				axios.setAuth({ token: '', username: '' });
 				navigate(Pages.Root);
 				if (res?.message) {
-					alert(res.message);
+					console.log(res.message);
 				}
 			});
 

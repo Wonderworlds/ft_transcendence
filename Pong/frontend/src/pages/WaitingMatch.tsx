@@ -47,8 +47,8 @@ const WaitingMatch: React.FC = () => {
 	};
 
 	const playLocalProps: CreateLobbyProps = {
-		labels: ['classic', 'Tournament'],
-		scores: ['local0', 'local1'],
+		labels: ['classic', 'multiplayer', 'Tournament'],
+		scores: ['local0', 'local1', 'local2'],
 		buttonSubmit: 'Play Local',
 		submit: playLocal,
 		state: playLocalCB,
