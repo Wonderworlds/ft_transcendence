@@ -92,18 +92,27 @@ export class PongLobbyLocal extends PongLobby {
       oldClient.leave(this.id);
       this.OwnerUser === user;
       client.join(this.id);
+      this.owner = client;
       this.listClients.set(user.pseudo, client);
     }
-    this.pongInstancePause(this.OwnerUser.pseudo);
+    this.pongInstanceUnpause(this.OwnerUser.pseudo);
     this.serverUpdateClients();
     console.info('updateClientLocal', client.id, oldClient.id);
+    if (this.status === GameState.START) {
+      console.info('updateClientLocal', 'playerReady');
+      this.server.to(this.owner.id).emit('isPlayerReady');
+    }
+    if (this.status === GameState.GAMEOVER) {
+      console.info('updateClientLocal', 'gameOver');
+      this.server.to(this.owner.id).emit('gameOver', true);
+    }
   }
 
   override removeClient(@ConnectedSocket() client: ValidSocket) {
     console.info('removeClientLocal', client.name);
     this.ownerIsIn = false;
     this.pongInstancePause(this.OwnerUser.pseudo);
-  }
+  } 
 
   initTournament() {
     if (this.status !== GameState.INIT) return;
@@ -121,6 +130,11 @@ export class PongLobbyLocal extends PongLobby {
       this.gameType === GameType.classicOnline
     )
       this.initMatch(this.pLeft, this.pRight);
+    else if (this.gameType === GameType.multiplayerLocal)
+    {
+      console.info('nextMatch', this.pLeft, this.pRight, this.pTop, this.pBot);
+      this.initMatch4p(this.pLeft, this.pRight, this.pTop, this.pBot);
+    }
     else return; //TODO next match in bracket
   }
 

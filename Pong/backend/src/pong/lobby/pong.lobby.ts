@@ -153,11 +153,12 @@ export class PongLobby {
       this.gameType === GameType.classicOnline
     )
       this.initMatch(this.pLeft, this.pRight);
-    else if (this.gameType === (GameType.multiplayerOnline || GameType.multiplayerLocal))
-    {
+    else if (
+      this.gameType ===
+      (GameType.multiplayerOnline || GameType.multiplayerLocal)
+    ) {
       this.initMatch(this.pLeft, this.pRight, this.pTop, this.pBot);
-    }
-    else return; //TODO next match in bracket
+    } else return; //TODO next match in bracket
   }
 
   getSocketFromPseudo(pseudo: string): ValidSocket | undefined {
@@ -271,9 +272,14 @@ export class PongLobby {
     console.info('game over', matchLog, this.id);
     this.status = GameState.GAMEOVER;
     this.server.to(this.id).emit('gameOver', matchLog);
-    return await this.userService.createMatchDB(matchLog);
+    if (
+      this.gameType === GameType.classicOnline ||
+      this.gameType === GameType.multiplayerOnline ||
+      this.gameType === GameType.tournamentOnline
+    ) {
+      return await this.userService.createMatchDB(matchLog);
+    }
   }
-
   public getOwnerPseudo() {
     return this.OwnerUser.pseudo;
   }
@@ -292,8 +298,24 @@ export class PongLobby {
     if (
       this.gameType === GameType.classicOnline ||
       this.gameType === GameType.classicLocal
-    )
+    ) {
+      if (this.status === GameState.INIT && this.pLeft && this.pRight) {
+        this.status = GameState.START;
+        ret.gameState = GameState.START;
+      }
       return ret;
+    }
+    console.info('getUpdateLobbyDto', this.pTop, this.pBot);
+    if (
+      this.pLeft &&
+      this.pRight &&
+      this.pTop &&
+      this.pBot &&
+      this.status === GameState.INIT
+    ) {
+      this.status = GameState.START;
+      ret.gameState = GameState.START;
+    }
     return {
       ...ret,
       pTop: this.pTop,
@@ -303,13 +325,67 @@ export class PongLobby {
     };
   }
 
+  pongInstanceUnpause(pseudo: string) {
+    if (!this.pongInstance) return;
+    if (this.status !== GameState.PAUSE) return;
+    if (
+      this.gameType === GameType.classicOnline ||
+      this.gameType === GameType.classicLocal
+    ) {
+      if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
+      this.status = GameState.PLAYING;
+      this.pongInstance.pause();
+      return;
+    }
+    if (
+      this.gameType === GameType.multiplayerOnline ||
+      this.gameType === GameType.multiplayerLocal
+    ) {
+      if (
+        this.pLeft.pseudo !== pseudo &&
+        this.pRight.pseudo !== pseudo &&
+        this.pTop.pseudo !== pseudo &&
+        this.pBot.pseudo !== pseudo
+      )
+        return;
+      this.status = GameState.PLAYING;
+      this.pongInstance.pause();
+    }
+  }
+
   pongInstancePause(pseudo: string) {
     if (!this.pongInstance) return;
-    if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
-    if (this.status !== GameState.PLAYING && this.status !== GameState.PAUSE)
+    console.info('pongInstancePause', this.status);
+    if (this.status !== GameState.PLAYING) return;
+    console.info('pongInstancePause', this.status);
+    if (
+      this.gameType === GameType.classicOnline ||
+      this.gameType === GameType.classicLocal
+    ) {
+      console.info('pongInstancePause', this.status);
+      if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
+      this.status = GameState.PAUSE;
+      this.pongInstance.pause();
+      console.info('pause', this.status);
       return;
-    this.status = GameState.PAUSE;
-    this.pongInstance.pause();
+    }
+    console.info('pongInstancePause', this.gameType);
+    if (
+      this.gameType === GameType.multiplayerOnline ||
+      this.gameType === GameType.multiplayerLocal
+    ) {
+      console.info('pongInstancePause', this.status);
+      if (
+        this.pLeft.pseudo !== pseudo &&
+        this.pRight.pseudo !== pseudo &&
+        this.pTop.pseudo !== pseudo &&
+        this.pBot.pseudo !== pseudo
+      )
+        return;
+      console.info('pongInstancePause', this.status);
+      this.status = GameState.PAUSE;
+      this.pongInstance.pause();
+    }
   }
 
   serverUpdateClients() {

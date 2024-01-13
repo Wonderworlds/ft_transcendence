@@ -132,6 +132,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 		});
 
 		socket.on('isPlayerReady', () => {
+			console.log('isPlayerReady');
 			setPlayerReady(false);
 		});
 

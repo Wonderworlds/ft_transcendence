@@ -9,6 +9,7 @@ class Ball4p extends Ball {
   constructor(handleDeath: (zone: 'TOP' | 'BOT' | 'LEFT' | 'RIGHT') => void) {
     super();
     this.handleDeath = handleDeath;
+    this.speed = 1.5;
   }
 
   public move4P(
@@ -24,7 +25,8 @@ class Ball4p extends Ball {
         this.direction = this.normalize(this.getRandomDirection());
         return this.handleDeath('LEFT');
       } else {
-        this.direction.x += 1;
+        this.direction.x = 1;
+        this.direction = this.normalize(this.direction);
       }
     } else if (this.position.x > 99) {
       if (pRight.isAlive) {
@@ -32,7 +34,8 @@ class Ball4p extends Ball {
         this.direction = this.normalize(this.getRandomDirection());
         return this.handleDeath('RIGHT');
       } else {
-        this.direction.x += -1;
+        this.direction.x = -1;
+        this.direction = this.normalize(this.direction);
       }
     } else if (this.position.y + 2 < 2) {
       if (pTop.isAlive) {
@@ -40,7 +43,8 @@ class Ball4p extends Ball {
         this.direction = this.normalize(this.getRandomDirection());
         return this.handleDeath('TOP');
       } else {
-        this.direction.y += 1;
+        this.direction.y = 1;
+        this.direction = this.normalize(this.direction);
       }
     } else if (this.position.y > 99) {
       if (pBot.isAlive) {
@@ -48,12 +52,37 @@ class Ball4p extends Ball {
         this.direction = this.normalize(this.getRandomDirection());
         return this.handleDeath('BOT');
       } else {
-        this.direction.y += -1;
+        this.direction.y = -1;
+        this.direction = this.normalize(this.direction);
       }
     }
 
+    this.checkColision(pLeft, pRight);
+    this.checkColision4p(pTop, pBot);
+
     this.position.x += this.direction.x * this.speed;
     this.position.y += this.direction.y * this.speed;
+  }
+
+  private checkColision4p(pTop: PlayerHorizontal, pBot: PlayerHorizontal) {
+    //check collision with players
+    const posTop = pTop.getPosition();
+    const posBot = pBot.getPosition();
+    if (
+      this.position.y <= posTop.y + 0.9 &&
+      this.dist(this.position.y, posTop.y + 0.9) < 1 &&
+      this.position.x >= posTop.x &&
+      this.position.x <= posTop.x + 12
+    ) {
+      this.direction.y += 1;
+    } else if (
+      this.position.y >= posBot.y - 2 &&
+      this.dist(this.position.y, posBot.y - 2) < 1 &&
+      this.position.x >= posBot.x &&
+      this.position.x <= posBot.x + 12
+    ) {
+      this.direction.y += -1;
+    }
   }
 }
 
@@ -64,6 +93,7 @@ class PlayerHorizontal extends Player {
   protected maxX = 88;
   constructor(name: string, position: Pos) {
     super(name, position);
+    this.speed = 1.5;
   }
 
   public override changePos(event: EventGame) {
@@ -197,7 +227,7 @@ export class Pong4p extends Pong {
   }
 
   override loop = () => {
-    setTimeout(this.loop, 1000 / 48);
+    setTimeout(this.loop, 1000 / 32);
     if (!this.running) return;
     this.ball4p.move4P(this.pLeft, this.pRight, this.pTop, this.pBot);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
