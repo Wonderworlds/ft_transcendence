@@ -16,6 +16,13 @@
 		border-radius: 50%;
 	}
 
+	.divCancelGameDisplayTop {
+		position: absolute;
+		left: 84%;
+		p {
+			font-size: clamp(30px, 2.5vw, 40px);
+		}
+	}
 	.divNameFirstPLayer {
 
 		display: flex;

@@ -113,6 +113,7 @@ export class PongLobbyLocal extends PongLobby {
     );
     this.status = GameState.START;
     this.serverUpdateClients();
+    console.info('initMatchLocal', 'playerReady');
     this.server
       .to(this.owner.id)
       .emit('isPlayerReady');

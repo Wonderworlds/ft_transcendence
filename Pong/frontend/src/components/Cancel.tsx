@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Cancel: React.FC = () => {
+const Cancel: React.FC<{ handleClick: () => void }> = ({ handleClick }) => {
 	return (
 		<div>
-			<button className='cancelButton'>
-				<p className='cancelText'>Cancel</p>
-			</button>	
+			<button onClick={handleClick} className="cancelButton">
+				<p className="cancelText">Cancel</p>
+			</button>
 		</div>
 	);
 };

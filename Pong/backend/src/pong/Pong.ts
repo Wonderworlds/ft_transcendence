@@ -145,8 +145,7 @@ export class Pong {
   protected server: Server;
   private ball = new Ball();
   private running: boolean = true;
-  private scoreEnd = 10;
-  private functionEnd: (log: any) => void;
+  private scoreEnd = 2;
   private p1: Player;
   private p2: Player;
   private lobby: PongLobby;

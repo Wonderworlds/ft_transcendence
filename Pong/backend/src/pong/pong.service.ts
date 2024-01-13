@@ -39,6 +39,7 @@ export class PongService {
   getLobbys(client: ValidSocket): {
     lobbysDto: LobbyDto[];
     lobbyLocal: LobbyDto;
+    lobbyRejoin: LobbyDto;
   } {
     const lobbysDto: Array<LobbyDto> = [];
     let lobbyLocal: LobbyDto = null;
@@ -52,7 +53,11 @@ export class PongService {
       if (value.getSize() >= value.maxClients) continue;
       lobbysDto.push(this.lobbyToLobbyDto(value));
     }
-    return { lobbysDto, lobbyLocal };
+    const index = this.isClientinRoom(client);
+    let lobbyRejoin = null;
+    if (index)
+      lobbyRejoin = this.lobbyToLobbyDto(this.listGameOnline.get(index));
+    return { lobbysDto, lobbyLocal, lobbyRejoin};
   }
 
   createLobby(

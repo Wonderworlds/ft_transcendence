@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getGame } from '../context/GameContext';
-import { GameType } from '../utils/types';
+import { GameType, Pages } from '../utils/types';
+import Cancel from './Cancel';
 
 const GameDisplayTop: React.FC = () => {
 	const gameContext = getGame();
-
+	const navigate = useNavigate();
 	const elementDefault = () => {
 		return (
 			<>
@@ -43,6 +45,13 @@ const GameDisplayTop: React.FC = () => {
 						{gameContext.playerRight.pseudo}
 					</h1>
 					<img src={gameContext.playerRight.ppImg} />
+				</div>
+				<div className="divCancelGameDisplayTop">
+					<Cancel
+						handleClick={() => {
+							navigate(Pages.Home);
+						}}
+					/>
 				</div>
 			</>
 		);

@@ -58,15 +58,24 @@
 		border-radius: 2rem;
 		margin-left: 10%;
 	}
-	
+
+.divSpecialLobby {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
 .divLobbyLocal {
 	--color: #780606;
 	--hover: #4d0241;
 	display: flex;
-	margin: 6%;
 	justify-content: center;
+	align-items: center;
 	width: 100%;
-	height: 20%;
+	height: 70%;
 	> button {
 		border: 5px solid;
 		font-family: zendots;
@@ -98,5 +107,43 @@
 		}
 	}
 }
+.divLobbyRejoin {
+	--color: #0ed8f8;
+	--hover: #0d026f;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 70%;
+	> button {
+		border: 5px solid;
+		font-family: zendots;
+		line-height: 1.2;
+		margin: 0.5em;
+		padding: 0.5em 1em;
+		color: #0ed8f8;
+		transition: 0.25s;
+		font-size: 3vh;
+		border-color: var(--color);
+		font-weight: 500;
+		background-color: #1d1b40e8;
 
+		&:hover,
+		&:focus {
+			border-color: var(--hover);
+			color: #fff;
+		}
+	}
+	> button:hover,
+	> button:focus {
+		animation: pulse 1s;
+		box-shadow: 0 0 0 2em transparent;
+	}
+
+	@keyframes pulse {
+		0% {
+			box-shadow: 0 0 0 0 var(--hover);
+		}
+	}
+}
 }

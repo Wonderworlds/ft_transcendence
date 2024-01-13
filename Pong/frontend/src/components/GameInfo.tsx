@@ -10,16 +10,14 @@ const GameInfo: React.FC = () => {
 	const readyButton = (label: string, handleClick: () => void) => {
 		return (
 			<>
-				<div className="divTitleReady">
-					<p>{label}</p>
-				</div>
 				<div className="divButtonReady">
 					<button
+						id="buttonGamePong"
 						onClick={() => {
 							handleClick();
 						}}
 					>
-						Ready
+						{label}
 					</button>
 				</div>
 			</>
@@ -38,11 +36,12 @@ const GameInfo: React.FC = () => {
 				/>
 				<div className="divButtonReady">
 					<button
+						id="buttonGamePong"
 						onClick={() => {
 							handleClick(pseudo);
 						}}
 					>
-						Add
+						<p>Add</p>
 					</button>
 				</div>
 			</>

@@ -4,9 +4,12 @@ import { getSocket } from '../context/WebsocketContext';
 import { GameState, LobbyDto } from '../utils/dtos';
 import { Pages } from '../utils/types';
 
-const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<LobbyDto>> }> = ({
-	setLobbyLocal,
-}) => {
+interface LobbyListProps {
+	setLobbyLocal: React.Dispatch<React.SetStateAction<LobbyDto>>;
+	setLobbyRejoin: React.Dispatch<React.SetStateAction<LobbyDto>>;
+}
+
+const LobbyList: React.FC<LobbyListProps> = ({ setLobbyLocal, setLobbyRejoin }) => {
 	const socketContext = getSocket();
 	const socket = socketContext.socket;
 	const navigate = useNavigate();
@@ -14,11 +17,15 @@ const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<L
 
 	React.useEffect(() => {
 		if (!socket) return;
-		socket.on('lobbyList', (res: { lobbys: LobbyDto[]; lobbyLocal: LobbyDto }) => {
-			console.log(res);
-			setLobbyList(res.lobbys);
-			setLobbyLocal(res.lobbyLocal);
-		});
+		socket.on(
+			'lobbyList',
+			(res: { lobbys: LobbyDto[]; lobbyLocal: LobbyDto; lobbyRejoin: LobbyDto }) => {
+				console.log(res);
+				setLobbyList(res.lobbys);
+				setLobbyLocal(res.lobbyLocal);
+				setLobbyRejoin(res.lobbyRejoin);
+			}
+		);
 		socket.emit('getLobbys');
 		return () => {
 			socket.off('lobbyList');
@@ -48,7 +55,7 @@ const LobbyList: React.FC<{ setLobbyLocal: React.Dispatch<React.SetStateAction<L
 							navigate(Pages.Pong);
 						}}
 					>
-						{lobby.status === GameState.INIT ? 'Join' : 'spectate'}
+						{lobby.status === GameState.INIT ? 'Join' : 'Rejoin'}
 					</button>
 				</div>
 			</div>

@@ -142,7 +142,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 	}
 
 	function addClientLocal(pseudo: string) {
-		if (!socket) return;
+		if (!socket || pseudo === '' || pseudo.trim() === '') return setPseudo('');
 		socket.emit('addClientLocal', {
 			lobby: socketContext.lobby,
 			...user.getUserLimited(),

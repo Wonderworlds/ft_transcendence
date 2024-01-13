@@ -34,11 +34,12 @@ export class PongGateway {
 
   @SubscribeMessage('getLobbys')
   onGetLobbys(@ConnectedSocket() client: ValidSocket) {
-    const { lobbysDto, lobbyLocal } = this.pongService.getLobbys(client);
-    console.info('getLobbys', { lobbysDto }, lobbyLocal);
+    const { lobbysDto, lobbyLocal, lobbyRejoin } = this.pongService.getLobbys(client);
+    console.info('getLobbys', { lobbysDto }, lobbyLocal, lobbyRejoin);
     this.websocketService.serverMessage('lobbyList', [client.id], {
       lobbys: lobbysDto,
       lobbyLocal: lobbyLocal,
+      lobbyRejoin: lobbyRejoin,
     });
   }
 

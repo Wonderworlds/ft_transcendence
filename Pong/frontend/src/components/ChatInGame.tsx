@@ -12,7 +12,6 @@ const ChatInGame: React.FC = () => {
 	const gameContext = getGame();
 
 	const tabElement = () => {
-		console.log('tab', gameContext.tab);
 		const maps = gameContext.tab.map((tab, index) => {
 			return (
 				<button

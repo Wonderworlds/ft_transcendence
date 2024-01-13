@@ -35,7 +35,7 @@ export class PongLobby {
     this.server = server;
     this.owner = owner;
     this.gameType = gameType;
-    if (gameType === GameType.classicOnline) this.maxClients = 8;
+    if (gameType === GameType.classicOnline) this.maxClients = 2;
     size ? (this.maxClients = size) : null;
   }
 
@@ -106,7 +106,7 @@ export class PongLobby {
       return this.listClients.delete(client.name);
     const id = setTimeout(() => {
       return this.removeClientCB(client);
-    }, 1000 * 10);
+    }, 1000 * 15);
     this.mapTimeout.set(client.name, id);
   }
 

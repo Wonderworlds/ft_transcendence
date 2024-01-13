@@ -1,8 +1,9 @@
 .icon {
-	font-size: 1.75vw;
+	position: relative;
+	transform: translateX(-30%);
+	font-size: clamp(20px, 3vw, 30px);
 	background-color: rgba(0, 0, 0, 0.155);
 	color: purple;
-
 	&:hover {
 		color: #ff00aa99;
 	}
