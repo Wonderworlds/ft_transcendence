@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fmauguin <fmauguin@student.42.fr >         +#+  +:+       +#+         #
+#    By: thbierne <thbierne@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/11 21:40:38 by fmauguin          #+#    #+#              #
-#    Updated: 2024/01/07 00:03:15 by fmauguin         ###   ########.fr        #
+#    Updated: 2024/01/13 14:43:46 by thbierne         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,12 +14,13 @@ SHELL				=	/bin/sh
 
 COMPOSE				:= ./docker-compose.yml
 
-vol_db=postgresql
+#vol_db=postgresql
 front=Pong/backend
 back=Pong/frontend
 
+#mkdir -p ${vol_db}
+
 all:
-	mkdir -p ${vol_db}
 	docker compose -f $(COMPOSE) up -d
 
 re: fclean all
