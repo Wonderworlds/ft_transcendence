@@ -144,6 +144,12 @@ export class PongService {
         to: [client.id],
         messagePayload: 'User not found',
       };
+    if(FriendUser.username === client.name)
+      return {
+        event: 'error',
+        to: [client.id],
+        messagePayload: 'You can\'t play with yourself',
+      };
     const friend = websocketService.getUser(FriendUser.username);
     if (!friend)
       return {
@@ -167,13 +173,14 @@ export class PongService {
       receiver: friend.name,
     });
     setTimeout(() => {
-      if (lobby.getSize() !== 2) return;
+      console.info('customGameCB', 'Lobby size', lobby.getSize());
+      if (lobby.getSize() === 2) return;
       this.listCustomGame.delete(id);
       this.customGamePending.splice(
         this.customGamePending.findIndex((e) => e.lobby === id),
         1,
       );
-      console.info('customGameCB', 'Lobby deleted');
+      console.info('customGameCB', 'Lobby deleted', id);
     }, 1000 * 20);
     console.info('customGameCreate', this.customGamePending);
     return {
@@ -235,6 +242,7 @@ export class PongService {
 	  this.listGameLocal.get(body.lobby) ||
 	  this.listGameOnline.get(body.lobby) ||
 	  this.listCustomGame.get(body.lobby);
+  if (!lobby) return;
 	lobby.onInput(client, body.input, body.pseudo);
   }
 

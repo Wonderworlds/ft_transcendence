@@ -4,18 +4,12 @@
 	width: 100%;
 	height: 100%;
 	flex-direction: column;
-
 	.divTabChat {
 
 		display: flex;
 		width: 100%;
 		height: 10%;
-		
-		justify-content: center;
-		align-items: center;
-
-		border-style: solid solid solid none;
-		border-color: white;
+		border: 2px solid white;
 
 		button {
 				
@@ -25,7 +19,7 @@
 			background-color: rgba($color: #000000, $alpha: 0.8);
 			border-color: transparent;
 			cursor: pointer;
-			font-size: 3vh;
+			font-size: clamp(20px, 1.5vw, 25px);
 			width: 100%;
 			height: 100%;
 
@@ -40,76 +34,10 @@
 	}
 
 	.divChatInGame {
-
 		display: flex;
-		flex-direction: column;
-		height: 80%;
+		height: 100%;
 		width: 100%;
-		overflow-y: scroll;
-
-		p {
-
-			color: white;
-			font-family: "Inter";
-			
-		}
-
 	}
 
-	.divTypeMessage {
-
-		display: flex;
-		width: 100%;
-		height: 10%;
-		flex-direction: row;
-		align-items: center;
-
-		.divInputMsg {
-
-			display: flex;
-			width: 83%;
-			height: 30%;
-			padding-left: 2%;
-
-			.msgToSend {
-
-				display: flex;
-				width: 100%;
-				height: 100%;
-				border: gray;
-				font-family: 'Inter';
-
-			}
-
-		}
-
-		.divButtonSend {
-
-			display: flex;
-			width: 17%;
-			height: 100%;
-			justify-content: center;
-			align-items: center;
-
-			button {
-					
-				color: white;
-				font-family: "Inter";
-				font-size: large;
-				background-color: rgba($color: #000000, $alpha: 0.8);
-				border-color: white;
-				cursor: pointer;
-				font-size: 3vh;
-				width: 50%;
-				height: 50%;
-
-				display: flex;
-				justify-content: center;
-				align-items: center;	
-			}
-
-		}
-
-	}
 
 }

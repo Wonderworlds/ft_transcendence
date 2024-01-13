@@ -92,13 +92,11 @@ export class ChatService {
       });
   }
 
-  private readonly helpMessage = `
-	/help : show this message
+  private readonly helpMessage = `/help : show this message
 	/block @pseudo : block a user
 	/unblock @pseudo : unblock a user
 	/invite @pseudo : invite a user to a custom game
-	/addFriend @pseudo : add a user to your friend list
-	`;
+	/addFriend @pseudo : add a user to your friend list`;
 
   private responseServer(
     @ConnectedSocket() user: ValidSocket,
@@ -210,6 +208,23 @@ export class ChatService {
     }
   }
 
+  private async commandProfile(@ConnectedSocket() user: ValidSocket, pseudo: string) {
+    console.info(`event [commandProfile]`, user.name, pseudo);
+    if (pseudo[0] !== '@')
+      return this.responseServer(user, 'error: invalid pseudo: missing @');
+    pseudo = pseudo.slice(1);
+      const friend = await this.userService.findUserByPseudo(pseudo);
+      if (!friend)
+        return this.responseServer(user, `error: ${pseudo} not found`);
+      const friendID = this.websocketService.users.get(friend.username);
+      if (!friendID)
+        return this.responseServer(user, `error: ${pseudo} not connected`);
+        return this.websocketService.server.to(user.id).emit('messageLobby', {
+          message: pseudo,
+          type: ChatMessageType.PROFILE,
+        });
+  }
+
   public sendCommandMessage(
     @ConnectedSocket() user: ValidSocket,
     body: messageLobbyDto,
@@ -231,6 +246,8 @@ export class ChatService {
         return this.commandInvite(user, msgSplit[1]);
       case 'addFriend':
         return this.commandAddFriend(user, msgSplit[1]);
+      case 'profile':
+        return this.commandProfile(user, msgSplit[1]);
       default:
         return this.responseServer(
           user,

@@ -1,83 +1,39 @@
 import React from 'react';
-import { Msg } from '../utils/types.tsx';
-import ProfileInfo from './ProfileInfo.tsx';
-import SystemInfo from './SystemInfo.tsx';
+import { getGame } from '../context/GameContext.tsx';
+import Chat from './Chat.tsx';
+
+export enum ChatTabs {
+	Pong = 'Pong',
+	Profile = 'Test',
+	Bracket = 'Bracket',
+}
 
 const ChatInGame: React.FC = () => {
-	let FriendsList = new Array<{ key: Number; msg: Msg }>();
-	let p1 = { pseudo: 'Tao', text: 'test', type: 1 } as Msg;
-	let p2 = { pseudo: 'WhispTao', text: 'test', type: 2 } as Msg;
-	let p3 = { pseudo: 'system', text: 'get ready for next pong', type: 0 } as Msg;
+	const gameContext = getGame();
 
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p1,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p3,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p2,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p1,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p2,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p1,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p3,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p2,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p1,
-	});
-	FriendsList.push({
-		key: FriendsList.length,
-		msg: p2,
-	});
-
-	const chatElement: any = FriendsList.map((item) => {
-		if (item.msg.type >= 1)
+	const tabElement = () => {
+		console.log('tab', gameContext.tab);
+		const maps = gameContext.tab.map((tab, index) => {
 			return (
-				<ProfileInfo
-					key={item.key.toString()}
-					pseudo={item.msg.pseudo}
-					text={item.msg.text}
-					type={item.msg.type}
-				/>
+				<button
+					key={index}
+					className="tabChat"
+					onClick={() => {
+						gameContext.setOnTab(index);
+					}}
+				>
+					<p>{tab}</p>
+				</button>
 			);
-		else return <SystemInfo key={item.key.toString()} text={item.msg.text} />;
-	});
+		});
+		return maps;
+	};
 
 	return (
 		<div className="headerChatInGame">
-			<div className="divTabChat">
-				<button className="">Pong</button>
-				<button>{p1.pseudo}</button>
-				<button>Bracket</button>
-			</div>
-			<div className="divChatInGame">{chatElement}</div>
-			<div className="divTypeMessage">
-				<div className="divInputMsg">
-					<input type="text" id="msgToSend" name="msgToSend" className="msgToSend" />
-				</div>
-				<div className="divButtonSend">
-					<button>send</button>
-				</div>
+			<div className="divTabChat">{tabElement()}</div>
+			<div className="divChatInGame">
+				<Chat />
 			</div>
 		</div>
 	);

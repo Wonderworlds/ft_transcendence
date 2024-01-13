@@ -13,6 +13,7 @@ export enum ChatMessageType {
 	BOT = 'BOT',
 	SERVER = 'SERVER',
 	UNDEFINED = 'UNDEFINED',
+	PROFILE = 'PROFILE',
 }
 
 export type Match = {

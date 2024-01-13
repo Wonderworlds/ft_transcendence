@@ -13,19 +13,32 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 
+	.divGameChat {
+		width: 98%;
+		height: 98%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+
 	.divDisplayTop {
 
 		display: flex;
-		width: 80%;
+		width: 75%;
 		height: 10%;
-	
+		align-self: flex-start;
+		padding-left: 5%;
 	}
 
 	.divDisplayGame {
 
 		display: flex;
-		width: 100%;
+		justify-content: center;
+		width: 90%;
 		height: 88%;
+		border: 2px solid white;
+		max-width: 1355px;
 	
 	}
 

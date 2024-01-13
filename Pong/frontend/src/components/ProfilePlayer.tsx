@@ -5,7 +5,7 @@ import MatchInfo from './MatchInfo';
 
 interface ProfilePlayerProps {
 	pseudo: string;
-	isClicked: string;
+	isClicked: string | number;
 	inviteGame?: (pseudo: string) => void;
 	deleteFriend?: (pseudo: string) => void;
 }

@@ -32,6 +32,12 @@ type GameContextType = {
 	setPlayerIsReady2: React.Dispatch<React.SetStateAction<boolean>>;
 	gameOver: boolean;
 	setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+	tab: string[];
+	setTab: React.Dispatch<React.SetStateAction<string[]>>;
+	onTab: number;
+	setOnTab: React.Dispatch<React.SetStateAction<number>>;
+	pseudo: string;
+	setPseudo: React.Dispatch<React.SetStateAction<string>>;
 	nextMatch(): void;
 	startMatch(): void;
 	startTournament(): void;
@@ -67,6 +73,10 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 	const [tournamentIsReady, setTournamentIsReady] = React.useState<boolean>(false);
 	const [gameState, setGameState] = React.useState<GameState>(GameState.INIT);
 	const [gameOver, setGameOver] = React.useState<boolean>(false);
+	const [tab, setTab] = React.useState<string[]>(['Pong'] as string[]);
+	const [onTab, setOnTab] = React.useState<number>(0);
+	const [pseudo, setPseudo] = React.useState<string>('');
+
 	useEffect(() => {
 		if (!socket) return;
 		socket.on('joinedLobby', (res: LobbyDto) => {
@@ -184,6 +194,12 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 				nextMatch,
 				gameOver,
 				setGameOver,
+				tab,
+				setTab,
+				onTab,
+				setOnTab,
+				pseudo,
+				setPseudo,
 			}}
 		>
 			{children}

@@ -1,9 +1,9 @@
 .divChatMessage {
-	background-color: gray;
+	background-color: rgb(128, 128, 128, 0.4);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	width: 100%;
+	width: 99%;
 	height: auto;
 	img {
 		border-radius: 50%;
@@ -13,9 +13,9 @@
 
 	p {
 		color: #fff;
+		font-family: "Inter";
 	}
 	
-	border-radius: 2rem;
 
 }
 
@@ -27,25 +27,22 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	border-radius: 2rem;
 }
 
 .chatBotMessageElement {
 	width: 100%;
-	background-color: #318a13;
+	background-color: rgb(49, 138, 19,0.4);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	border-radius: 2rem;
 }
 
 .chatServerMessageElement{
 	width: 100%;
-	background-color: #a31d1d;
+	background-color: rgb(163, 29, 29, 0.4);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	border-radius: 2rem;
 }
 
 .chatStandardMessageElement {
@@ -53,16 +50,15 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	border-radius: 2rem;
+
 }
 
 .chatPrivateMessageElement {
 	width: 100%;
-	background-color: #2f64c0;
+	background-color: rgba(47, 100, 192, 0.4);
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	border-radius: 2rem;
 }
 

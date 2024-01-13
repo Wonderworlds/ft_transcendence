@@ -5,13 +5,15 @@ import GameDisplayTop from '../components/GameDisplayTop.tsx';
 const Game: React.FC = () => {
 	return (
 		<div className="headerGame">
-			<div className="divDisplayTop">
-				<GameDisplayTop />
+			<div className="divGameChat">
+				<div className="divDisplayTop">
+					<GameDisplayTop />
+				</div>
+				<div className="divDisplayGame">
+					<GameDisplay />
+				</div>
+				<div className="divDisplayBottom"></div>
 			</div>
-			<div className="divDisplayGame">
-				<GameDisplay />
-			</div>
-			<div className="divDisplayBottom"></div>
 		</div>
 	);
 };

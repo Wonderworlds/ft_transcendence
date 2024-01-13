@@ -4,22 +4,8 @@
 	width: 100%;
 	height: 100%;
 	flex-direction: row;
+	background-color: rgba(0, 0, 0, 0.612);
 
-	.emptySpace {
-
-		display: flex;
-		width: 2%;
-		height: 100%;
-
-	}
-
-	.divDisplayGame {
-
-		display: flex;
-		width: 96%;
-		height: 100%;
-		background-color: rgba($color: #000000, $alpha: 0.85);
-		border-radius: 1rem;
 		.display {
 
 			display: flex;
@@ -36,20 +22,27 @@
 			width: 100%;
 			height: 85%;
 			background-color: black;
+			border-bottom: 2px solid white;
 			
-			border-color: white;
-			border-style: solid solid solid solid;
 
 		}
 
-		.displayTypeGame {
 
+		.divGameInfo {
 			display: flex;
 			width: 100%;
 			height: 15%;
-
 			flex-direction: row;
+		}
+		.displayTypeGame {
 
+			display: flex;
+			width: 50%;
+			height: 100%;
+
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
 			h1 {
 
 				font-family: "inter";
@@ -57,44 +50,15 @@
 				font-size: 4vh;
 			}
 
-			.leftDisplayTypeGame {
-
+			.RightDisplayTypeGame {
+				
 				display: flex;
 				width: 50%;
 				height: 100%;
-				flex-direction: column;
-
-				.divType {
-
-					display: flex;
-					width: 100%;
-					height: 50%;
-
-					justify-content: center;
-					align-items: center;
-
-				}
-
-				.divNbPlayer {
-
-					display: flex;
-					width: 100%;
-					height: 50%;
-
-					justify-content: center;
-					align-items: center;
-
-				}
+				justify-content: center;
+				align-items: center;
 
 			}
-
-			.RightDisplayTypeGame {
-
-				display: flex;
-				width: 50%;
-				height: 100%;
-				flex-direction: column;
-
 				.divTitleReady {
 
 					display: flex;
@@ -154,12 +118,7 @@
 		.divChat {
 
 			display: flex;
-			width: 29%;
+			width: 30%;
 			height: 100%;
-
-
+			border-left: 2px solid white;
 		}
-
-	}
-
-}
