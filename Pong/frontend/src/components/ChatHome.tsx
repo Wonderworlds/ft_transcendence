@@ -12,7 +12,7 @@ export type ChatMessage = {
 
 interface ChatHomeProps {
 	setPseudo: React.Dispatch<React.SetStateAction<string>>;
-	setInvitation: React.Dispatch<React.SetStateAction<{ lobby: string; sender: string }>>;
+	setInvitation: React.Dispatch<React.SetStateAction<string>>;
 	setFriendDemand: React.Dispatch<React.SetStateAction<{ sender: string }>>;
 }
 
@@ -26,6 +26,7 @@ const ChatHome: React.FC<ChatHomeProps> = ({ setPseudo, setInvitation, setFriend
 	React.useEffect(() => {
 		if (!socket) return;
 		socket.on('messageLobby', (res: ChatMessage) => {
+			console.log(res);
 			switch (res.type) {
 				case ChatMessageType.UNDEFINED:
 					return;
@@ -36,7 +37,7 @@ const ChatHome: React.FC<ChatHomeProps> = ({ setPseudo, setInvitation, setFriend
 					setFriendDemand({ sender: res.from.pseudo });
 					break;
 				case ChatMessageType.INVITE:
-					setInvitation({ lobby: res.message, sender: res.from.pseudo });
+					setInvitation(res.message);
 					break;
 				default:
 					setChat((chat) => [res, ...chat]);

@@ -107,6 +107,7 @@ export class PongService {
     const index = this.customGamePending.findIndex(
       (e) => e.lobby === body.lobby,
     );
+    console.log('responseFriendGame', this.customGamePending, index)
     const customGame = this.customGamePending[index];
     if (index === -1)
       return {
@@ -124,10 +125,10 @@ export class PongService {
     this.customGamePending.splice(index, 1);
     if (body.accept) {
       return {
-        event: 'responseFriendGame',
+        event: 'forcedMove',
         to: [socket1.id, client.id],
-        messagePayload: { accept: body.accept, lobby: body.lobby },
-      };
+        messagePayload: { lobby: body.lobby },
+      }
     } else {
       return {
         event: 'error',
@@ -200,8 +201,7 @@ export class PongService {
       event: 'friendGame',
       to: [friend.id],
       messagePayload: {
-        message: 'Hey! Wanna Play?',
-        lobby: id,
+        message: id,
         sender: body.owner,
       },
     };

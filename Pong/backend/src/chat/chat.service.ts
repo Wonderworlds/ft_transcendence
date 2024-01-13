@@ -118,6 +118,8 @@ export class ChatService {
     });
   }
 
+
+
   private async commandBlock(
     @ConnectedSocket() user: ValidSocket,
     pseudo: string,
@@ -167,30 +169,52 @@ export class ChatService {
     pseudo = pseudo.slice(1);
     const userDB = await this.userService.findOneUser(
       { username: user.name },
-      [],
-      ['pseudo', 'id'],
+      ['blockedBy'],
+      ['pseudo', 'id', 'blockedBy'],
     );
+    if (userDB.pseudo === pseudo)
+      return this.responseServer(user, 'error: you cannot invite yourself');
+    console.info(`event [commandInvite]`, userDB.pseudo, pseudo);
+    if (userDB.blockedBy.length !== 0) {
+      const blockedBy = userDB.blockedBy.find((e) => {
+        if (e.pseudo === pseudo) {
+          return e.username;
+        }
+      });
+      if (blockedBy)
+        return this.responseServer(user, 'error: you are blocked by ' + pseudo);
+    }
+    console.info(`event [commandInvite]`, userDB.pseudo, pseudo);
     const friendDB = await this.userService.findOneUser(
       { pseudo: pseudo },
       [],
-      ['pseudo', 'id'],
+      ['pseudo', 'username', 'id'],
     );
+    console.info(`event [commandInvite]`, userDB.pseudo, friendDB.pseudo);
     if (!userDB || !friendDB)
-      return this.responseServer(user, 'error: user not found');
-    console.info('here');
+      return this.responseServer(user, 'error: target not found');
+    const friendSocket = this.websocketService.users.get(friendDB.username);
+    if (!friendSocket || !friendSocket.rooms.has('Mainchat'))
+      return this.responseServer(user, 'error: user offline');
+    console.info(`event [commandInvite]`, userDB.pseudo, friendDB.pseudo);
     const res = await this.pongService.customGame(
       user,
       { owner: userDB.pseudo, friend: friendDB.pseudo },
       this.websocketService.server,
       this.websocketService,
     );
-    res.event === 'error'
-      ? this.websocketService.serverError(res.to, res.messagePayload as string)
-      : this.websocketService.serverMessage(
-          res.event,
-          res.to,
-          res.messagePayload,
-        );
+    if (res.event === 'error')
+      this.websocketService.serverError(res.to, res.messagePayload as string);
+    else {
+      const msg = res.messagePayload as {message: string, sender: string};
+      console.info(`event [commandInvite]`, userDB.pseudo, msg, msg.message);
+      this.websocketService.server.to(friendSocket.id).emit('messageLobby', {
+        message: msg.message,
+        from: { pseudo: userDB.pseudo, ppImg: userDB.ppImg },
+        type: ChatMessageType.INVITE,
+      });
+      this.responseServer(user, 'invite sent');
+    }
   }
 
   private async commandAddFriend(
@@ -202,20 +226,45 @@ export class ChatService {
       return this.responseServer(user, 'error: invalid pseudo: missing @');
     pseudo = pseudo.slice(1);
     try {
-      const res = await this.userService.sendFriendDemand(user.name, pseudo);
       const friend = await this.userService.findOneUser(
         { pseudo: pseudo },
-        [],
-        ['username', 'id'],
+        ['blocked'],
+        ['username', 'id', 'pseudo', 'blocked'],
       );
+      if (!friend) return this.responseServer(user, 'error: user not found');
+      if (friend.username === user.name)
+        return this.responseServer(user, 'error: you cannot add yourself');
+      if (friend.blocked.length !== 0) {
+        const blocked = friend.blocked.find((e) => {
+          if (e.pseudo === user.name) {
+            return e.username;
+          }
+        });
+        if (blocked)
+          return this.responseServer(
+            user,
+            'error: you are blocked by ' + pseudo,
+          );
+      }
       const friendID = this.websocketService.users.get(friend.username);
-      console.info(friendID, friend.username);
-      console.info(this.websocketService.users);
+      const res = await this.userService.sendFriendDemand(user.name, pseudo);
+      const userDB = await this.userService.findOneUser(
+        { username: user.name },
+        [],
+        ['pseudo', 'ppImg', 'id'],
+      );
+      if (!userDB) return this.responseServer(user, 'error: user not found');
       if (res.success) {
         this.responseServer(user, 'demand sent');
         if (friendID)
           this.responseServer(friendID, 'you have a new friend demand');
-        return;
+        return this.websocketService.server
+          .to(friendID.id)
+          .emit('messageLobby', {
+            message: "you've sent a friend demand to " + pseudo,
+            from: { pseudo: userDB.pseudo, ppImg: userDB.ppImg },
+            type: ChatMessageType.DEMAND,
+          });
       }
       return this.responseServer(user, 'error: demand failed');
     } catch (error) {
@@ -260,7 +309,7 @@ export class ChatService {
       case 'unblock':
         return this.commandUnblock(user, msgSplit[1]);
       case 'invite': {
-        if (body.lobby !== 'chat')
+        if (body.lobby !== 'Mainchat')
           return this.responseServer(
             user,
             'error: you can only invite in the main chat lobby',
