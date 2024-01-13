@@ -108,15 +108,31 @@ export class CreateCustomLobbyDto {
 export class MatchDto {
   @IsNumber()
   scoreP1: number;
-
+  
   @IsNumber()
   scoreP2: number;
 
+  @IsOptional()
+  @IsNumber()
+  scoreP3?: number;
+
+  @IsOptional()
+  @IsNumber()
+  scoreP4?: number;
+  
   @IsString()
   p1: string;
 
   @IsString()
   p2: string;
+
+  @IsOptional()
+  @IsString()
+  p3?: string;
+  
+  @IsOptional()
+  @IsString()
+  p4?: string;
 
   @IsEnum(GameType)
   gameType: GameType;

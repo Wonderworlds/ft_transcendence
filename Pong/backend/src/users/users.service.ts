@@ -34,10 +34,14 @@ export class UsersService {
     return await this.userRepository.save(newUser);
   }
 
-  async getMe(id: number) : Promise<UserDto> {
-    const user = await this.findOneUser({id: id}, [], ['username', 'twoFA', 'email', 'pseudo', 'ppImg', 'status']);
+  async getMe(id: number): Promise<UserDto> {
+    const user = await this.findOneUser(
+      { id: id },
+      [],
+      ['username', 'twoFA', 'email', 'pseudo', 'ppImg', 'status'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    return (user);
+    return user;
   }
 
   async findUserByPseudo(pseudo: string): Promise<User> | undefined {
@@ -93,35 +97,72 @@ export class UsersService {
     const matchs = await this.matchRepository.find({
       where: [{ winner: user }, { loser: user }],
       relations: ['winner', 'loser'],
-      order: { createdAt: 'DESC' }
-  });
-  const ret: Array<MatchDto> = [];
-  matchs.forEach((match) => {
-    const won = match.winner.id === user.id;
-    ret.push({
-      p1: match.p1,
-      p2: match.p2,
-      scoreP1: match.scoreP1,
-      scoreP2: match.scoreP2,
-      gameType: match.gameType,
-      won: won,
+      order: { createdAt: 'DESC' },
     });
-  });
-  return ret;
-}
+    const ret: Array<MatchDto> = [];
+    matchs.forEach((match) => {
+      const won = match.winner.id === user.id;
+      ret.push({
+        p1: match.p1,
+        p2: match.p2,
+        scoreP1: match.scoreP1,
+        scoreP2: match.scoreP2,
+        gameType: match.gameType,
+        won: won,
+      });
+    });
+    return ret;
+  }
 
   async createMatchDB(matchInfo: MatchDto) {
     const p1 = await this.findUserByPseudo(matchInfo.p1);
     if (!p1) return;
     const p2 = await this.findUserByPseudo(matchInfo.p2);
     if (!p2) return;
-    const newMatch = this.matchRepository.create({
-      ...matchInfo,
-      winner: matchInfo.scoreP1 > matchInfo.scoreP2 ? p1 : p2,
-      loser: matchInfo.scoreP1 > matchInfo.scoreP2 ? p2 : p1,
-    });
-    console.info('createMatchDB', newMatch);
-    return await this.matchRepository.save(newMatch);
+    const p3 = await this.findUserByPseudo(matchInfo.p3);
+    const p4 = await this.findUserByPseudo(matchInfo.p4);
+    if (p3 || p4) {
+      if (!p3 || !p4) return;
+
+      const winner =
+        matchInfo.scoreP1 > matchInfo.scoreP2
+          ? matchInfo.scoreP1 > matchInfo.scoreP3
+            ? matchInfo.scoreP1 > matchInfo.scoreP4
+              ? p1
+              : p4
+            : matchInfo.scoreP3 > matchInfo.scoreP4
+              ? p3
+              : p4
+          : matchInfo.scoreP2 > matchInfo.scoreP3
+            ? matchInfo.scoreP2 > matchInfo.scoreP4
+              ? p2
+              : p4
+            : matchInfo.scoreP3 > matchInfo.scoreP4
+              ? p3
+              : p4;
+      let losers;
+      if (winner === p1) losers = [p2, p3, p4];
+      else if (winner === p2) losers = [p1, p3, p4];
+      else if (winner === p3) losers = [p1, p2, p4];
+      else losers = [p1, p2, p3];
+      const newMatch = this.matchRepository.create({
+        ...matchInfo,
+        winner: winner,
+        loser: losers,
+      });
+      console.info('createMatchDB', newMatch);
+      return await this.matchRepository.save(newMatch);
+    } else {
+      const winner = matchInfo.scoreP1 > matchInfo.scoreP2 ? p1 : p2;
+      const loser: User[] = matchInfo.scoreP1 > matchInfo.scoreP2 ? [p2] : [p1];
+      const newMatch = this.matchRepository.create({
+        ...matchInfo,
+        winner: winner,
+        loser: loser,
+      });
+      console.info('createMatchDB', newMatch);
+      return await this.matchRepository.save(newMatch);
+    }
   }
 
   userToDto(user: User): UserDto {
@@ -155,31 +196,51 @@ export class UsersService {
     }
   }
   async getFriends(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['friends'], ['friends', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['friends'],
+      ['friends', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.friends);
   }
 
   async getFriendsPending(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['friendsPending'], ['friendsPending', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['friendsPending'],
+      ['friendsPending', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.friendsPending);
   }
 
   async getFriendsDemands(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['friendsDemands'], ['friendsDemands', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['friendsDemands'],
+      ['friendsDemands', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.friendsDemands);
   }
 
   async getBlockList(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['blocked'], ['blocked', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['blocked'],
+      ['blocked', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.blocked);
   }
 
   async getBlockByList(id: number): Promise<Array<LimitedUserDto>> {
-    const user = await this.findOneUser({ id: id }, ['blockedBy'], ['blockedBy', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['blockedBy'],
+      ['blockedBy', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
     return this.userArraytoLimitedDto(user.blockedBy);
   }
@@ -209,15 +270,17 @@ export class UsersService {
   }
 
   async addFriend(id: number, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ id: id }, [
-      'friends',
-      'friendsDemands',
-    ], ['friends', 'friendsDemands', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['friends', 'friendsDemands'],
+      ['friends', 'friendsDemands', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    const friend = await this.findOneUser({ pseudo: pseudo }, [
-      'friends',
-      'friendsPending',
-    ], ['friends', 'friendsPending', 'id']);
+    const friend = await this.findOneUser(
+      { pseudo: pseudo },
+      ['friends', 'friendsPending'],
+      ['friends', 'friendsPending', 'id'],
+    );
     if (!friend) throw new BadRequestException('Target Not Found');
     if (friend.id === user.id)
       throw new BadRequestException("You can't add yourself");
@@ -237,11 +300,17 @@ export class UsersService {
   }
 
   async declineFriend(id: number, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ id: id }, ['friendsDemands'], ['friendsDemands', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['friendsDemands'],
+      ['friendsDemands', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    const friend = await this.findOneUser({ pseudo: pseudo }, [
-      'friendsPending',
-    ], ['friendsPending', 'id']);
+    const friend = await this.findOneUser(
+      { pseudo: pseudo },
+      ['friendsPending'],
+      ['friendsPending', 'id'],
+    );
     if (!friend) throw new BadRequestException('Target Not Found');
     if (!this.isUserInArray(friend, user.friendsDemands))
       throw new BadRequestException(
@@ -251,14 +320,20 @@ export class UsersService {
   }
 
   async sendFriendDemand(username: string, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ username: username}, ['friends', 'friendsPending'], ['friends', 'friendsPending', 'id']);
+    const user = await this.findOneUser(
+      { username: username },
+      ['friends', 'friendsPending'],
+      ['friends', 'friendsPending', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    const friend = await this.findOneUser({ pseudo: pseudo }, [
-      'friendsDemands',
-    ], ['friendsDemands', 'id']);
-    if (this.isUserInArray(friend, user.friends)) 
-      throw new BadRequestException("Already friends");
-      if (!friend) throw new BadRequestException('Target Not Found');
+    const friend = await this.findOneUser(
+      { pseudo: pseudo },
+      ['friendsDemands'],
+      ['friendsDemands', 'id'],
+    );
+    if (this.isUserInArray(friend, user.friends))
+      throw new BadRequestException('Already friends');
+    if (!friend) throw new BadRequestException('Target Not Found');
     if (friend.id === user.id)
       throw new BadRequestException("You can't add yourself");
     const friendsPending: User[] = user.friendsPending;
@@ -271,9 +346,17 @@ export class UsersService {
   }
 
   async deleteFriend(id: number, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ id: id }, ['friends'], ['friends', 'id']);
+    const user = await this.findOneUser(
+      { id: id },
+      ['friends'],
+      ['friends', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    const friend = await this.findOneUser({ pseudo: pseudo }, ['friends'], ['friends', 'id']);
+    const friend = await this.findOneUser(
+      { pseudo: pseudo },
+      ['friends'],
+      ['friends', 'id'],
+    );
     if (!friend) throw new BadRequestException('Target Not Found');
     if (friend.id === user.id)
       throw new BadRequestException("You can't delete yourself");
@@ -281,18 +364,21 @@ export class UsersService {
       throw new BadRequestException('This user is not your friend');
     myDebug('deleteFriend', user, friend);
     const friends: User[] = user.friends;
-    friends.splice(friends.map((e) =>e.id).indexOf(friend.id), 1);
+    friends.splice(friends.map((e) => e.id).indexOf(friend.id), 1);
     const res = await this.userRepository.save(user);
     const inversefriend: User[] = friend.friends;
-    inversefriend.splice(inversefriend.map((e) =>e.id).indexOf(user.id), 1);
+    inversefriend.splice(inversefriend.map((e) => e.id).indexOf(user.id), 1);
     const res1 = await this.userRepository.save(friend);
     return res && res1 ? { success: true } : { success: false };
   }
 
   private async cleanFriends(pending: User, demand: User): Promise<Success> {
-  
-    const indexPending = pending.friendsPending.map((e) =>e.id).indexOf(demand.id);
-    const indexDemand = demand.friendsDemands.map((e) =>e.id).indexOf(pending.id);
+    const indexPending = pending.friendsPending
+      .map((e) => e.id)
+      .indexOf(demand.id);
+    const indexDemand = demand.friendsDemands
+      .map((e) => e.id)
+      .indexOf(pending.id);
     const friendsPending: User[] = pending.friendsPending;
     friendsPending.splice(indexPending, 1);
     const res = await this.userRepository.save(pending);
@@ -303,9 +389,17 @@ export class UsersService {
   }
 
   async blockUser(username: string, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ username: username }, ['blocked'], ['blocked', 'id']);
+    const user = await this.findOneUser(
+      { username: username },
+      ['blocked'],
+      ['blocked', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    const friend = await this.findOneUser({ pseudo: pseudo }, ['blockedBy'], ['blockedBy', 'id']);
+    const friend = await this.findOneUser(
+      { pseudo: pseudo },
+      ['blockedBy'],
+      ['blockedBy', 'id'],
+    );
     if (!friend) throw new BadRequestException('Target Not Found');
     if (friend.id === user.id)
       throw new BadRequestException("You can't block yourself");
@@ -321,25 +415,39 @@ export class UsersService {
   }
 
   async unblockUser(username: string, pseudo: string): Promise<Success> {
-    const user = await this.findOneUser({ username: username }, ['blocked'], ['blocked', 'id']);
+    const user = await this.findOneUser(
+      { username: username },
+      ['blocked'],
+      ['blocked', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    const friend = await this.findOneUser({ pseudo: pseudo }, ['blockedBy'], ['blockedBy', 'id']);
+    const friend = await this.findOneUser(
+      { pseudo: pseudo },
+      ['blockedBy'],
+      ['blockedBy', 'id'],
+    );
     if (!friend) throw new BadRequestException('Target Not Found');
     if (!this.isUserInArray(friend, user.blocked))
       throw new BadRequestException('This user is not blocked');
     const blocked: User[] = user.blocked;
-    blocked.splice(blocked.map((e) =>e.id).indexOf(friend.id), 1);
+    blocked.splice(blocked.map((e) => e.id).indexOf(friend.id), 1);
     const res = await this.userRepository.save(user);
     const blockedBy: User[] = friend.blockedBy;
-    blockedBy.splice(blockedBy.map((e) =>e.id).indexOf(user.id), 1);
+    blockedBy.splice(blockedBy.map((e) => e.id).indexOf(user.id), 1);
     const res1 = await this.userRepository.save(friend);
     return res && res1 ? { success: true } : { success: false };
   }
 
   async getBlockedBy(username: string): Promise<Array<string>> {
-    const user = await this.findOneUser({ username: username }, ['blockedBy'], ['blockedBy', 'id']);
+    const user = await this.findOneUser(
+      { username: username },
+      ['blockedBy'],
+      ['blockedBy', 'id'],
+    );
     if (!user) throw new BadRequestException('User Not Found');
-    const blockedBy = user.blockedBy.map((e) => {return e.username});
+    const blockedBy = user.blockedBy.map((e) => {
+      return e.username;
+    });
     return blockedBy;
   }
 }
