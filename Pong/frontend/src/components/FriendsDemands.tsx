@@ -1,21 +1,22 @@
 import React from 'react';
 
 interface FriendsDemandsProps {
-	pseudo: string;
-	ppImg: string;
-	handleClick(option: string, pseudo: string): void;
+	pseudo?: string;
+	ppImg?: string;
+	handleClick(option: boolean, pseudo?: string, lobby?: string): void;
+	lobby?: string;
 }
 
-const FriendsDemands: React.FC<FriendsDemandsProps> = ({ pseudo, ppImg, handleClick }) => {
+const FriendsDemands: React.FC<FriendsDemandsProps> = ({ pseudo, ppImg, handleClick, lobby }) => {
 	return (
 		<div className="divFriendDemandsBox">
 			<div className="divFriendDemandsButton">
-				<p onClick={() => handleClick('accept', pseudo)}>&#x2705;</p>
-				<p onClick={() => handleClick('decline', pseudo)}>&#x274C;</p>
+				<p onClick={() => handleClick(true, pseudo, lobby)}>&#x2705;</p>
+				<p onClick={() => handleClick(false, pseudo, lobby)}>&#x274C;</p>
 			</div>
 			<div className="divFriendDemandsSender">
 				<p>{pseudo}</p>
-				<img src={ppImg} />
+				{ppImg ? <img src={ppImg} /> : null}
 			</div>
 		</div>
 	);

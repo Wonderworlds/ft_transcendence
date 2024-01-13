@@ -115,10 +115,10 @@ export class PongService {
         to: [client.id],
         messagePayload: 'User not Online',
       };
+    this.customGamePending.splice(index, 1);
     if (body.accept) {
-      this.customGamePending.splice(index, 1);
       return {
-        event: 'friendGame',
+        event: 'responseFriendGame',
         to: [socket1.id, client.id],
         messagePayload: { accept: body.accept, lobby: body.lobby },
       };
@@ -137,18 +137,24 @@ export class PongService {
     server: Server,
     websocketService: WebsocketService,
   ): Promise<{ event: string; to: string[]; messagePayload: Object }> {
+    if (this.customGamePending.find((e) => e.owner === client.name))
+      return {
+        event: 'error',
+        to: [client.id],
+        messagePayload: 'You already have a pending game',
+      };
     const FriendUser = await this.userService.findUserByPseudo(body.friend);
     if (!FriendUser)
       return {
         event: 'error',
         to: [client.id],
-        messagePayload: 'User not found',
+        messagePayload: 'Target not found',
       };
-    if(FriendUser.username === client.name)
+    if (FriendUser.username === client.name)
       return {
         event: 'error',
         to: [client.id],
-        messagePayload: 'You can\'t play with yourself',
+        messagePayload: "You can't play with yourself",
       };
     const friend = websocketService.getUser(FriendUser.username);
     if (!friend)
@@ -175,6 +181,7 @@ export class PongService {
     setTimeout(() => {
       console.info('customGameCB', 'Lobby size', lobby.getSize());
       if (lobby.getSize() === 2) return;
+      websocketService.serverError([client.id], 'Game declined');
       this.listCustomGame.delete(id);
       this.customGamePending.splice(
         this.customGamePending.findIndex((e) => e.lobby === id),
@@ -238,27 +245,30 @@ export class PongService {
   }
 
   inputReceived(client: ValidSocket, body: InputLobbyDto) {
-	const lobby =
-	  this.listGameLocal.get(body.lobby) ||
-	  this.listGameOnline.get(body.lobby) ||
-	  this.listCustomGame.get(body.lobby);
-  if (!lobby) return;
-	lobby.onInput(client, body.input, body.pseudo);
+    const lobby =
+      this.listGameLocal.get(body.lobby) ||
+      this.listGameOnline.get(body.lobby) ||
+      this.listCustomGame.get(body.lobby);
+    if (!lobby) return;
+    lobby.onInput(client, body.input, body.pseudo);
   }
 
-  addClientLocal(client: ValidSocket, body: UserLobbyDto) : {to: string[]; messagePayload: string} {
-	let { lobby, ...rest } = body;
+  addClientLocal(
+    client: ValidSocket,
+    body: UserLobbyDto,
+  ): { to: string[]; messagePayload: string } {
+    let { lobby, ...rest } = body;
     const lobbyRoom = this.listGameLocal.get(lobby);
     if (!lobbyRoom) return;
     const isTaken = lobbyRoom.isPseudoTaken(rest.pseudo);
-	if (isTaken)
-		return {to: [client.id], messagePayload: 'Pseudo already taken'};
+    if (isTaken)
+      return { to: [client.id], messagePayload: 'Pseudo already taken' };
     lobbyRoom.addClient(client, rest);
-	return {to: [client.id], messagePayload: rest.pseudo + ' joined'};
+    return { to: [client.id], messagePayload: rest.pseudo + ' joined' };
   }
 
   leaveLobby(client: ValidSocket, body: LobbyIDDto) {
-	const lobbyLocal = this.listGameLocal.get(body.lobby);
+    const lobbyLocal = this.listGameLocal.get(body.lobby);
     const lobbyOnline = this.listGameOnline.get(body.lobby);
     const lobbyCustom = this.listCustomGame.get(body.lobby);
     if (!lobbyLocal && !lobbyOnline && !lobbyCustom) return;

@@ -3,9 +3,9 @@ import FriendsDemands from '../components/FriendsDemands.tsx';
 import FriendsInfo, { FriendsInfoProps } from '../components/FriendsInfo.tsx';
 import ProfilePlayer from '../components/ProfilePlayer.tsx';
 import { getAxios } from '../context/AxiosContext.tsx';
+import { getUser } from '../context/UserContext.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
 import { User } from '../utils/types.tsx';
-import { getUser } from '../context/UserContext.tsx';
 
 const Friends: React.FC = () => {
 	const axios = getAxios();
@@ -69,9 +69,9 @@ const Friends: React.FC = () => {
 		return true;
 	}
 
-	async function handleClick(option: string, pseudo: string) {
+	async function handleClick(option: boolean, pseudo: string) {
 		console.log(option, pseudo);
-		if (!(await responseFriendsDemands(option, pseudo))) return;
+		if (!(await responseFriendsDemands(option ? 'accept' : 'decline', pseudo))) return;
 		await getFriendsList();
 		await getFriendsDemands();
 	}

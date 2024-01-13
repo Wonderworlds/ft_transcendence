@@ -16,7 +16,7 @@
 }
 
 .divProfilePlayerStats {
-	margin-top: 3%;
+	margin-top: 5%;
 	display: flex;
 	flex-direction: row;
 	height: 10%;
@@ -25,7 +25,7 @@
 	> p {
 		color: #d7a20f;
 				font-weight: 500;
-				font-size: 3vw;
+				font-size: clamp(20px, 4vw, 40px);
 				font-family: zendots;
 	}
 }
