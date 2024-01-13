@@ -17,11 +17,12 @@ const CreateLobby: React.FC<CreateLobbyProps> = ({
 	state,
 	setState,
 }) => {
-	const playOptions: Array<{ key: number; title: string; score: string }> = [
-		{ key: 1, title: labels[0], score: scores[0] },
-		{ key: 2, title: labels[1], score: scores[1] },
-		{ key: 3, title: labels[2], score: scores[2] },
-	];
+	const playOptions: Array<{ key: number; title: string; score: string }> = [];
+
+	for (let i = 0; i < labels.length; i++) {
+		playOptions.push({ key: i, title: labels[i], score: scores[i] });
+	}
+
 	return (
 		<div className="divPlayLocal">
 			<div className="divPlayLocalList">

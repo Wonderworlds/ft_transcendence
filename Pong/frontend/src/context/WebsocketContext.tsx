@@ -39,6 +39,13 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 				alert(error);
 			});
 
+			socket.on('forcedLeave', (res) => {
+				navigate(Pages.Home);
+				if (res?.message) {
+					alert(res.message);
+				}
+			});
+
 			socket.on('forcedDisconnect', (res) => {
 				sessionStorage.clear();
 				socket.disconnect();
@@ -63,6 +70,7 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 			if (socket) {
 				socket.off('connect');
 				socket.off('forcedDisconnect');
+				socket.off('forcedLeave');
 				socket.off('error');
 				socket.off('disconnect');
 				socket.off('responseFriendGame');

@@ -5,6 +5,7 @@ import {
   AcceptLobbyDto,
   CreateCustomLobbyDto,
   CreateLobbyDto,
+  GameState,
   InputLobbyDto,
   LobbyDto,
   LobbyIDDto,
@@ -57,7 +58,7 @@ export class PongService {
     let lobbyRejoin = null;
     if (index)
       lobbyRejoin = this.lobbyToLobbyDto(this.listGameOnline.get(index));
-    return { lobbysDto, lobbyLocal, lobbyRejoin};
+    return { lobbysDto, lobbyLocal, lobbyRejoin };
   }
 
   createLobby(
@@ -272,6 +273,28 @@ export class PongService {
     return { to: [client.id], messagePayload: rest.pseudo + ' joined' };
   }
 
+  private leaveLobbyOnline(
+    client: ValidSocket,
+    lobbyOnline: PongLobby,
+    body: LobbyIDDto,
+  ) {
+    lobbyOnline.removeClient(client);
+    if (lobbyOnline.getSize() === 0) {
+      console.info('leaveLobbyCB', 'Lobby deleted');
+      return this.listGameOnline.delete(body.lobby);
+    }
+    setTimeout(() => {
+      if (
+        lobbyOnline?.gameType === GameType.classicOnline &&
+        lobbyOnline?.status === GameState.INIT
+      )
+        return;
+      lobbyOnline?.forcedLeave();
+      if (this.listGameOnline.delete(body.lobby))
+        console.info('leaveLobbyCB', 'Lobby deleted');
+    }, 1000 * 20);
+  }
+
   leaveLobby(client: ValidSocket, body: LobbyIDDto) {
     const lobbyLocal = this.listGameLocal.get(body.lobby);
     const lobbyOnline = this.listGameOnline.get(body.lobby);
@@ -284,21 +307,15 @@ export class PongService {
         console.info('leaveLobbyCB', 'Lobby deleted');
         this.listGameLocal.delete(body.lobby);
       }, 1000 * 20);
-    } else if (lobbyOnline) {
-      lobbyOnline.removeClient(client);
-      setTimeout(() => {
-        if (lobbyOnline?.getSize() !== 0) return;
-        console.info('leaveLobbyCB', 'Lobby deleted');
-        this.listGameOnline.delete(body.lobby);
-      }, 1000 * 20);
     } else if (lobbyCustom) {
       lobbyCustom.removeClient(client);
       setTimeout(() => {
-        if (lobbyCustom?.getSize() !== 0) return;
-        console.info('leaveLobbyCB', 'Lobby deleted');
+        if (lobbyCustom?.getSize() === 2) return;
+        lobbyCustom?.forcedLeave();
         this.listCustomGame.delete(body.lobby);
+        console.info('leaveLobbyCB', 'Lobby deleted');
       }, 1000 * 20);
-    }
+    } else this.leaveLobbyOnline(client, lobbyOnline, body);
   }
 
   private isClientOwner(

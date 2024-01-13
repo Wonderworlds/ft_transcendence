@@ -36,6 +36,7 @@ export class PongLobby {
     this.owner = owner;
     this.gameType = gameType;
     if (gameType === GameType.classicOnline) this.maxClients = 2;
+    if (gameType === GameType.multiplayerOnline) this.maxClients = 4;
     size ? (this.maxClients = size) : null;
   }
 
@@ -43,9 +44,9 @@ export class PongLobby {
     @ConnectedSocket() client: ValidSocket,
     user: LimitedUserDto,
   ) {
+    client.join(this.id);
     const oldClient = this.listClients.get(client.name);
     if (oldClient) return this.updateClient(client, oldClient, user);
-    client.join(this.id);
     if (this.listClients.size === 0) {
       this.owner = client;
       this.OwnerUser = user;
@@ -53,7 +54,10 @@ export class PongLobby {
     this.listClients.set(client.name, client);
     this.userMap.set(client.name, user);
     console.info('addClient', client.id);
-    if (this.listClients.size >= 2 && this.gameType === GameType.classicOnline) {
+    if (
+      this.listClients.size >= 2 &&
+      this.gameType === GameType.classicOnline
+    ) {
       this.initMatchClassicOnline();
     }
   }
@@ -72,7 +76,6 @@ export class PongLobby {
     } else {
       oldClient.leave(this.id);
       if (this.owner === oldClient) this.owner = client;
-      client.join(this.id);
       this.listClients.set(client.name, client);
       this.userMap.set(client.name, user);
     }
@@ -87,22 +90,27 @@ export class PongLobby {
     //multiplayer?
     console.info('updateClient', client.id, oldClient.id);
     this.serverUpdateClients();
+    if (this.status === GameState.START)
+      this.server.to(this.id).emit('isPlayerReady');
   }
 
   removeClientCB(client: ValidSocket) {
-    client.leave(this.id);
     this.listClients.delete(client.name);
     this.userMap.delete(client.name);
     if (client.id === this.owner.id && this.listClients.size > 0) {
-      this.owner = this.listClients.values().next().value;
+      const newOwner = this.listClients.values().next().value;
+      this.owner = newOwner;
+      this.OwnerUser = this.userMap.get(newOwner.name);
     }
     if (this.mapTimeout.has(client.name)) this.mapTimeout.delete(client.name);
     console.info('removeClientCB', client.id);
+    this.serverUpdateClients();
   }
 
   removeClient(@ConnectedSocket() client: ValidSocket): void | boolean {
     console.info('removeClient', client.id);
-    if (this.listClients.size === 1 && !this.isLocal)
+    client.leave(this.id);
+    if (this.listClients.size === 1)
       return this.listClients.delete(client.name);
     const id = setTimeout(() => {
       return this.removeClientCB(client);
@@ -118,34 +126,33 @@ export class PongLobby {
     return this.owner;
   }
 
-  
   initTournament() {
     if (this.status !== GameState.INIT) return;
     //create tournament bracket
     this.status = GameState.START;
     //initMatch();
   }
-  
-    nextMatch() {
-      if (this.status !== GameState.GAMEOVER) return;
-      this.status = GameState.INIT;
-      this.pongInstance = null;
-      if (this.gameType === GameType.classicLocal || this.gameType === GameType.classicOnline)
-        this.initMatch(this.pLeft, this.pRight);
-      else
-        return ; //TODO next match in bracket
-    }
 
-    getSocketFromPseudo(pseudo: string) : ValidSocket | undefined {
-      const name = this.userMap.get(pseudo)?.pseudo;
-      return this.listClients.get(name);
-      }
+  nextMatch() {
+    if (this.status !== GameState.GAMEOVER) return;
+    this.status = GameState.INIT;
+    this.pongInstance = null;
+    if (
+      this.gameType === GameType.classicLocal ||
+      this.gameType === GameType.classicOnline
+    )
+      this.initMatch(this.pLeft, this.pRight);
+    else return; //TODO next match in bracket
+  }
+
+  getSocketFromPseudo(pseudo: string): ValidSocket | undefined {
+    const name = this.userMap.get(pseudo)?.pseudo;
+    return this.listClients.get(name);
+  }
 
   initMatchClassicOnline() {
-    this.server
-      .to(this.id)
-      .emit('isPlayerReady');
-      this.serverUpdateClients();
+    this.server.to(this.id).emit('isPlayerReady');
+    this.serverUpdateClients();
   }
 
   initMatch(pleft: LimitedUserDto, pright: LimitedUserDto) {
@@ -161,36 +168,38 @@ export class PongLobby {
     this.serverUpdateClients();
     const pLeftSocket = this.getSocketFromPseudo(pleft.pseudo);
     const pRightSocket = this.getSocketFromPseudo(pright.pseudo);
-    this.server
-      .to([pLeftSocket.id, pRightSocket.id])
-      .emit('isPlayerReady');
+    this.server.to([pLeftSocket.id, pRightSocket.id]).emit('isPlayerReady');
   }
 
   startMatch(pseudo: string) {
-    if (this.gameType === GameType.classicOnline && this.status === GameState.INIT) 
-      {const user = this.userMap.get(pseudo);
-        console.info('startMatch', user);
+    if (
+      this.gameType === GameType.classicOnline &&
+      this.status === GameState.INIT
+    ) {
+      const user = this.userMap.get(pseudo);
+      console.info('startMatch', user);
       if (!user) return;
       if (this.pLeft && this.pRight) return;
-      !this.pLeft ? this.pLeft = user : this.pRight = user;
+      !this.pLeft ? (this.pLeft = user) : (this.pRight = user);
       if (this.pLeft && this.pRight) {
         console.info('startMatch', this.pLeft, this.pRight);
         this.initMatch(this.pLeft, this.pRight);
         this.serverUpdateClients();
       }
+    } else if (this.pongInstance) {
+      this.pongInstance.startMatch(pseudo)
+        ? (this.status = GameState.PLAYING)
+        : null;
+      this.serverUpdateClients();
     }
-      else if(this.pongInstance){
-        this.pongInstance.startMatch(pseudo) ? this.status = GameState.PLAYING : null; 
-        this.serverUpdateClients();
   }
-};
 
   private inputGame(input: EventGame.UP | EventGame.DOWN, pseudo: string) {
     if (this.status !== GameState.PLAYING || !this.pongInstance) return;
     if (pseudo === this.pLeft.pseudo || pseudo === this.pRight.pseudo) {
       this.pongInstance.onInput(input, pseudo);
     }
-  };
+  }
 
   public onInput(
     @ConnectedSocket() client: ValidSocket,
@@ -231,7 +240,7 @@ export class PongLobby {
   public getOwnerPseudo() {
     return this.OwnerUser.pseudo;
   }
-  
+
   getUpdateLobbyDto(option: boolean): UpdateLobbyDto {
     const pReady = this.pongInstance?.getPlayersReady();
     return {
@@ -239,28 +248,28 @@ export class PongLobby {
       pLeftReady: pReady?.p1,
       pRightReady: pReady?.p2,
       gameState: this.status,
-      pLeft: option? this.pLeft : null,
-      pRight: option? this.pRight : null,
+      pLeft: option ? this.pLeft : null,
+      pRight: option ? this.pRight : null,
     };
   }
-  
+
   pongInstancePause(pseudo: string) {
     if (!this.pongInstance) return;
     if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
-    if (
-      this.status !== GameState.PLAYING && this.status !== GameState.PAUSE
-    )
+    if (this.status !== GameState.PLAYING && this.status !== GameState.PAUSE)
       return;
     this.status = GameState.PAUSE;
     this.pongInstance.pause();
   }
 
-  
   serverUpdateClients() {
     const lobbyState = this.getUpdateLobbyDto(true);
-    this.server
-      .to(this.id)
-      .emit('updateLobby', lobbyState);
+    this.server.to(this.id).emit('updateLobby', lobbyState);
   }
-
+  public forcedLeave() {
+    this.server.to(this.id).emit('forcedLeave', 'Lobby closed');
+    this.listClients.forEach((client) => {
+      client.leave(this.id);
+    });
+  }
 }
