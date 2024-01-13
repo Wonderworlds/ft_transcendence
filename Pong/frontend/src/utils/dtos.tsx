@@ -30,6 +30,10 @@ export type UpdateGameDto = {
 	pRight: Pos;
 	scorePLeft: number;
 	scorePRight: number;
+	pTop?: Pos;
+	pBot?: Pos;
+	scorePTop?: number;
+	scorePBot?: number;
 };
 
 export type LobbyIDDto = {

@@ -38,6 +38,14 @@ type GameContextType = {
 	setOnTab: React.Dispatch<React.SetStateAction<number>>;
 	pseudo: string;
 	setPseudo: React.Dispatch<React.SetStateAction<string>>;
+	playerTop: User;
+	setPlayerTop: React.Dispatch<React.SetStateAction<User>>;
+	playerBot: User;
+	setPlayerBot: React.Dispatch<React.SetStateAction<User>>;
+	scorePTop: number;
+	setScorePTop: React.Dispatch<React.SetStateAction<number>>;
+	scorePBot: number;
+	setScorePBot: React.Dispatch<React.SetStateAction<number>>;
 	nextMatch(): void;
 	startMatch(): void;
 	startTournament(): void;
@@ -62,8 +70,12 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 	const user = getUser();
 	const [playerLeft, setPlayerLeft] = React.useState<User>({} as User);
 	const [playerRight, setPlayerRight] = React.useState<User>({} as User);
+	const [playerTop, setPlayerTop] = React.useState<User>({} as User);
+	const [playerBot, setPlayerBot] = React.useState<User>({} as User);
 	const [scorePLeft, setScorePLeft] = React.useState<number>(0);
 	const [scorePRight, setScorePRight] = React.useState<number>(0);
+	const [scorePBot, setScorePBot] = React.useState<number>(0);
+	const [scorePTop, setScorePTop] = React.useState<number>(0);
 	const [gameType, setGameType] = React.useState<string>('');
 	const [nbPlayer, setNbPlayer] = React.useState<number>(0);
 	const [maxPlayer, setMaxPlayer] = React.useState<number>(24);
@@ -200,6 +212,14 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 				setOnTab,
 				pseudo,
 				setPseudo,
+				playerTop,
+				setPlayerTop,
+				playerBot,
+				setPlayerBot,
+				scorePTop,
+				setScorePTop,
+				scorePBot,
+				setScorePBot,
 			}}
 		>
 			{children}

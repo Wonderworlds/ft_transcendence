@@ -28,6 +28,7 @@ export class PongLobbyLocal extends PongLobby {
   ) {
     super(id, server, owner, gameType, userService);
     if (gameType === GameType.classicLocal) this.maxClients = 2;
+    if (gameType === GameType.multiplayerLocal) this.maxClients = 4;
   }
 
   override async addClient(

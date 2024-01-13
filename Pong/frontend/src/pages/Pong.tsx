@@ -2,20 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { getGame } from '../context/GameContext.tsx';
 import { getUser } from '../context/UserContext.tsx';
 import { getSocket } from '../context/WebsocketContext.tsx';
-import { GameState } from '../utils/dtos.tsx';
+import { GameState, UpdateGameDto } from '../utils/dtos.tsx';
 import { EventGame } from '../utils/types.tsx';
 
 export type Position = {
 	x: number;
 	y: number;
-};
-
-export type UpdateGameDto = {
-	ball: Position;
-	pLeft: Position;
-	pRight: Position;
-	scorePLeft: number;
-	scorePRight: number;
 };
 
 const Pong: React.FC = () => {
