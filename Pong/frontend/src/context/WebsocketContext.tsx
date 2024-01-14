@@ -52,13 +52,10 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 			});
 
 			socket.on('forcedDisconnect', (res) => {
-				sessionStorage.clear();
-				user.setUsername('');
-				axios.setAuth({ token: '', username: '' });
 				navigate(Pages.Root);
-				socket.disconnect();
+				window.location.reload();
 				if (res?.message) {
-					alert(res.message);
+					console.log(res.message);
 				}
 			});
 

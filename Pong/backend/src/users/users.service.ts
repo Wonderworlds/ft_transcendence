@@ -108,7 +108,7 @@ export class UsersService {
         scoreP2: match.scoreP2,
         gameType: match.gameType,
         date: match.createdAt,
-        winner: match.winner.pseudo,
+        winner: match.winnerPseudo,
         won: match.winner.username === user.username,
       };
       console.log(match, match.winner.pseudo);
@@ -158,6 +158,7 @@ export class UsersService {
         else losers = [p1, p2, p3];
         const newMatch = this.matchRepository.create({
           ...matchInfo,
+          winnerPseudo: winner.pseudo,
           winner: winner,
           loser: losers,
         });
@@ -170,6 +171,7 @@ export class UsersService {
       const newMatch = this.matchRepository.create({
         ...matchInfo,
         winner: winner,
+        winnerPseudo: winner.pseudo,
         loser: loser,
       });
       console.info('createMatchDB', newMatch);
@@ -334,8 +336,8 @@ export class UsersService {
   async sendFriendDemand(username: string, pseudo: string): Promise<Success> {
     const user = await this.findOneUser(
       { username: username },
-      ['friends', 'friendsPending'],
-      ['friends', 'friendsPending', 'id'],
+      ['friends', 'friendsPending', 'friendsDemands'],
+      ['friends', 'friendsPending', 'friendsDemands', 'id'],
     );
     if (!user) throw new BadRequestException('User Not Found');
     const friend = await this.findOneUser(
@@ -343,11 +345,15 @@ export class UsersService {
       ['friendsDemands'],
       ['friendsDemands', 'id'],
     );
-    if (this.isUserInArray(friend, user.friends))
-      throw new BadRequestException('Already friends');
     if (!friend) throw new BadRequestException('Target Not Found');
     if (friend.id === user.id)
       throw new BadRequestException("You can't add yourself");
+    if (this.isUserInArray(friend, user.friends))
+      throw new BadRequestException('Already friends');
+    if (this.isUserInArray(friend, user.friendsPending))
+      throw new BadRequestException('Demand already pending');
+    if (this.isUserInArray(friend, user.friendsDemands))
+      throw new BadRequestException('tou have a demand from this user');
     const friendsPending: User[] = user.friendsPending;
     friendsPending.push(friend);
     const res = await this.userRepository.save(user);

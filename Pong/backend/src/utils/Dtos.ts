@@ -129,6 +129,9 @@ export class MatchDto {
   date?: Date;
 
   @IsString()
+  winnerPseudo?: string;
+
+  @IsString()
   p1: string;
 
   @IsString()

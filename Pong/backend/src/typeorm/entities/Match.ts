@@ -1,12 +1,12 @@
 import { GameType } from 'src/utils/types';
 import {
-	Column,
-	Entity,
-	JoinColumn,
-	JoinTable,
-	ManyToMany,
-	ManyToOne,
-	PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
 
@@ -26,6 +26,9 @@ export class Match {
     inverseJoinColumn: { name: 'user_id' },
   })
   loser: User[];
+
+  @Column()
+  winnerPseudo: string;
 
   @Column()
   p1: string;

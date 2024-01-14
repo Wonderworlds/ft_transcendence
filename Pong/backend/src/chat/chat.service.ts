@@ -58,12 +58,13 @@ export class ChatService {
         'error: ' + to + ' not connected to the lobby',
       );
 
-    this.websocketService.server.to([socketTo.id, user.id]).emit('messageLobby', {
-      message: body.message,
-      from: { pseudo: userDB.pseudo, ppImg: userDB.ppImg },
-      type: ChatMessageType.PRIVATE,
-    });
-    
+    this.websocketService.server
+      .to([socketTo.id, user.id])
+      .emit('messageLobby', {
+        message: body.message,
+        from: { pseudo: userDB.pseudo, ppImg: userDB.ppImg },
+        type: ChatMessageType.PRIVATE,
+      });
   }
 
   public async sendMessageRoom(
@@ -133,7 +134,6 @@ export class ChatService {
     });
   }
 
-
   private async commandBlock(
     @ConnectedSocket() user: ValidSocket,
     pseudo: string,
@@ -188,7 +188,6 @@ export class ChatService {
     );
     if (userDB.pseudo === pseudo)
       return this.responseServer(user, 'error: you cannot invite yourself');
-    console.info(`event [commandInvite]`, userDB.pseudo, pseudo);
     if (userDB.blockedBy.length !== 0) {
       const blockedBy = userDB.blockedBy.find((e) => {
         if (e.pseudo === pseudo) {
@@ -198,19 +197,16 @@ export class ChatService {
       if (blockedBy)
         return this.responseServer(user, 'error: you are blocked by ' + pseudo);
     }
-    console.info(`event [commandInvite]`, userDB.pseudo, pseudo);
     const friendDB = await this.userService.findOneUser(
       { pseudo: pseudo },
       [],
       ['pseudo', 'username', 'id'],
     );
-    console.info(`event [commandInvite]`, userDB.pseudo, friendDB.pseudo);
     if (!userDB || !friendDB)
-      return this.responseServer(user, 'error: target not found');
+    return this.responseServer(user, 'error: target not found');
     const friendSocket = this.websocketService.users.get(friendDB.username);
     if (!friendSocket || !friendSocket.rooms.has('Mainchat'))
       return this.responseServer(user, 'error: user offline');
-    console.info(`event [commandInvite]`, userDB.pseudo, friendDB.pseudo);
     const res = await this.pongService.customGame(
       user,
       { owner: userDB.pseudo, friend: friendDB.pseudo },
@@ -221,7 +217,7 @@ export class ChatService {
       this.websocketService.serverError(res.to, res.messagePayload as string);
     else {
       this.websocketService.server.to(friendSocket.id).emit('messageLobby', {
-        ...res.messagePayload as {lobby: string, sender: string},
+        ...(res.messagePayload as { lobby: string; sender: string }),
         type: ChatMessageType.INVITE,
       });
       this.responseServer(user, 'invite sent');
@@ -231,6 +227,7 @@ export class ChatService {
   private async commandAddFriend(
     @ConnectedSocket() user: ValidSocket,
     pseudo: string,
+    lobby: string,
   ) {
     console.info(`event [commandAddFriend]`, user.name, pseudo);
     if (pseudo[0] !== '@')
@@ -269,13 +266,15 @@ export class ChatService {
         this.responseServer(user, 'demand sent');
         if (friendID)
           this.responseServer(friendID, 'you have a new friend demand');
-        return this.websocketService.server
-          .to(friendID.id)
-          .emit('messageLobby', {
-            message: "you've sent a friend demand to " + pseudo,
-            from: { pseudo: userDB.pseudo, ppImg: userDB.ppImg },
-            type: ChatMessageType.DEMAND,
-          });
+        if (lobby === 'Mainchat') {
+          return this.websocketService.server
+            .to(friendID.id)
+            .emit('messageLobby', {
+              message: '',
+              from: { pseudo: userDB.pseudo, ppImg: userDB.ppImg },
+              type: ChatMessageType.DEMAND,
+            });
+        }
       }
       return this.responseServer(user, 'error: demand failed');
     } catch (error) {
@@ -328,7 +327,7 @@ export class ChatService {
         else return this.commandInvite(user, msgSplit[1]);
       }
       case 'addfriend':
-        return this.commandAddFriend(user, msgSplit[1]);
+        return this.commandAddFriend(user, msgSplit[1], body.lobby);
       case 'profile':
         return this.commandProfile(user, msgSplit[1]);
       default:
