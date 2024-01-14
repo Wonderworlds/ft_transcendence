@@ -47,7 +47,7 @@ const ProfilePlayer: React.FC<ProfilePlayerProps> = ({
 			.catch((err: any) => {
 				alert(err.response?.data?.message);
 			});
-	}, [axios.ready, isClicked]);
+	}, [axios.ready, isClicked, pseudo]);
 
 	const hsl = `hsl(${winRate}, 87%, 45%)`;
 	return (

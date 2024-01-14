@@ -1,5 +1,6 @@
 import { IntersectionType, PickType } from '@nestjs/mapped-types';
 import {
+  IsAlphanumeric,
   IsBoolean,
   IsDate,
   IsEmail,
@@ -8,7 +9,7 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
-  Length,
+  Length
 } from 'class-validator';
 import { EventGame, GameType, Pos, Status } from './types';
 
@@ -45,11 +46,11 @@ export class TwoFADto {
 
 export class UserDto {
   @Length(3, 10)
-  @IsString()
+  @IsAlphanumeric()
   username: string;
 
   @Length(3, 10)
-  @IsString()
+  @IsAlphanumeric()
   pseudo: string;
 
   @IsString()
