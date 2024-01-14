@@ -37,8 +37,9 @@ export class PongLobbyLocal extends PongLobby {
     owner: ValidSocket,
     gameType: GameType,
     protected readonly userService: UsersService,
+    destroy: (lobby: string) => void,
   ) {
-    super(id, server, owner, gameType, userService);
+    super(id, server, owner, gameType, userService, destroy);
   }
 
   override async addClient(

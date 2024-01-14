@@ -95,12 +95,12 @@ const LogIn: React.FC = () => {
 			.post('auth/signup', { username: username, password: password })
 			.then(() => {
 				alert('User created');
+				setUsername('');
+				setPassword('');
 			})
 			.catch((err: any) => {
 				setError(err.response?.data?.message);
 			});
-		setUsername('');
-		setPassword('');
 	}
 
 	async function logIn() {
@@ -111,6 +111,8 @@ const LogIn: React.FC = () => {
 				user.setUsername(res.data.username);
 				if (!res.data.twoFA) {
 					axios.setAuth({ token: res.data.access_token, username: res.data.username });
+					setUsername('');
+					setPassword('');
 				} else {
 					alert('2FA enabled: Enter code received by email at ' + res.data.email);
 				}
@@ -118,8 +120,6 @@ const LogIn: React.FC = () => {
 			.catch((err: any) => {
 				setError(err.response?.data?.message);
 			});
-		setUsername('');
-		setPassword('');
 	}
 
 	async function twoFA() {

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import {
@@ -78,6 +79,7 @@ export class PongService {
         client,
         body.gameType,
         this.userService,
+        this.destroyLobby.bind(this),
       );
       this.listGameLocal.set(id, lobby);
     } else {
@@ -87,6 +89,7 @@ export class PongService {
         client,
         body.gameType,
         this.userService,
+        this.destroyLobby.bind(this),
       );
       this.listGameOnline.set(id, lobby);
     }
@@ -182,6 +185,7 @@ export class PongService {
       client,
       GameType.classicOnline,
       this.userService,
+      this.destroyLobby.bind(this),
     );
     this.listCustomGame.set(id, lobby);
     this.customGamePending.push({
@@ -218,16 +222,17 @@ export class PongService {
     let lobbyRoomID =
       this.isClientOwner(client, this.listGameLocal) ||
       this.isClientinRoom(client);
-    if (!body.lobby && lobbyRoomID)
-    {const lobbyRoom =
-      this.listGameLocal.get(lobbyRoomID) ||
-      this.listGameOnline.get(lobbyRoomID) ||
-      this.listCustomGame.get(lobbyRoomID);
-    return {
-      event: 'joinedLobby',
-      to: [client.id],
-      messagePayload: this.lobbyToLobbyDto(lobbyRoom),
-    };}
+    if (!body.lobby && lobbyRoomID) {
+      const lobbyRoom =
+        this.listGameLocal.get(lobbyRoomID) ||
+        this.listGameOnline.get(lobbyRoomID) ||
+        this.listCustomGame.get(lobbyRoomID);
+      return {
+        event: 'joinedLobby',
+        to: [client.id],
+        messagePayload: this.lobbyToLobbyDto(lobbyRoom),
+      };
+    }
     lobbyRoomID = body.lobby;
     if (!lobbyRoomID)
       return {
@@ -294,16 +299,15 @@ export class PongService {
   ) {
     lobbyOnline.removeClient(client);
     if (lobbyOnline.getSize() === 0) {
+      lobbyOnline.forcedLeave();
       console.info('leaveLobbyCB', 'Lobby deleted');
       return this.listGameOnline.delete(body.lobby);
     }
     setTimeout(() => {
-      if (
-        lobbyOnline?.gameType === GameType.classicOnline &&
-        lobbyOnline?.status === GameState.INIT
-      )
-        return;
-      lobbyOnline?.forcedLeave();
+      if (!lobbyOnline) return;
+      if (this.isClientInLobby(client, lobbyOnline)) return;
+      if (lobbyOnline.status !== GameState.GAMEOVER) return;
+      lobbyOnline.forcedLeave();
       if (this.listGameOnline.delete(body.lobby))
         console.info('leaveLobbyCB', 'Lobby deleted');
     }, 1000 * 20);
@@ -317,6 +321,7 @@ export class PongService {
     if (lobbyLocal) {
       lobbyLocal.removeClient(client);
       setTimeout(() => {
+        if (!lobbyLocal) return;
         if (lobbyLocal?.isOwnerConnected()) return;
         console.info('leaveLobbyCB', 'Lobby deleted');
         this.listGameLocal.delete(body.lobby);
@@ -324,6 +329,7 @@ export class PongService {
     } else if (lobbyCustom) {
       lobbyCustom.removeClient(client);
       setTimeout(() => {
+        if (!lobbyCustom) return;
         if (lobbyCustom?.getSize() === 2) return;
         lobbyCustom?.forcedLeave();
         this.listCustomGame.delete(body.lobby);
@@ -342,6 +348,14 @@ export class PongService {
     return '';
   }
 
+  private isClientInLobby(
+    @ConnectedSocket() client: ValidSocket,
+    lobbyRoom: PongLobby,
+  ) {
+    if (lobbyRoom.listClients.has(client.name)) return true;
+    return false;
+  }
+
   private isClientinRoom(client: ValidSocket) {
     for (const [key, value] of this.listGameOnline.entries()) {
       if (value.listClients.has(client.name)) return key;
@@ -358,5 +372,18 @@ export class PongService {
       gameType: lobby.gameType,
       status: lobby.status,
     };
+  }
+
+  public destroyLobby(lobbyID: string) {
+    setTimeout(() => {
+      const lobby =
+        this.listGameOnline.get(lobbyID) ||
+        this.listGameLocal.get(lobbyID) ||
+        this.listCustomGame.get(lobbyID);
+      if (!lobby) return;
+      lobby.forcedLeave();
+      if (this.listGameOnline.delete(lobby.id))
+        console.info('destroyLobby', 'Lobby deleted');
+    }, 1000 * 10);
   }
 }

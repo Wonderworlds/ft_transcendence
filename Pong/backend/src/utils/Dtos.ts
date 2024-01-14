@@ -19,6 +19,8 @@ export enum GameState {
   PLAYING = 'playing',
   PAUSE = 'pause',
   GAMEOVER = 'gameover',
+	AUTODESTRUCT = 'autodestruct',
+
 }
 
 export type LobbyDto = {

@@ -33,7 +33,7 @@ const ProfilePlayer: React.FC<ProfilePlayerProps> = ({
 		setLoses(loses);
 		if (wins + loses === 0) return setWinRate('0');
 		const winRate: number = (wins / (wins + loses)) * 100;
-		setWinRate(winRate.toFixed(2));
+		setWinRate(winRate.toFixed(1));
 	}
 	React.useEffect(() => {
 		if (!axios.auth.token) return;
