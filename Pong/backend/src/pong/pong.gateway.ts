@@ -65,7 +65,6 @@ export class PongGateway {
     @Body() body: AcceptLobbyDto,
   ) {
     console.info('responseFriendGame', body);
-    return ;
     const res = this.pongService.responseFriendGame(
       client,
       body,

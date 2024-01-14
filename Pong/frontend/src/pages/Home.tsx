@@ -14,7 +14,9 @@ const Home: React.FC = () => {
 	const axios = getAxios();
 	const [pseudo, setPseudo] = React.useState<string>(user.pseudo);
 	const [isClicked, setIsClicked] = React.useState<string>('');
-	const [invitation, setInvitation] = React.useState<string>('');
+	const [invitation, setInvitation] = React.useState<{ lobby: string; sender: string }>(
+		{} as { lobby: string; sender: string }
+	);
 	const [friendDemand, setFriendDemand] = React.useState<{ sender: string }>(
 		{} as { sender: string }
 	);
@@ -40,12 +42,10 @@ const Home: React.FC = () => {
 	};
 
 	function handleclickInvitation(accept: boolean) {
-		const lobby = invitation;
-		console.log('invitation', lobby);
-		const res = { lobby: invitation, accept: accept };
+		const res = { ...invitation, accept: accept };
 		console.log(res);
 		socket.emit('responseFriendGame', res);
-		setInvitation('');
+		setInvitation({} as { lobby: string; sender: string });
 	}
 
 	async function handleclickFriendDemand(accept: boolean) {
@@ -70,7 +70,12 @@ const Home: React.FC = () => {
 						<div className="divPlayBigHome">
 							<PlayBig />
 						</div>
-						{invitation ? invitationElement('Invitation for a game', handleclickInvitation) : null}
+						{invitation.lobby
+							? invitationElement(
+									'Invitation for a game with ' + invitation.sender,
+									handleclickInvitation
+							  )
+							: null}
 						{friendDemand?.sender
 							? invitationElement(
 									'friendDemand from ' + friendDemand.sender,

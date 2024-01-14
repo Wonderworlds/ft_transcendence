@@ -35,9 +35,12 @@ const Chat: React.FC = () => {
 				gameContext.setOnTab(1);
 			} else setChat((chat) => [res, ...chat]);
 		});
+		socket.emit('joinChat', { lobby: socketContext.lobby });
 
 		return () => {
 			socket.off('messageLobby');
+			socket.off('onJoinChat');
+			socket.emit('leaveChat', { lobby: socketContext.lobby });
 		};
 	}, [socket]);
 

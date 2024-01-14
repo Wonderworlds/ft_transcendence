@@ -31,17 +31,29 @@ export class ChatGateway{
   }
 
   @SubscribeMessage('joinChat')
-  handleJoinChat(@ConnectedSocket() client: ValidSocket) {
+  handleJoinChat(@ConnectedSocket() client: ValidSocket, body?: {lobby: string}) {
     console.info(`event [joinLobby]`, client.name);
+    if (body?.lobby) {
+      this.chatService.sendNewUserMessage(body.lobby);
+      client.join(body.lobby);
+      this.chatService.sendWelcomeMessage(client);
+      return;
+    }
+    this.chatService.sendNewUserMessage('Mainchat');
     client.join('Mainchat');
     this.websocketService.serverMessage('onJoinChat', [client.id], 'Mainchat');
     this.chatService.sendWelcomeMessage(client);
-
   }
 
   @SubscribeMessage('leaveChat')
-  handleLeaveChat(@ConnectedSocket() client: ValidSocket) {
+  handleLeaveChat(@ConnectedSocket() client: ValidSocket, body?: {lobby: string}) {
     console.info(`event [joinLobby]`, client.name);
+    if (body?.lobby) {
+      client.leave(body.lobby);
+      this.chatService.sendUserLeaveMessage(body.lobby);
+      return;
+    }
     client.leave('Mainchat');
+    this.chatService.sendUserLeaveMessage('Mainchat');
   }
 }

@@ -107,7 +107,7 @@ export class PongService {
     const index = this.customGamePending.findIndex(
       (e) => e.lobby === body.lobby,
     );
-    console.log('responseFriendGame', this.customGamePending, index)
+    console.log('responseFriendGame', this.customGamePending, index);
     const customGame = this.customGamePending[index];
     if (index === -1)
       return {
@@ -128,8 +128,9 @@ export class PongService {
         event: 'forcedMove',
         to: [socket1.id, client.id],
         messagePayload: { lobby: body.lobby },
-      }
+      };
     } else {
+      this.listCustomGame.delete(body.lobby);
       return {
         event: 'error',
         to: [socket1.id],
@@ -143,7 +144,11 @@ export class PongService {
     body: CreateCustomLobbyDto,
     server: Server,
     websocketService: WebsocketService,
-  ): Promise<{ event: string; to: string[]; messagePayload: Object }> {
+  ): Promise<{
+    event: string;
+    to: string[];
+    messagePayload: string | { lobby: string; sender: string };
+  }> {
     if (this.customGamePending.find((e) => e.owner === client.name))
       return {
         event: 'error',
@@ -186,14 +191,14 @@ export class PongService {
       receiver: friend.name,
     });
     setTimeout(() => {
+      const invitPendingIndex = this.customGamePending.findIndex(
+        (e) => e.lobby === id,
+      );
+      if (invitPendingIndex === -1) return;
       console.info('customGameCB', 'Lobby size', lobby.getSize());
-      if (lobby.getSize() === 2) return;
       websocketService.serverError([client.id], 'Game declined');
       this.listCustomGame.delete(id);
-      this.customGamePending.splice(
-        this.customGamePending.findIndex((e) => e.lobby === id),
-        1,
-      );
+      this.customGamePending.splice(invitPendingIndex, 1);
       console.info('customGameCB', 'Lobby deleted', id);
     }, 1000 * 20);
     console.info('customGameCreate', this.customGamePending);
@@ -201,7 +206,7 @@ export class PongService {
       event: 'friendGame',
       to: [friend.id],
       messagePayload: {
-        message: id,
+        lobby: id,
         sender: body.owner,
       },
     };
