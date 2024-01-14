@@ -86,7 +86,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 	const [gameType, setGameType] = React.useState<string>('');
 	const [nbPlayer, setNbPlayer] = React.useState<number>(0);
 	const [maxPlayer, setMaxPlayer] = React.useState<number>(24);
-	const [playerReady, setPlayerReady] = React.useState<boolean>(true);
+	const [playerReady, setPlayerReady] = React.useState<boolean>(false);
 	const [playerIsReady1, setPlayerIsReady1] = React.useState<boolean>(false);
 	const [playerIsReady2, setPlayerIsReady2] = React.useState<boolean>(false);
 	const [playerIsReady3, setPlayerIsReady3] = React.useState<boolean>(false);
@@ -133,7 +133,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 
 		socket.on('isPlayerReady', () => {
 			console.log('isPlayerReady');
-			setPlayerReady(false);
+			setPlayerReady(true);
 		});
 
 		socket.on('gameOver', (res: boolean) => {

@@ -244,7 +244,7 @@ export class Pong {
     this.p2.changePos(input);
   }
 
-  getMatchLog() {
+  getMatchLog(){
     return {
       p1: this.p1.name,
       p2: this.p2.name,

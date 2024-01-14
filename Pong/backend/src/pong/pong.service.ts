@@ -182,7 +182,6 @@ export class PongService {
       client,
       GameType.classicOnline,
       this.userService,
-      2,
     );
     this.listCustomGame.set(id, lobby);
     this.customGamePending.push({
@@ -216,10 +215,20 @@ export class PongService {
     client: ValidSocket,
     body: LobbyIDDto,
   ): Promise<{ event: string; to: string[]; messagePayload: Object }> {
-    const lobbyRoomID =
-      body.lobby ||
+    let lobbyRoomID =
       this.isClientOwner(client, this.listGameLocal) ||
       this.isClientinRoom(client);
+    if (!body.lobby && lobbyRoomID)
+    {const lobbyRoom =
+      this.listGameLocal.get(lobbyRoomID) ||
+      this.listGameOnline.get(lobbyRoomID) ||
+      this.listCustomGame.get(lobbyRoomID);
+    return {
+      event: 'joinedLobby',
+      to: [client.id],
+      messagePayload: this.lobbyToLobbyDto(lobbyRoom),
+    };}
+    lobbyRoomID = body.lobby;
     if (!lobbyRoomID)
       return {
         event: 'joinedLobby',
