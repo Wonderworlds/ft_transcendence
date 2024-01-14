@@ -29,4 +29,33 @@ export class ChatGateway{
       case ChatMessageType.COMMAND: return this.chatService.sendCommandMessage(client, payload);
     }
   }
+
+  @SubscribeMessage('joinChat')
+  handleJoinChat(@ConnectedSocket() client: ValidSocket, @Body() body?: {lobby: string}) {
+    console.info(`event [joinLobby]`, client.name, body?.lobby);
+    if (body?.lobby) {
+      this.chatService.sendNewUserMessage(body.lobby);
+      client.join(body.lobby);
+      this.chatService.sendWelcomeMessage(client);
+      return;
+    }
+    this.chatService.sendNewUserMessage('Mainchat');
+    client.join('Mainchat');
+    this.websocketService.serverMessage('onJoinChat', [client.id], 'Mainchat');
+    this.chatService.sendWelcomeMessage(client);
+  }
+
+  @SubscribeMessage('leaveChat')
+  handleLeaveChat(@ConnectedSocket() client: ValidSocket, @Body() body?: {lobby: string}) {
+    console.info(`event [joinLobby]`, client.name);
+    if (body?.lobby) {
+      client.leave(body.lobby);
+      this.chatService.sendUserLeaveMessage(body.lobby);
+      return;
+    }
+    console.info(`event [leaveChat]`, client.name, client.rooms);
+    client.leave('Mainchat');
+    this.chatService.sendUserLeaveMessage('Mainchat');
+    console.info(`event [leaveChat]`, client.name, client.rooms);
+  }
 }

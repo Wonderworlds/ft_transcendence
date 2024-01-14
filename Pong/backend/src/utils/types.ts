@@ -6,7 +6,10 @@ export enum Status {
   DnD = 'Do Not Disturb',
   Busy = 'Busy',
 }
-
+export type FriendGameDto = {
+  lobby: string;
+  sender: string;
+}
 export enum ChatMessageType {
   STANDARD = 'STANDARD',
   PRIVATE = 'PRIVATE',
@@ -15,6 +18,8 @@ export enum ChatMessageType {
   SERVER = 'SERVER',
   UNDEFINED = 'UNDEFINED',
   PROFILE = 'PROFILE',
+  DEMAND = 'DEMAND',
+  INVITE = 'INVITE',
 }
 
 export type Success = {

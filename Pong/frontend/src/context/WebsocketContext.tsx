@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
-import { UserDto } from '../utils/dtos';
+import { LobbyIDDto, UserDto } from '../utils/dtos';
 import { Pages } from '../utils/types';
 import { getAxios } from './AxiosContext';
 import { getUser } from './UserContext';
@@ -46,14 +46,16 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 				}
 			});
 
+			socket.on('forcedMove', (res: LobbyIDDto) => {
+				setLobby(res.lobby);
+				navigate(Pages.Pong);
+			});
+
 			socket.on('forcedDisconnect', (res) => {
-				sessionStorage.clear();
-				user.setUsername('');
-				axios.setAuth({ token: '', username: '' });
 				navigate(Pages.Root);
-				socket.disconnect();
+				window.location.reload();
 				if (res?.message) {
-					alert(res.message);
+					console.log(res.message);
 				}
 			});
 
@@ -69,6 +71,8 @@ export const WebsocketProvider = ({ children }: { children: React.ReactNode }) =
 		return () => {
 			if (socket) {
 				socket.off('connect');
+				socket.off('reconnect');
+				socket.off('forcedMove');
 				socket.off('forcedDisconnect');
 				socket.off('forcedLeave');
 				socket.off('error');

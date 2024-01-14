@@ -20,6 +20,7 @@ export type MatchDto = {
 	p4?: string;
 	date: Date;
 	winner: string;
+	won: boolean;
 	gameType: GameType;
 };
 
@@ -72,6 +73,7 @@ export enum GameState {
 	PLAYING = 'playing',
 	PAUSE = 'pause',
 	GAMEOVER = 'gameover',
+	AUTODESTRUCT = 'autodestruct',
 }
 
 export type LobbyDto = {

@@ -7,7 +7,7 @@ import { PongLobby } from './lobby/pong.lobby';
 export class Ball {
   protected position: Pos = { x: 50, y: 50 };
   protected direction: Pos;
-  protected readonly speed = 0.8;
+  protected speed = 0.8;
 
   constructor() {
     this.setDirection(this.normalize(this.getRandomDirection()));
@@ -36,9 +36,11 @@ export class Ball {
     this.checkColision(p1, p2);
 
     if (this.position.y <= 0) {
-      this.direction.y += 1;
-  } else if (this.position.y + 2 >= 100) {
-      this.direction.y += -1;
+      this.direction.y = 1;
+      this.direction = this.normalize(this.direction);
+    } else if (this.position.y + 2 >= 100) {
+      this.direction.y = -1;
+      this.direction = this.normalize(this.direction);
   }
     
     this.position.x += this.direction.x * this.speed;
@@ -93,7 +95,7 @@ export class Ball {
 
 export class Player {
   protected position: Pos;
-  protected readonly speed = 2;
+  protected speed = 2;
   protected maxY = 88;
   protected score = 0;
   private scoreToWin = 2;
@@ -242,7 +244,7 @@ export class Pong {
     this.p2.changePos(input);
   }
 
-  getMatchLog() {
+  getMatchLog(){
     return {
       p1: this.p1.name,
       p2: this.p2.name,

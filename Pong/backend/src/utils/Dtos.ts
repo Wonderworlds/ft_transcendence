@@ -1,5 +1,6 @@
 import { IntersectionType, PickType } from '@nestjs/mapped-types';
 import {
+  IsAlphanumeric,
   IsBoolean,
   IsDate,
   IsEmail,
@@ -8,7 +9,7 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
-  Length,
+  Length
 } from 'class-validator';
 import { EventGame, GameType, Pos, Status } from './types';
 
@@ -18,6 +19,8 @@ export enum GameState {
   PLAYING = 'playing',
   PAUSE = 'pause',
   GAMEOVER = 'gameover',
+	AUTODESTRUCT = 'autodestruct',
+
 }
 
 export type LobbyDto = {
@@ -44,11 +47,12 @@ export class TwoFADto {
 }
 
 export class UserDto {
-  @IsString()
+  @Length(3, 10)
+  @IsAlphanumeric()
   username: string;
 
-  @Length(3, 20)
-  @IsString()
+  @Length(3, 10)
+  @IsAlphanumeric()
   pseudo: string;
 
   @IsString()
@@ -127,6 +131,9 @@ export class MatchDto {
   date?: Date;
 
   @IsString()
+  winnerPseudo?: string;
+
+  @IsString()
   p1: string;
 
   @IsString()
@@ -146,6 +153,10 @@ export class MatchDto {
   @IsString()
   @IsOptional()
   winner?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  won?: boolean;
 }
 
 export class LobbyIDDto {

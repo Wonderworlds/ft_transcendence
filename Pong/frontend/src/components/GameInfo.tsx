@@ -50,70 +50,29 @@ const GameInfo: React.FC = () => {
 	};
 
 	const dynamicElement = () => {
-		switch (gameContext.gameType) {
-			case GameType.classicLocal: {
-				return (
-					<>
-						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
-						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
-						{gameContext.gameState === GameState.INIT
-							? addClientLocal(gameContext.addClientLocal)
-							: null}
-					</>
-				);
-			}
-			case GameType.multiplayerLocal: {
-				return (
-					<>
-						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
-						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
-						{gameContext.gameState === GameState.INIT
-							? addClientLocal(gameContext.addClientLocal)
-							: null}
-					</>
-				);
-			}
-			case GameType.classicOnline: {
-				return (
-					<>
-						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
-						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
-					</>
-				);
-			}
-			case GameType.multiplayerOnline: {
-				return (
-					<>
-						{gameContext.gameOver ? readyButton('ReMatch', gameContext.nextMatch) : null}
-						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
-					</>
-				);
-			}
-			case GameType.tournamentLocal: {
-				return (
-					<>
-						{gameContext.gameOver ? readyButton('Next Game', gameContext.nextMatch) : null}
-						{gameContext.tournamentIsReady
-							? readyButton('Start Tournament', gameContext.startTournament)
-							: null}
-						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
-						{gameContext.gameState === GameState.INIT
-							? addClientLocal(gameContext.addClientLocal)
-							: null}
-					</>
-				);
-			}
-			case GameType.tournamentOnline: {
-				return (
-					<>
-						{gameContext.tournamentIsReady
-							? readyButton('Start Tournament', gameContext.startTournament)
-							: null}
-						{gameContext.playerReady ? null : readyButton('Start Match', gameContext.startMatch)}
-					</>
-				);
-			}
-		}
+		return (
+			<>
+				{gameContext.gameOver &&
+				(gameContext.gameState === GameState.GAMEOVER || gameContext.gameState === GameState.INIT)
+					? readyButton('ReMatch', gameContext.nextMatch)
+					: null}
+				{gameContext.playerReady && gameContext.gameState === GameState.START
+					? readyButton('Start Match', gameContext.startMatch)
+					: null}
+				{(gameContext.gameType === GameType.tournamentLocal ||
+					gameContext.gameType === GameType.tournamentOnline) &&
+				gameContext.tournamentIsReady &&
+				gameContext.gameState === GameState.INIT
+					? readyButton('Start Tournament', gameContext.startTournament)
+					: null}
+				{(gameContext.gameType === GameType.classicLocal ||
+					gameContext.gameType === GameType.multiplayerLocal ||
+					gameContext.gameType === GameType.tournamentLocal) &&
+				gameContext.gameState === GameState.INIT
+					? addClientLocal(gameContext.addClientLocal)
+					: null}
+			</>
+		);
 	};
 
 	return (

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BsChatLeftText } from 'react-icons/bs';
-import { getGame } from '../context/GameContext';
 import { getSocket } from '../context/WebsocketContext';
 import { ChatMessageType } from '../utils/types';
 import ChatMessage from './ChatMessage';
@@ -11,43 +10,57 @@ export type ChatMessage = {
 	type: ChatMessageType;
 };
 
-const Chat: React.FC = () => {
-	const gameContext = getGame();
+interface ChatHomeProps {
+	setPseudo: React.Dispatch<React.SetStateAction<string>>;
+	setInvitation: React.Dispatch<React.SetStateAction<{ lobby: string; sender: string }>>;
+	setFriendDemand: React.Dispatch<React.SetStateAction<{ sender: string }>>;
+}
+
+const ChatHome: React.FC<ChatHomeProps> = ({ setPseudo, setInvitation, setFriendDemand }) => {
 	const socketContext = getSocket();
 	const socket = socketContext.socket;
 	const [message, setMessage] = React.useState<string>('');
 	const [chat, setChat] = React.useState<ChatMessage[]>([]);
+	const [room, setRoom] = React.useState<string>('');
 
 	React.useEffect(() => {
 		if (!socket) return;
-		socket.on('messageLobby', (res: ChatMessage) => {
+		socket.on('messageLobby', (res: ChatMessage | any) => {
 			console.log(res);
-			if (res.type === ChatMessageType.PROFILE) {
-				gameContext.setPseudo(res.message);
-				gameContext.setTab((prev) => {
-					const newTab = [...prev];
-					if (newTab.length === 2) {
-						newTab.splice(1, 1);
-					}
-					newTab.push(res.message);
-					return newTab;
-				});
-				gameContext.setOnTab(1);
-			} else setChat((chat) => [res, ...chat]);
+			switch (res.type) {
+				case ChatMessageType.UNDEFINED:
+					return;
+				case ChatMessageType.PROFILE:
+					setPseudo(res.message);
+					break;
+				case ChatMessageType.DEMAND:
+					setFriendDemand({ sender: res.from.pseudo });
+					break;
+				case ChatMessageType.INVITE:
+					setInvitation({ lobby: res.lobby, sender: res.sender });
+					break;
+				default:
+					setChat((chat) => [res, ...chat]);
+					break;
+			}
 		});
-		console.log('joinChat', socketContext.lobby);
-		socket.emit('joinChat', { lobby: socketContext.lobby });
+		socket.on('onJoinChat', (res: string) => {
+			console.log('onJoinChat', res);
+			setRoom(res);
+		});
+		socket.emit('joinChat');
 
 		return () => {
 			socket.off('messageLobby');
-			socket.emit('leaveChat', { lobby: socketContext.lobby });
+			socket.off('onJoinChat');
+			socket.emit('leaveChat');
 		};
-	}, [socket, socketContext.lobby]);
+	}, [socket]);
 
 	const handleClick = () => {
 		console.log('message', message);
 		if (message === '') return;
-		socket.emit('messageChat', { message: message, lobby: socketContext.lobby });
+		socket.emit('messageChat', { message: message, lobby: room });
 		setMessage('');
 	};
 
@@ -118,4 +131,4 @@ const Chat: React.FC = () => {
 	);
 };
 
-export default Chat;
+export default ChatHome;

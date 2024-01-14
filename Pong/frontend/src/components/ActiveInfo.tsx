@@ -14,9 +14,9 @@ const ActiveInfo: React.FC<ActiveInfoProps> = ({ tab }) => {
 		switch (tab) {
 			case TabOption.History:
 				return (
-					<>
+					<div className="divProfilePlayerActiveInfo">
 						<ProfilePlayer pseudo={user.pseudo} isClicked="" />
-					</>
+					</div>
 				);
 			case TabOption.Friend:
 				return (

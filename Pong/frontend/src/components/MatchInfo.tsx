@@ -1,5 +1,4 @@
 import React from 'react';
-import { getUser } from '../context/UserContext';
 import { MatchDto } from '../utils/dtos';
 import { GameType } from '../utils/types';
 
@@ -8,8 +7,7 @@ interface MatchInfoProps {
 }
 
 const MatchInfo: React.FC<MatchInfoProps> = ({ match }) => {
-	const user = getUser();
-	const won = match.winner === user.pseudo;
+	const won = match.won;
 	const gameTypeColor = () => {
 		switch (match.gameType) {
 			case GameType.classicLocal:
