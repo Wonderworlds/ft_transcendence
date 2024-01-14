@@ -58,6 +58,7 @@ type GameContextType = {
 
 export type UpdateLobbyDto = {
 	nbPlayer: number;
+	maxClients?: number;
 	pLeftReady: boolean;
 	pRightReady: boolean;
 	pTopReady?: boolean;
@@ -119,6 +120,7 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			setPlayerIsReady1(res.pLeftReady);
 			setPlayerIsReady2(res.pRightReady);
 			setGameState(res.gameState);
+			if (res.maxClients !== undefined) setMaxPlayer(res.maxClients);
 			if (res.pTopReady !== undefined) setPlayerIsReady3(res.pTopReady);
 			if (res.pBotReady !== undefined) setPlayerIsReady4(res.pBotReady);
 			res.pLeft && setPlayerLeft(res.pLeft);
@@ -159,12 +161,17 @@ export const GameContextProvider = ({ children }: { children: React.ReactNode })
 			pseudo: user.pseudo,
 		};
 		socket.emit('input', payload);
-		setPlayerReady(true);
+		setPlayerReady(false);
 	}
 
 	function startTournament() {
 		if (!socket) return;
-		socket.emit('startTournament', { lobby: socketContext.lobby, pseudo: user.pseudo });
+		const payload = {
+			lobby: socketContext.lobby,
+			input: EventGame.START_TOURNAMENT,
+			pseudo: user.pseudo,
+		};
+		socket.emit('input', payload);
 		setTournamentIsReady(false);
 	}
 

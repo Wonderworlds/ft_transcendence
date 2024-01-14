@@ -1,17 +1,21 @@
 import { Inject } from '@nestjs/common';
-import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { GameState, LimitedUserDto, MatchDto } from 'src/utils/Dtos';
 import { Tournament } from 'src/utils/Tournament';
-import { ChatMessageType, EventGame, GameType, ValidSocket } from 'src/utils/types';
+import {
+  ChatMessageType,
+  EventGame,
+  GameType,
+  ValidSocket,
+} from 'src/utils/types';
 import { Pong } from '../Pong';
 import { Pong4p } from '../Pong4p';
 import { UpdateLobbyDto } from './pongLocal.lobby';
 
 export class PongLobby {
-  @WebSocketServer()
-  server: Server;
+  public server: Server;
   public listClients = new Map<string, ValidSocket>();
   protected mapTimeout = new Map<string, NodeJS.Timeout>();
   protected userMap = new Map<string, LimitedUserDto>();
@@ -23,7 +27,8 @@ export class PongLobby {
   protected pRight: LimitedUserDto = null;
   protected pBot: LimitedUserDto = null;
   protected pTop: LimitedUserDto = null;
-  public isLocal: boolean;
+  private playerSocketsID: string[] = [];
+  private nextPlayers: string[] = null;
   public id: string;
   protected pongInstance: Pong | Pong4p;
   protected OwnerUser: LimitedUserDto;
@@ -84,12 +89,76 @@ export class PongLobby {
     } else if (this.isMultiplayer && this.listClients.size >= 4) {
       return this.initMatchStart();
     } else if (this.isTournament && this.listClients.size >= 4) {
-      //initTournament();
+      if (this.listClients.size === 16) return this.initTournament();
+      console.info('addClient', 'tournamentIsReady');
+      this.server.to(this.owner.id).emit('tournamentIsReady');
     }
     this.serverUpdateClients();
   }
 
-  updateClient(
+  public getPlayers(): string[] {
+    const players = [];
+    for (const [key, value] of this.userMap.entries()) {
+      players.push(key);
+    }
+    console.info('getPlayers', players);
+    return players;
+  }
+
+  initTournament() {
+    console.info('initTournament', this.listClients.size);
+    if (this.status !== GameState.INIT) return;
+    this.server.to(this.id).emit('messageLobby', {
+      message: 'tournament is starting',
+      type: ChatMessageType.BOT,
+    });
+    this.winners = [];
+    this.tournament = new Tournament(this.shuffle(this.getPlayers()));
+    this.status = GameState.START;
+    if (!this.launchMatchTournament()) {
+      console.info('initTournament', 'tournament Error');
+      this.forcedLeave();
+    }
+    this.serverUpdateClients();
+  }
+
+  protected launchMatchTournament() {
+    let players: string[];
+    console.info('nextplayers', this.nextPlayers);
+    if (this.nextPlayers === null || this.nextPlayers === undefined) {
+      players = this.tournament.nextMatch();
+      if (!players) return false;
+    } else {
+      players = this.nextPlayers;
+      this.nextPlayers = null;
+    }
+    this.status = GameState.INIT;
+    console.info('launchMatchTournament', players);
+    console.info(players);
+    this.pLeft = this.userMap.get(players[0]);
+    this.pRight = this.userMap.get(players[1]);
+    this.playerSocketsID = [];
+    this.playerSocketsID.push(this.listClients.get(players[0]).id);
+    this.playerSocketsID.push(this.listClients.get(players[1]).id);
+    this.initMatch(this.pLeft, this.pRight);
+    this.nextPlayers = this.tournament.nextMatch();
+    console.info('this.nextPlayers', this.nextPlayers);
+    if (this.nextPlayers !== null && this.nextPlayers !== undefined && this.nextPlayers.length === 2) {
+      this.server
+        .to([
+          this.listClients.get(this.nextPlayers[0]).id,
+          this.listClients.get(this.nextPlayers[1]).id,
+        ])
+        .emit('messageLobby', {
+          message:
+            'next match: ' + this.nextPlayers[0] + ' vs ' + this.nextPlayers[1],
+          type: ChatMessageType.BOT,
+        });
+    }
+    return true;
+  }
+
+  protected updateClient(
     @ConnectedSocket() client: ValidSocket,
     oldClient: ValidSocket,
     user: LimitedUserDto,
@@ -102,35 +171,55 @@ export class PongLobby {
       this.userMap.set(client.name, user);
     } else {
       oldClient.leave(this.id);
-      if (this.owner === oldClient) this.owner = client;
+      if (this.owner.name === oldClient.name) this.owner = client;
       this.listClients.set(client.name, client);
       this.userMap.set(client.name, user);
     }
     if (this.pLeft && this.pLeft.pseudo === oldPseudo) {
       this.pLeft = user;
+      this.playerSocketsID[0] = client.id;
       this.pongInstance?.setPlayersName(user.pseudo, null);
     }
     if (this.pRight && this.pRight.pseudo === oldPseudo) {
       this.pRight = user;
+      this.playerSocketsID[1] = client.id;
       this.pongInstance?.setPlayersName(null, user.pseudo);
     }
-    //multiplayer?
+    if (this.pTop && this.pTop.pseudo === oldPseudo) {
+      this.pTop = user;
+      this.playerSocketsID[2] = client.id;
+      this.pongInstance?.setPlayersName(null, null, user.pseudo, null);
+    }
+    if (this.pBot && this.pBot.pseudo === oldPseudo) {
+      this.pBot = user;
+      this.playerSocketsID[3] = client.id;
+      this.pongInstance?.setPlayersName(null, null, null, user.pseudo);
+    }
     console.info('updateClient', client.id, oldClient.id);
+    this.updateMsg(client);
     this.serverUpdateClients();
-    if (this.status === GameState.START)
-      this.server.to(this.id).emit('isPlayerReady');
   }
 
   protected updateMsg(@ConnectedSocket() client: ValidSocket) {
     const user = this.userMap.get(client.name);
-    if (this.status === GameState.INIT && this.isTournament && this.owner.id === client.id && this.listClients.size >= 4) {
+    if (
+      this.status === GameState.INIT &&
+      this.isTournament &&
+      this.owner.id === client.id &&
+      this.listClients.size >= 4
+    ) {
       console.info('updateClientLocal', 'tournamentIsReady');
       this.server.to(client.id).emit('tournamentIsReady');
     }
     if (this.status === GameState.START) {
       console.info('updateClientLocal', 'GameState.START');
-      if (user === this.pLeft || user === this.pRight || user === this.pTop || user === this.pBot)
-      this.server.to(client.id).emit('isPlayerReady');
+      if (
+        user === this.pLeft ||
+        user === this.pRight ||
+        user === this.pTop ||
+        user === this.pBot
+      )
+        this.server.to(client.id).emit('isPlayerReady');
       this.server.to(client.id).emit('messageLobby', {
         message: 'pLeft: ' + this.pLeft.pseudo,
         type: ChatMessageType.BOT,
@@ -140,14 +229,15 @@ export class PongLobby {
         type: ChatMessageType.BOT,
       });
       if (this.isMultiplayer) {
-      this.server.to(client.id).emit('messageLobby', {
-        message: 'pTop: ' + this.pTop.pseudo,
-        type: ChatMessageType.BOT,
-      });
-      this.server.to(client.id).emit('messageLobby', {
-        message: 'pBot: ' + this.pBot.pseudo,
-        type: ChatMessageType.BOT,
-      });}
+        this.server.to(client.id).emit('messageLobby', {
+          message: 'pTop: ' + this.pTop.pseudo,
+          type: ChatMessageType.BOT,
+        });
+        this.server.to(client.id).emit('messageLobby', {
+          message: 'pBot: ' + this.pBot.pseudo,
+          type: ChatMessageType.BOT,
+        });
+      }
     }
     if (this.status === GameState.GAMEOVER && this.owner.id === client.id) {
       console.info('updateClientLocal', 'gameOver');
@@ -163,14 +253,15 @@ export class PongLobby {
         type: ChatMessageType.BOT,
       });
       if (this.isMultiplayer) {
-      this.server.to(client.id).emit('messageLobby', {
-        message: 'pTop: ' + this.pTop.pseudo,
-        type: ChatMessageType.BOT,
-      });
-      this.server.to(client.id).emit('messageLobby', {
-        message: 'pBot: ' + this.pBot.pseudo,
-        type: ChatMessageType.BOT,
-      });}
+        this.server.to(client.id).emit('messageLobby', {
+          message: 'pTop: ' + this.pTop.pseudo,
+          type: ChatMessageType.BOT,
+        });
+        this.server.to(client.id).emit('messageLobby', {
+          message: 'pBot: ' + this.pBot.pseudo,
+          type: ChatMessageType.BOT,
+        });
+      }
       console.info('updateClientLocal', 'GameState.PLAYING');
     }
   }
@@ -208,27 +299,16 @@ export class PongLobby {
     return this.owner;
   }
 
-  public initTournament() {
-    if (this.status !== GameState.INIT) return;
-    //create tournament bracket
-    this.status = GameState.START;
-    //initMatch();
-  }
-
   nextMatch() {
     if (this.status !== GameState.GAMEOVER) return;
     this.status = GameState.INIT;
     this.pongInstance = null;
-    this.server.to(this.id).emit('gameOver', false);
     if (this.isClassic) this.initMatch(this.pLeft, this.pRight);
     else if (this.isMultiplayer) {
       this.initMatch(this.pLeft, this.pRight, this.pTop, this.pBot);
-    } else return; //TODO next match in bracket
-  }
-
-  getSocketFromPseudo(pseudo: string): ValidSocket | undefined {
-    const name = this.userMap.get(pseudo)?.pseudo;
-    return this.listClients.get(name);
+    } else if (this.isTournament) {
+      this.initTournament();
+    } //TODO next match in bracket
   }
 
   initMatchStart() {
@@ -248,7 +328,7 @@ export class PongLobby {
     ptop?: LimitedUserDto,
     pbot?: LimitedUserDto,
   ) {
-    if (this.isClassic) {
+    if (this.isClassic || this.isTournament) {
       this.pongInstance = new Pong(
         this,
         this.id,
@@ -256,6 +336,14 @@ export class PongLobby {
         pleft.pseudo,
         pright.pseudo,
       );
+      this.server.to(this.id).emit('messageLobby', {
+        message:
+          'Game is starting: ' +
+          this.pLeft.pseudo +
+          ' vs ' +
+          this.pRight.pseudo,
+        type: ChatMessageType.BOT,
+      });
     } else if (this.isMultiplayer) {
       this.pongInstance = new Pong4p(
         this,
@@ -266,10 +354,16 @@ export class PongLobby {
         ptop.pseudo,
         pbot.pseudo,
       );
+      this.server.to(this.id).emit('messageLobby', {
+        message: `Game is starting: ${this.pLeft.pseudo} vs ${this.pRight.pseudo} vs ${this.pTop.pseudo} vs ${this.pBot.pseudo}`,
+        type: ChatMessageType.BOT,
+      });
     }
     this.status = GameState.START;
+    if (this.isTournament) {
+      this.server.to(this.playerSocketsID).emit('isPlayerReady');
+    } else this.server.to(this.id).emit('isPlayerReady');
     this.serverUpdateClients();
-    this.server.to(this.id).emit('isPlayerReady');
   }
 
   startMatch(pseudo: string) {
@@ -320,13 +414,43 @@ export class PongLobby {
         return this.inputGame4P(EventGame.RIGHT, pseudo);
       case EventGame.START_MATCH:
         return this.startMatch(pseudo);
-      case EventGame.START_TOURNAMENT:
+      case EventGame.START_TOURNAMENT: {
+        this.maxClients = this.listClients.size;
         return this.initTournament();
+      }
       case EventGame.PAUSE:
         return this.pongInstancePause(pseudo);
       case EventGame.NEXT:
         return this.nextMatch();
     }
+  }
+
+  private tournamentMatchOver(winner: string) {
+    this.winners.push(winner);
+    if (this.nextPlayers !== null && this.nextPlayers !== undefined && this.nextPlayers.length === 1)
+     { this.winners.push(this.nextPlayers[0]); this.nextPlayers = null;}
+    if (this.nextPlayers === null || this.nextPlayers === undefined) {
+      if (this.winners.length === 1) {
+        console.info('tournament over', this.winners);
+        this.server.to(this.id).emit('messageLobby', {
+          message: 'Tournament is over: winner ' + winner,
+          type: ChatMessageType.BOT,
+        });
+        this.status = GameState.GAMEOVER;
+        this.server.to(this.owner.id).emit('gameOver', true);
+        this.serverUpdateClients();
+        return;
+      } else {
+        const players = this.winners.map((winner) => {
+          for (const [key, value] of this.userMap.entries()) {
+            if (value.pseudo === winner) return key;
+          }
+        });
+        this.tournament.setNextRoundPlayers(players.reverse());
+        this.winners = [];
+        this.launchMatchTournament();
+      }
+    } else this.launchMatchTournament();
   }
 
   public pongInstanceEnd(log: any) {
@@ -336,10 +460,29 @@ export class PongLobby {
     };
     console.info('game over', matchLog, this.id);
     this.status = GameState.GAMEOVER;
-    this.server.to(this.id).emit('gameOver', matchLog);
     this.saveMatch(matchLog);
+    if (this.isTournament || this.isClassic) {
+      const winner =
+        matchLog.scoreP1 > matchLog.scoreP2 ? this.pLeft : this.pRight;
+      if (this.isTournament) {
+        this.tournamentMatchOver(winner.pseudo);
+        return;
+      } else {
+        this.server.to(this.id).emit('messageLobby', {
+          message: 'Game is over: winner ' + winner.pseudo,
+          type: ChatMessageType.BOT,
+        });
+      }
+    } else if (this.isMultiplayer) {
+      this.server.to(this.id).emit('messageLobby', {
+        message: 'Game is over: winner ' + matchLog?.winner,
+        type: ChatMessageType.BOT,
+      });
+    }
+    this.serverUpdateClients();
+    this.server.to(this.owner.id).emit('gameOver', matchLog);
   }
-  
+
   private async saveMatch(matchLog: MatchDto) {
     return await this.userService.createMatchDB(matchLog);
   }
@@ -353,6 +496,7 @@ export class PongLobby {
     const pReady = pong4p?.getPlayersReady();
     let ret = {
       nbPlayer: this.listClients.size,
+      maxClients: this.maxClients,
       pLeftReady: pReady?.p1,
       pRightReady: pReady?.p2,
       gameState: this.status,
@@ -449,17 +593,18 @@ export class PongLobby {
   }
 
   public shuffle(array: string[]) {
-    var m = array.length, t, i;
-  
+    var m = array.length,
+      t,
+      i;
+
     while (m) {
-  
       i = Math.floor(Math.random() * m--);
-  
+
       t = array[m];
       array[m] = array[i];
       array[i] = t;
     }
-  
+
     return array;
   }
 }

@@ -15,6 +15,7 @@ import { PongLobby } from './pong.lobby';
 
 export type UpdateLobbyDto = {
   nbPlayer: number;
+  maxClients?: number;
   pLeftReady: boolean;
   pRightReady: boolean;
   pTopReady?: boolean;
@@ -114,7 +115,7 @@ export class PongLobbyLocal extends PongLobby {
     this.pongInstancePause(this.OwnerUser.pseudo);
   }
 
-  initTournament() {
+  override initTournament() {
     if (this.status !== GameState.INIT) return;
     this.server.to(this.id).emit('messageLobby', {
       message: 'tournament is starting',
@@ -130,7 +131,7 @@ export class PongLobbyLocal extends PongLobby {
     this.serverUpdateClients();
   }
 
-  nextMatch() {
+  override nextMatch() {
     if (this.status !== GameState.GAMEOVER) return;
     this.status = GameState.INIT;
     this.pongInstance = null;
@@ -234,17 +235,6 @@ export class PongLobbyLocal extends PongLobby {
     this.serverUpdateClients();
   }
 
-  private launchMatchTournament() {
-    const players = this.tournament.nextMatch();
-    if (!players) return false;
-    this.status = GameState.INIT;
-    console.info('launchMatchTournament', players);
-    this.pLeft = this.userMap.get(players[0]);
-    this.pRight = this.userMap.get(players[1]);
-    this.initMatch(this.pLeft, this.pRight);
-    return true;
-  }
-
   public override pongInstanceEnd(log: any) {
     const matchLog: MatchDto = {
       gameType: this.gameType,
@@ -338,15 +328,6 @@ export class PongLobbyLocal extends PongLobby {
       case EventGame.NEXT:
         return this.nextMatch();
     }
-  }
-
-  public getPlayers(): string[] {
-    const players = [];
-    for (const [key, value] of this.userMap.entries()) {
-      players.push(key);
-    }
-    console.info('getPlayers', players);
-    return players;
   }
 
   public isOwnerConnected(): boolean {

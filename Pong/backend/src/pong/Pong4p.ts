@@ -208,7 +208,8 @@ export class Pong4p extends Pong {
       scoreP3: this.pTop.lives,
       scoreP4: this.pBot.lives,
     };
-    return log;
+    const winnerPseudo = [this.pTop.name, this.pBot.name, this.pLeft.name, this.pRight.name][this.pAlive.findIndex((e) => e)];
+    return {...log, winnerPseudo: winnerPseudo};
   }
 
   public override getStateOfGame() {

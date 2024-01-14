@@ -90,8 +90,8 @@ const LogIn: React.FC = () => {
 			</>
 		);
 	};
-	async function signUp() {
-		return await axios.client
+	function signUp() {
+		axios.client
 			.post('auth/signup', { username: username, password: password })
 			.then(() => {
 				alert('User created');
@@ -99,6 +99,8 @@ const LogIn: React.FC = () => {
 			.catch((err: any) => {
 				setError(err.response?.data?.message);
 			});
+		setUsername('');
+		setPassword('');
 	}
 
 	async function logIn() {
@@ -116,6 +118,8 @@ const LogIn: React.FC = () => {
 			.catch((err: any) => {
 				setError(err.response?.data?.message);
 			});
+		setUsername('');
+		setPassword('');
 	}
 
 	async function twoFA() {

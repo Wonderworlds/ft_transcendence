@@ -31,8 +31,8 @@ export class ChatGateway{
   }
 
   @SubscribeMessage('joinChat')
-  handleJoinChat(@ConnectedSocket() client: ValidSocket, body?: {lobby: string}) {
-    console.info(`event [joinLobby]`, client.name);
+  handleJoinChat(@ConnectedSocket() client: ValidSocket, @Body() body?: {lobby: string}) {
+    console.info(`event [joinLobby]`, client.name, body?.lobby);
     if (body?.lobby) {
       this.chatService.sendNewUserMessage(body.lobby);
       client.join(body.lobby);
@@ -46,14 +46,16 @@ export class ChatGateway{
   }
 
   @SubscribeMessage('leaveChat')
-  handleLeaveChat(@ConnectedSocket() client: ValidSocket, body?: {lobby: string}) {
+  handleLeaveChat(@ConnectedSocket() client: ValidSocket, @Body() body?: {lobby: string}) {
     console.info(`event [joinLobby]`, client.name);
     if (body?.lobby) {
       client.leave(body.lobby);
       this.chatService.sendUserLeaveMessage(body.lobby);
       return;
     }
+    console.info(`event [leaveChat]`, client.name, client.rooms);
     client.leave('Mainchat');
     this.chatService.sendUserLeaveMessage('Mainchat');
+    console.info(`event [leaveChat]`, client.name, client.rooms);
   }
 }

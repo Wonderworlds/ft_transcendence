@@ -121,6 +121,7 @@ export class ChatService {
   }
 
   public sendNewUserMessage(lobby: string) {
+    console.info(`event [sendNewUserMessage]`, lobby);
     return this.websocketService.server.to(lobby).emit('messageLobby', {
       message: 'a new user joined the lobby',
       type: ChatMessageType.BOT,
@@ -128,6 +129,7 @@ export class ChatService {
   }
 
   public sendUserLeaveMessage(lobby: string) {
+    console.info(`event [sendUserLeaveMessage]`, lobby);
     return this.websocketService.server.to(lobby).emit('messageLobby', {
       message: 'a user left the lobby',
       type: ChatMessageType.BOT,
