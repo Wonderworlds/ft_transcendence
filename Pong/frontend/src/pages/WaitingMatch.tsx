@@ -12,7 +12,7 @@ const WaitingMatch: React.FC = () => {
 	const socket = socketContext.socket;
 	const navigate = useNavigate();
 	const [lobbyLocal, setLobbyLocal] = React.useState<LobbyDto>({} as LobbyDto);
-	const [lobbyRejoin, setLobbyRejoin] = React.useState<LobbyDto>({} as LobbyDto);
+	// const [lobbyRejoin, setLobbyRejoin] = React.useState<LobbyDto>({} as LobbyDto);
 	const [playLocalCB, setPlayLocalCB] = React.useState<string>('local0');
 	const [playOnlineCB, setPlayOnlineCB] = React.useState<string>('online0');
 
@@ -69,6 +69,20 @@ const WaitingMatch: React.FC = () => {
 		setState: setPlayOnlineCB,
 	};
 
+	// const lobbyRejoinElement = () => {
+	// 	{lobbyRejoin ? (
+	// 		<div className="divLobbyRejoin">
+	// 			<button
+	// 				onClick={() => {
+	// 					navigate(Pages.Pong);
+	// 				}}
+	// 			>
+	// 				Lobby Rejoin
+	// 			</button>
+	// 		</div>
+	// 	) : null}
+	// }
+
 	return (
 		<div className="waitingMatch">
 			<div className="divNav">
@@ -91,22 +105,11 @@ const WaitingMatch: React.FC = () => {
 								</button>
 							</div>
 						) : null}
-						{lobbyRejoin ? (
-							<div className="divLobbyRejoin">
-								<button
-									onClick={() => {
-										navigate(Pages.Pong);
-									}}
-								>
-									Lobby Rejoin
-								</button>
-							</div>
-						) : null}
 					</div>
 				</div>
 				<div className="divFindLobby">
 					<p>Lobby List</p>
-					<LobbyList setLobbyLocal={setLobbyLocal} setLobbyRejoin={setLobbyRejoin} />
+					<LobbyList setLobbyLocal={setLobbyLocal} />
 				</div>
 			</div>
 		</div>

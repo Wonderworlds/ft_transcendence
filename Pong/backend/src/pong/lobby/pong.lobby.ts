@@ -300,6 +300,24 @@ export class PongLobby {
       this.userMap.delete(client.name);
       return this.serverUpdateClients();
     }
+    console.info(
+      'removeClient',
+      'lastClient',
+      this.listClients.size,
+      this.away.size,
+      this.mapTimeout.size,
+    );
+    if (this.listClients.size - this.away.size - this.mapTimeout.size === 1) {
+      console.info(
+        'removeClient',
+        'lastClient',
+        this.listClients.size,
+        this.away.size,
+        this.mapTimeout.size,
+      );
+      this.status = GameState.AUTODESTRUCT;
+      this.destroyLobby(this.id);
+    }
     if (this.listClients.size === 1)
       return this.listClients.delete(client.name);
     if (
@@ -310,6 +328,7 @@ export class PongLobby {
       this.userMap.delete(client.name);
       return this.serverUpdateClients();
     }
+
     const id = setTimeout(() => {
       return this.removeClientCB(client);
     }, 1000 * 30);
@@ -735,7 +754,9 @@ export class PongLobby {
   }
 
   public getOwnerPseudo() {
-    return this.OwnerUser.pseudo;
+    if (this.OwnerUser)
+      return this.OwnerUser.pseudo;
+    return null;
   }
 
   public shuffle(array: string[]) {

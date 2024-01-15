@@ -6,24 +6,24 @@ import { Pages } from '../utils/types';
 
 interface LobbyListProps {
 	setLobbyLocal: React.Dispatch<React.SetStateAction<LobbyDto>>;
-	setLobbyRejoin: React.Dispatch<React.SetStateAction<LobbyDto>>;
 }
 
-const LobbyList: React.FC<LobbyListProps> = ({ setLobbyLocal, setLobbyRejoin }) => {
+const LobbyList: React.FC<LobbyListProps> = ({ setLobbyLocal }) => {
 	const socketContext = getSocket();
 	const socket = socketContext.socket;
 	const navigate = useNavigate();
 	const [lobbyList, setLobbyList] = React.useState<LobbyDto[]>([]);
+	const [lobbyRejoin, setLobbyRejoin] = React.useState<LobbyDto[]>([]);
 
 	React.useEffect(() => {
 		if (!socket) return;
 		socket.on(
 			'lobbyList',
-			(res: { lobbys: LobbyDto[]; lobbyLocal: LobbyDto; lobbyRejoin: LobbyDto }) => {
+			(res: { lobbys: LobbyDto[]; lobbyLocal: LobbyDto; lobbyRejoin: LobbyDto[] }) => {
 				console.log(res);
 				setLobbyList(res.lobbys);
-				setLobbyLocal(res.lobbyLocal);
 				setLobbyRejoin(res.lobbyRejoin);
+				setLobbyLocal(res.lobbyLocal);
 			}
 		);
 		socket.emit('getLobbys');
@@ -32,9 +32,9 @@ const LobbyList: React.FC<LobbyListProps> = ({ setLobbyLocal, setLobbyRejoin }) 
 		};
 	}, [socket]);
 
-	const lobbyElement = (lobby: LobbyDto) => {
+	const lobbyElement = (lobby: LobbyDto, rejoin: boolean) => {
 		let statusStyle;
-		if (lobby.status !== GameState.INIT)
+		if (rejoin)
 			statusStyle = {
 				backgroundColor: '#1d1b40e8',
 				border: '3px solid #80008049',
@@ -65,8 +65,11 @@ const LobbyList: React.FC<LobbyListProps> = ({ setLobbyLocal, setLobbyRejoin }) 
 	return (
 		// JSX code for your component's UI
 		<div className="divFindLobbyList">
+			{lobbyRejoin.map((lobby) => {
+				return lobbyElement(lobby, true);
+			})}
 			{lobbyList.map((lobby) => {
-				return lobbyElement(lobby);
+				return lobbyElement(lobby, false);
 			})}
 		</div>
 	);
