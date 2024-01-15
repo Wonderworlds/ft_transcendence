@@ -20,6 +20,9 @@ export class WebsocketService {
   }
 
   public addUser(@ConnectedSocket() newUser: ValidSocket): void {
+    const oldUser = this.users.get(newUser.name);
+    if (oldUser)
+      newUser.lobby = oldUser.lobby;
     this.users.set(newUser.name, newUser);
   }
 
