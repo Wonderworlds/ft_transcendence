@@ -40,6 +40,7 @@ export class PongLobby {
   private away: Map<string, LimitedUserDto> = new Map<string, LimitedUserDto>();
   @Inject()
   protected tournament: Tournament;
+  private matchlog: MatchDto = null;
   private readonly destroyLobby: (id: string) => void;
   //#endregion
 
@@ -75,6 +76,12 @@ export class PongLobby {
       this.isTournament = true;
       this.maxClients = 16;
     }
+    setTimeout(() => {
+      if (this.listClients.size === 0) {
+        this.status = GameState.AUTODESTRUCT;
+        this.destroyLobby(this.id);
+      }
+    }, 1000 * 5);
   }
 
   //#region ConnectionRegion
@@ -503,6 +510,7 @@ export class PongLobby {
     };
     console.info('game over', matchLog, this.id);
     this.status = GameState.GAMEOVER;
+    this.matchlog = matchLog;
     this.saveMatch(matchLog);
     if (this.isTournament || this.isClassic) {
       const winner =
@@ -518,7 +526,7 @@ export class PongLobby {
       }
     } else if (this.isMultiplayer) {
       this.server.to(this.id).emit('messageLobby', {
-        message: 'Game is over: winner ' + matchLog?.winner,
+        message: 'Game is over: winner ' + matchLog?.winnerPseudo,
         type: ChatMessageType.BOT,
       });
     }
@@ -658,6 +666,81 @@ export class PongLobby {
 
   //#endregion
 
+  //#region APIRegion
+
+  public getGameUpdate() {
+    if (!this.pongInstance) return null;
+    return this.pongInstance.getStateOfGame();
+  }
+
+  public getMatchLog() {
+    return this.matchlog;
+  }
+
+  public movePlayerCLI(
+    pseudo: string,
+    input: EventGame.UP | EventGame.DOWN | EventGame.LEFT | EventGame.RIGHT,
+  ) {
+    if (!this.pongInstance) return { sucess: false, error: 'no pongInstance' };
+    if (
+      this.isMultiplayer &&
+      (pseudo === this.pTop.pseudo ||
+        pseudo === this.pBot.pseudo ||
+        pseudo === this.pLeft.pseudo ||
+        pseudo === this.pRight.pseudo)
+    ) {
+      const pong4 = this.pongInstance as Pong4p;
+      pong4.onInput(input, pseudo);
+      return { sucess: true };
+    } else if (pseudo === this.pLeft.pseudo || pseudo === this.pRight.pseudo) {
+      if (input === EventGame.UP || input === EventGame.DOWN) {
+        this.pongInstance.onInput(
+          input as EventGame.UP | EventGame.DOWN,
+          pseudo,
+        );
+        return { sucess: true };
+      } else
+        return {
+          sucess: false,
+          error: 'wrong input UP and DOWN only in classic pong',
+        };
+    }
+    return { sucess: false, error: 'pseudo not found' };
+  }
+
+  public startGameCLI(pseudo: string) {
+    if (!this.pongInstance)
+      return { sucess: false, error: 'no pongInstance', status: 404 };
+    if (
+      pseudo === this.pLeft.pseudo ||
+      pseudo === this.pRight.pseudo ||
+      (this.isMultiplayer &&
+        (pseudo === this.pTop.pseudo || pseudo === this.pBot.pseudo))
+    ) {
+      if (this.pongInstance.startMatch(pseudo)) {
+        this.status = GameState.PLAYING;
+        this.serverUpdateClients();
+        return { sucess: true, msg: 'match has started' };
+      }
+      this.serverUpdateClients();
+      return { sucess: true, msg: 'some players are not ready' };
+    }
+    return { sucess: false, error: 'player not found' };
+  }
+
+  public getPlayerReady() {
+    if (!this.pongInstance) return { sucess: false, error: 'no pongInstance' };
+    return this.pongInstance.getPlayersReady();
+  }
+
+  public reMatchCLI() {
+    if (this.status !== GameState.GAMEOVER)
+      return { sucess: false, error: 'game is not over' };
+    this.nextMatch();
+    return { sucess: true };
+  }
+  //#endregion
+
   //#region UtilsRegion
 
   public getPlayers(): string[] {
@@ -754,8 +837,7 @@ export class PongLobby {
   }
 
   public getOwnerPseudo() {
-    if (this.OwnerUser)
-      return this.OwnerUser.pseudo;
+    if (this.OwnerUser) return this.OwnerUser.pseudo;
     return null;
   }
 

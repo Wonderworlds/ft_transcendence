@@ -6,7 +6,7 @@ import {
   ChatMessageType,
   EventGame,
   GameType,
-  ValidSocket,
+  ValidSocket
 } from 'src/utils/types';
 import { GameState, LimitedUserDto, MatchDto } from '../../utils/Dtos';
 import { Pong } from '../Pong';
