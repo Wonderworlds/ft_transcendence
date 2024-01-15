@@ -31,6 +31,7 @@ export class OtpService {
     const tsmp = new Date().getTime();
     const otpDB = this.otpRepository.create({
       ...otp,
+      createdAt: new Date(),
       expiresAt: new Date(tsmp + 5 * 60000),
     });
     return await this.otpRepository.save(otpDB);

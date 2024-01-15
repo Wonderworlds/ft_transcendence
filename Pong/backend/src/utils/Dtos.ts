@@ -47,11 +47,11 @@ export class TwoFADto {
 }
 
 export class UserDto {
-  @Length(3, 10)
+  @Length(3, 12)
   @IsAlphanumeric()
   username: string;
 
-  @Length(3, 10)
+  @Length(3, 12)
   @IsAlphanumeric()
   pseudo: string;
 

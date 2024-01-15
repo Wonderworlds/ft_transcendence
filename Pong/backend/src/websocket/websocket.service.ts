@@ -44,6 +44,14 @@ export class WebsocketService {
     return this.users.size;
   }
 
+  public getUsersFromLobby(lobbyId: string): string[] {
+    const users: string[] = [];
+    this.users.forEach((user) => {
+      if (user.rooms.has(lobbyId)) users.push(user.name);
+    });
+    return users;
+  }
+
   async validateJWT(token: string): Promise<UserJwt> {
     try {
       const payload = await this.jwtService.verifyAsync(token, {

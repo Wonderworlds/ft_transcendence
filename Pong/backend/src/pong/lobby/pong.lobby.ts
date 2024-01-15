@@ -295,7 +295,12 @@ export class PongLobby {
       this.destroyLobby(this.id);
     }
     if (this.listClients.size === 1)
-      return this.listClients.delete(client.name);
+    return this.listClients.delete(client.name);
+    if (this.status === GameState.INIT) {
+      this.listClients.delete(client.name);
+      this.userMap.delete(client.name);
+      return this.serverUpdateClients();
+    }
     const id = setTimeout(() => {
       return this.removeClientCB(client);
     }, 1000 * 30);

@@ -26,6 +26,9 @@ export class User {
 	@Column({nullable: true})
 	email: string;
 
+	@Column()
+	createdAt: Date;
+
 	@OneToOne(() => Otp)
 	@JoinColumn()
 	otp: Otp;
