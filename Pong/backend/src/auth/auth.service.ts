@@ -25,8 +25,8 @@ export class AuthService {
     private async validatePseudo(pseudo: string): Promise<string> {
       let found = await this.userService.findUserByPseudo(pseudo);
       let step = 0;
-      while (found || pseudo.length >= 12) {
-        if (pseudo.length >= 12)
+      while (found) {
+        if (pseudo.length + step.toString().length >= 12)
           pseudo = pseudo.substring(0, pseudo.length - step.toString().length);
         found = await this.userService.findUserByPseudo(pseudo + step.toString());
         if (!found)

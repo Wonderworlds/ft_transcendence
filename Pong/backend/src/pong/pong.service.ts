@@ -215,35 +215,43 @@ export class PongService {
     };
   }
 
+  private clientInRoom(@ConnectedSocket() client: ValidSocket) {
+    if (!client.lobby) {
+      client.lobby =
+        this.isClientOwner(client, this.listGameLocal) ||
+        this.isClientinRoom(client);
+    }
+    if (!client.lobby) return null;
+    const lobby =
+      this.listGameLocal.get(client.lobby) ||
+      this.listGameOnline.get(client.lobby) ||
+      this.listCustomGame.get(client.lobby);
+    if (lobby && lobby.listClients.has(client.name)) return lobby;
+  }
+
   async joinLobby(
     client: ValidSocket,
     body: LobbyIDDto,
   ): Promise<{ event: string; to: string[]; messagePayload: Object }> {
-    let lobbyRoomID =
-      this.isClientOwner(client, this.listGameLocal) ||
-      this.isClientinRoom(client);
-    if (!body.lobby && lobbyRoomID) {
-      const lobbyRoom =
-        this.listGameLocal.get(lobbyRoomID) ||
-        this.listGameOnline.get(lobbyRoomID) ||
-        this.listCustomGame.get(lobbyRoomID);
+    if (!body.lobby) {
+      const lobbyRoom = this.clientInRoom(client);
+      if (!lobbyRoom) {
+        return {
+          event: 'joinedLobby',
+          to: [client.id],
+          messagePayload: { id: '' },
+        };
+      }
       return {
         event: 'joinedLobby',
         to: [client.id],
         messagePayload: this.lobbyToLobbyDto(lobbyRoom),
       };
     }
-    lobbyRoomID = body.lobby;
-    if (!lobbyRoomID)
-      return {
-        event: 'joinedLobby',
-        to: [client.id],
-        messagePayload: { id: '' },
-      };
     const lobbyRoom =
-      this.listGameLocal.get(lobbyRoomID) ||
-      this.listGameOnline.get(lobbyRoomID) ||
-      this.listCustomGame.get(lobbyRoomID);
+      this.listGameLocal.get(body.lobby) ||
+      this.listGameOnline.get(body.lobby) ||
+      this.listCustomGame.get(body.lobby);
     if (!lobbyRoom)
       return {
         event: 'joinedLobby',

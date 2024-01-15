@@ -28,6 +28,7 @@ export type Success = {
 
 export type ValidSocket = Socket & {
   name: string;
+  lobby: string;
 };
 
 export enum lobbyProtection {

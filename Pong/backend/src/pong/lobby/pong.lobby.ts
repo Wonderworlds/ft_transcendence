@@ -15,7 +15,6 @@ import { Pong4p } from '../Pong4p';
 import { UpdateLobbyDto } from './pongLocal.lobby';
 
 export class PongLobby {
-
   //#region VariablesRegion
   public server: Server;
   public listClients = new Map<string, ValidSocket>();
@@ -43,7 +42,7 @@ export class PongLobby {
   protected tournament: Tournament;
   private readonly destroyLobby: (id: string) => void;
   //#endregion
-  
+
   constructor(
     id: string,
     server: Server,
@@ -85,6 +84,7 @@ export class PongLobby {
     user: LimitedUserDto,
   ) {
     client.join(this.id);
+    client.lobby = this.id;
     const oldClient = this.listClients.get(client.name);
     if (oldClient) return this.updateClient(client, oldClient, user);
     if (this.listClients.size === 0) {
@@ -165,18 +165,21 @@ export class PongLobby {
     }
     if (
       this.isClassic &&
+      this.status === GameState.INIT &&
       this.listClients.size >= 2 &&
       this.mapTimeout.size === 0
     ) {
       return this.initMatchStart();
     } else if (
       this.isMultiplayer &&
+      this.status === GameState.INIT &&
       this.listClients.size >= 4 &&
       this.mapTimeout.size === 0
     ) {
       return this.initMatchStart();
     } else if (
       this.isTournament &&
+      this.status === GameState.INIT &&
       this.listClients.size >= 4 &&
       this.mapTimeout.size === 0
     ) {
@@ -293,10 +296,16 @@ export class PongLobby {
         type: ChatMessageType.SERVER,
       });
       this.destroyLobby(this.id);
+      this.listClients.delete(client.name);
+      this.userMap.delete(client.name);
+      return this.serverUpdateClients();
     }
     if (this.listClients.size === 1)
-    return this.listClients.delete(client.name);
-    if (this.status === GameState.INIT) {
+      return this.listClients.delete(client.name);
+    if (
+      this.status === GameState.INIT ||
+      this.status === GameState.AUTODESTRUCT
+    ) {
       this.listClients.delete(client.name);
       this.userMap.delete(client.name);
       return this.serverUpdateClients();
@@ -632,7 +641,6 @@ export class PongLobby {
 
   //#region UtilsRegion
 
-  
   public getPlayers(): string[] {
     const players = [];
     for (const [key, value] of this.userMap.entries()) {
@@ -641,7 +649,7 @@ export class PongLobby {
     console.info('getPlayers', players);
     return players;
   }
-  
+
   getSize() {
     return this.listClients.size;
   }
