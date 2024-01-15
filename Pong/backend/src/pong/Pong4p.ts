@@ -74,14 +74,14 @@ class Ball4p extends Ball {
       this.position.x >= posTop.x &&
       this.position.x <= posTop.x + 12
     ) {
-      this.direction.y += 1;
+      this.direction.y = 1;
     } else if (
       this.position.y >= posBot.y - 2 &&
       this.dist(this.position.y, posBot.y - 2) < 1 &&
       this.position.x >= posBot.x &&
       this.position.x <= posBot.x + 12
     ) {
-      this.direction.y += -1;
+      this.direction.y = -1;
     }
   }
 }
