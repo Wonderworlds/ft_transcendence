@@ -13,14 +13,14 @@ import {
 } from 'class-validator';
 import { EventGame, GameType, Pos, Status } from './types';
 
+
 export enum GameState {
   INIT = 'init',
   START = 'waiting',
   PLAYING = 'playing',
   PAUSE = 'pause',
   GAMEOVER = 'gameover',
-	AUTODESTRUCT = 'autodestruct',
-
+  AUTODESTRUCT = 'autodestruct',
 }
 
 export type LobbyDto = {
@@ -172,6 +172,17 @@ export class AcceptDto {
 export class InputDto {
   @IsEnum(EventGame)
   input: EventGame;
+}
+
+enum InputMove {
+  UP = EventGame.UP,
+  DOWN = EventGame.DOWN,
+  LEFT = EventGame.LEFT,
+  RIGHT = EventGame.RIGHT,
+}
+export class InputCLIDto {
+  @IsEnum(InputMove)
+  input: InputMove;
 }
 
 export class messageLobbyDto {

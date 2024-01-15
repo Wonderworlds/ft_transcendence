@@ -159,7 +159,7 @@ export class Pong {
   protected server: Server;
   private ball = new Ball();
   protected running: boolean = true;
-  protected scoreEnd = 2;
+  protected scoreEnd = 10;
   protected p1: Player;
   protected p2: Player;
   protected lobby: PongLobby;

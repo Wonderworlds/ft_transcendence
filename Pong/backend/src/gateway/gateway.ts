@@ -10,6 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ChatGateway } from 'src/chat/chat.gateway';
+import { PongController } from 'src/pong/pong.controller';
 import { PongGateway } from 'src/pong/pong.gateway';
 import { PongService } from 'src/pong/pong.service';
 import { UsersService } from 'src/users/users.service';
@@ -33,6 +34,7 @@ export class Gateway
     private readonly pongGateway: PongGateway,
     private readonly chatGateway: ChatGateway,
     private readonly pongService: PongService,
+    private readonly pongController: PongController,
   ) {
   }
 
@@ -44,6 +46,8 @@ export class Gateway
     this.chatGateway.chatService.websocketService = this.websocketService;
     this.chatGateway.chatService.pongService = this.pongService;
     this.pongGateway.pongService = this.pongService;
+    this.pongController.pongService = this.pongService;
+
   }
   
   async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
@@ -64,7 +68,7 @@ export class Gateway
 
   async handleDisconnect(@ConnectedSocket() user: ValidSocket) {
     console.info(
-      `User ${user.name} | Disconnected to Gateway | wsID: ${user.id}`,
+      `User ${user.name} | Disconnected from Gateway | wsID: ${user.id}`,
       );
       this.websocketService.removeUser(user);
     this.userService.updateUserByUsername(user.name, {
