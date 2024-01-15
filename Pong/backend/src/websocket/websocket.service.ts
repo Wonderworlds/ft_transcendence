@@ -9,25 +9,31 @@ import { UserJwt, ValidSocket } from 'src/utils/types';
 export class WebsocketService {
   public server: Server;
   public users: Map<string, ValidSocket> = new Map<string, ValidSocket>();
-  public usersJWT: Map<string, NodeJS.Timeout> = new Map<string, NodeJS.Timeout>();
+  public usersJWT: Map<string, NodeJS.Timeout> = new Map<
+    string,
+    NodeJS.Timeout
+  >();
+  public usersRooms: Map<string, string> = new Map<string, string>();
 
-  constructor(
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   public getUser(username: string): ValidSocket | undefined {
     return this.users.get(username);
   }
 
   public addUser(@ConnectedSocket() newUser: ValidSocket): void {
-    const oldUser = this.users.get(newUser.name);
-    if (oldUser)
-      newUser.lobby = oldUser.lobby;
+    const oldLobby = this.usersRooms.get(newUser.name);
+    console.info(`event [addUser] ${newUser.name}`, oldLobby);
+    if (oldLobby) {
+      newUser.lobby = oldLobby;
+    }
     this.users.set(newUser.name, newUser);
+    this.usersRooms.delete(newUser.name);
   }
 
   public removeUser(user: ValidSocket) {
-    this.users.delete(user.name);
+      this.users.delete(user.name);
+      this.usersRooms.set(user.name, user.lobby);
   }
 
   public serverMessage(event: string, to?: string[], messagePayload?: Object) {
@@ -60,13 +66,18 @@ export class WebsocketService {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
-      const exp = payload.exp - (new Date().getTime() / 1000);
-      const id = setTimeout(() => {
-        const user = this.users.get(payload.user);
-        if (!user) return;
-          this.serverMessage('forcedDisconnect', [user.id], { message: 'JWT Expired' });
+      const exp = payload.exp - new Date().getTime() / 1000;
+      const id = setTimeout(
+        () => {
+          const user = this.users.get(payload.user);
+          if (!user) return;
+          this.serverMessage('forcedDisconnect', [user.id], {
+            message: 'JWT Expired',
+          });
           this.usersJWT.delete(payload.user);
-      }, 1000 * (exp + 1));
+        },
+        1000 * (exp + 1),
+      );
       const old = this.usersJWT.get(payload.user);
       if (old) clearTimeout(old);
       this.usersJWT.set(payload.user, id);

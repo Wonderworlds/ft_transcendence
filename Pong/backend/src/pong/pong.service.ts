@@ -41,7 +41,7 @@ export class PongService {
   getLobbys(client: ValidSocket): {
     lobbysDto: LobbyDto[];
     lobbyLocal: LobbyDto;
-    lobbyRejoin: LobbyDto;
+    lobbyRejoin: LobbyDto[];
   } {
     const lobbysDto: Array<LobbyDto> = [];
     let lobbyLocal: LobbyDto = null;
@@ -55,10 +55,7 @@ export class PongService {
       if (value.getSize() >= value.maxClients) continue;
       lobbysDto.push(this.lobbyToLobbyDto(value));
     }
-    const index = this.isClientinRoom(client);
-    let lobbyRejoin = null;
-    if (index)
-      lobbyRejoin = this.lobbyToLobbyDto(this.listGameOnline.get(index));
+    const lobbyRejoin: LobbyDto[] = this.isClientinRooms(client).map((e) => this.lobbyToLobbyDto(e));
     return { lobbysDto, lobbyLocal, lobbyRejoin };
   }
 
@@ -216,11 +213,7 @@ export class PongService {
   }
 
   private clientInRoom(@ConnectedSocket() client: ValidSocket) {
-    if (!client.lobby) {
-      client.lobby =
-        this.isClientOwner(client, this.listGameLocal) ||
-        this.isClientinRoom(client);
-    }
+    console.info('clientInRoom', client.name, client.lobby);
     if (!client.lobby) return null;
     const lobby =
       this.listGameLocal.get(client.lobby) ||
@@ -364,11 +357,12 @@ export class PongService {
     return false;
   }
 
-  private isClientinRoom(client: ValidSocket) {
+  private isClientinRooms(client: ValidSocket) : Array<PongLobby> {
+    const lobbys: PongLobby[] = [];
     for (const [key, value] of this.listGameOnline.entries()) {
-      if (value.listClients.has(client.name)) return key;
+      if (value.listClients.has(client.name)) lobbys.push(value);
     }
-    return '';
+    return lobbys;
   }
 
   private lobbyToLobbyDto(lobby: PongLobby | PongLobbyLocal): LobbyDto {
