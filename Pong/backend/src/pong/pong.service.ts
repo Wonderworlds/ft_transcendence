@@ -52,6 +52,18 @@ export class PongService {
     return lobby.reMatchCLI();
   }
 
+  pauseCli(lobbyID: string, pseudo: string) {
+    const lobby = this.getLobbyID(lobbyID);
+    if (!lobby) return {error: "Lobby not found", status: 404};
+    return lobby.onPauseCLI(pseudo);
+  }
+
+  unpauseCli(lobbyID: string, pseudo: string) {
+    const lobby = this.getLobbyID(lobbyID);
+    if (!lobby) return {error: "Lobby not found", status: 404};
+    return lobby.onUnpauseCLI(pseudo);
+  }
+
   getLobbysOpen(): LobbyDto[] {
     const lobbysDto: Array<LobbyDto> = [];
     for (const [key, value] of this.listGameOnline.entries()) {
@@ -330,6 +342,11 @@ export class PongService {
       return { to: [client.id], messagePayload: 'Pseudo already taken' };
     lobbyRoom.addClient(client, rest);
     return { to: [client.id], messagePayload: rest.pseudo + ' joined' };
+  }
+
+  public leaveDisconnect(@ConnectedSocket() client: ValidSocket) {
+    if (!client.lobby) return;
+    this.leaveLobby(client, {lobby: client.lobby});
   }
 
   private leaveLobbyOnline(

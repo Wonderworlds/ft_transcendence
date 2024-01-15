@@ -6,7 +6,7 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ChatGateway } from 'src/chat/chat.gateway';
@@ -35,8 +35,7 @@ export class Gateway
     private readonly chatGateway: ChatGateway,
     private readonly pongService: PongService,
     private readonly pongController: PongController,
-  ) {
-  }
+  ) {}
 
   afterInit(server: Server) {
     this.pongGateway.websocketService = this.websocketService;
@@ -47,11 +46,9 @@ export class Gateway
     this.chatGateway.chatService.pongService = this.pongService;
     this.pongGateway.pongService = this.pongService;
     this.pongController.pongService = this.pongService;
-
   }
-  
+
   async handleConnection(@ConnectedSocket() user: ValidSocket): Promise<void> {
-    
     user.name = user.handshake.query.name as string;
     const validUser = await this.websocketService.validateJWT(
       user.handshake.query['Authorization'] as string,
@@ -62,29 +59,33 @@ export class Gateway
     }
     this.websocketService.addUser(user);
     this.userService.updateUserById(validUser.userId, {
-        status: Status.Online,
-      });
+      status: Status.Online,
+    });
   }
 
   async handleDisconnect(@ConnectedSocket() user: ValidSocket) {
     console.info(
       `User ${user.name} | Disconnected from Gateway | wsID: ${user.id}`,
-      );
-      this.websocketService.removeUser(user);
+    );
+    this.websocketService.removeUser(user);
+    if (user.lobby) this.pongService.leaveDisconnect(user);
     this.userService.updateUserByUsername(user.name, {
       status: Status.Offline,
     });
   }
 
-  
   @SubscribeMessage('handshake')
   async handleHandshake(@ConnectedSocket() client: ValidSocket) {
-      console.info(
-        `User ${client.name} | Connected to Gateway | wsID: ${client.id}`,
-      );
-      const user = await this.userService.findUserByUsername(client.name);
-      const userDto = this.userService.userToDto(user);
-      this.websocketService.serverMessage('reconnect', [client.id], {user: userDto});
-      this.websocketService.users.forEach((user) => {console.info(user.name, user.connected);} );
+    console.info(
+      `User ${client.name} | Connected to Gateway | wsID: ${client.id}`,
+    );
+    const user = await this.userService.findUserByUsername(client.name);
+    const userDto = this.userService.userToDto(user);
+    this.websocketService.serverMessage('reconnect', [client.id], {
+      user: userDto,
+    });
+    this.websocketService.users.forEach((user) => {
+      console.info(user.name, user.connected);
+    });
   }
 }

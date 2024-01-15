@@ -194,6 +194,9 @@ export class PongLobby {
       console.info('addClient', 'tournamentIsReady');
       this.server.to(this.owner.id).emit('tournamentIsReady');
     }
+    if (this.status === GameState.PAUSE) {
+      this.pongInstanceUnpause(user.pseudo);
+    }
     console.info('updateClient', client.id, oldClient.id);
     this.updateMsg(client);
     this.serverUpdateClients();
@@ -286,6 +289,9 @@ export class PongLobby {
           ' is away, this lobby will selfdestruct after the game is over',
         type: ChatMessageType.SERVER,
       });
+      if (this.status === GameState.PAUSE) {
+        this.pongInstanceUnpause(user.pseudo);
+      }
       if (this.status === GameState.START) {
         this.awayAutoAccept(user.pseudo);
         this.serverUpdateClients();
@@ -324,6 +330,7 @@ export class PongLobby {
       );
       this.status = GameState.AUTODESTRUCT;
       this.destroyLobby(this.id);
+      return;
     }
     if (this.listClients.size === 1)
       return this.listClients.delete(client.name);
@@ -334,6 +341,10 @@ export class PongLobby {
       this.listClients.delete(client.name);
       this.userMap.delete(client.name);
       return this.serverUpdateClients();
+    }
+    if (this.status === GameState.PLAYING) {
+      const user = this.userMap.get(client.name);
+      this.pongInstancePause(user.pseudo);
     }
 
     const id = setTimeout(() => {
@@ -581,13 +592,11 @@ export class PongLobby {
   pongInstanceUnpause(pseudo: string) {
     if (!this.pongInstance) return;
     if (this.status !== GameState.PAUSE) return;
-    if (this.isClassic) {
+    if (this.isClassic || this.isTournament) {
       if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
       this.status = GameState.PLAYING;
       this.pongInstance.pause();
-      return;
-    }
-    if (this.isMultiplayer) {
+    } else if (this.isMultiplayer) {
       if (
         this.pLeft.pseudo !== pseudo &&
         this.pRight.pseudo !== pseudo &&
@@ -598,24 +607,18 @@ export class PongLobby {
       this.status = GameState.PLAYING;
       this.pongInstance.pause();
     }
+    this.serverUpdateClients();
   }
 
   pongInstancePause(pseudo: string) {
     if (!this.pongInstance) return;
-    console.info('pongInstancePause', this.status);
     if (this.status !== GameState.PLAYING) return;
-    console.info('pongInstancePause', this.status);
-    if (this.isClassic) {
-      console.info('pongInstancePause', this.status);
+    if (this.isClassic || this.isTournament) {
       if (this.pLeft.pseudo !== pseudo && this.pRight.pseudo !== pseudo) return;
       this.status = GameState.PAUSE;
       this.pongInstance.pause();
       console.info('pause', this.status);
-      return;
-    }
-    console.info('pongInstancePause', this.gameType);
-    if (this.isMultiplayer) {
-      console.info('pongInstancePause', this.status);
+    } else if (this.isMultiplayer) {
       if (
         this.pLeft.pseudo !== pseudo &&
         this.pRight.pseudo !== pseudo &&
@@ -627,6 +630,7 @@ export class PongLobby {
       this.status = GameState.PAUSE;
       this.pongInstance.pause();
     }
+    this.serverUpdateClients();
   }
 
   public onInput(
@@ -724,6 +728,44 @@ export class PongLobby {
       }
       this.serverUpdateClients();
       return { sucess: true, msg: 'some players are not ready' };
+    }
+    return { sucess: false, error: 'player not found' };
+  }
+
+  public onPauseCLI(pseudo: string) {
+    if (!this.pongInstance)
+      return { sucess: false, error: 'no pongInstance', status: 404 };
+    if (
+      pseudo === this.pLeft.pseudo ||
+      pseudo === this.pRight.pseudo ||
+      (this.isMultiplayer &&
+        (pseudo === this.pTop.pseudo || pseudo === this.pBot.pseudo))
+    ) {
+      if (this.status === GameState.PLAYING) {
+        this.status = GameState.PAUSE;
+        this.pongInstance.pause();
+        this.serverUpdateClients();
+        return { sucess: true, msg: 'game in pause' };
+      } else return { sucess: false, msg: 'game is not playing' };
+    }
+    return { sucess: false, error: 'player not found' };
+  }
+
+  public onUnpauseCLI(pseudo: string) {
+    if (!this.pongInstance)
+      return { sucess: false, error: 'no pongInstance', status: 404 };
+    if (
+      pseudo === this.pLeft.pseudo ||
+      pseudo === this.pRight.pseudo ||
+      (this.isMultiplayer &&
+        (pseudo === this.pTop.pseudo || pseudo === this.pBot.pseudo))
+    ) {
+      if (this.status === GameState.PAUSE) {
+        this.status = GameState.PLAYING;
+        this.pongInstance.pause();
+        this.serverUpdateClients();
+        return { sucess: true, msg: 'game resumed' };
+      } else return { sucess: false, msg: 'game is not in pause' };
     }
     return { sucess: false, error: 'player not found' };
   }
