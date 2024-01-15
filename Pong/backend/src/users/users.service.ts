@@ -29,6 +29,7 @@ export class UsersService {
   async createUserDB(user: SecureUserDto): Promise<User> {
     const newUser = this.userRepository.create({
       ...user,
+      createdAt: new Date(),
     });
     myDebug('createUserDB', newUser);
     return await this.userRepository.save(newUser);
@@ -42,6 +43,19 @@ export class UsersService {
     );
     if (!user) throw new BadRequestException('User Not Found');
     return user;
+  }
+
+  async getUsersPseudo(usernames: string[]) : Promise<Array<string>> {
+    const users = await this.userRepository.find({
+      select: ['pseudo', 'id', 'username'],
+    });
+    console.info('getUsersPseudo', usernames, users);
+    const ret = users.map((user) => {
+      if (usernames.includes(user.username))
+        return (user.pseudo);
+    });
+    console.info('getUsersPseudo', ret);
+    return ret;
   }
 
   async findUserByPseudo(pseudo: string): Promise<User> | undefined {
@@ -161,6 +175,7 @@ export class UsersService {
           winnerPseudo: winner.pseudo,
           winner: winner,
           loser: losers,
+          createdAt: new Date(),
         });
         console.info('createMatchDB', newMatch);
         return await this.matchRepository.save(newMatch);
@@ -173,6 +188,7 @@ export class UsersService {
         winner: winner,
         winnerPseudo: winner.pseudo,
         loser: loser,
+        createdAt: new Date(),
       });
       console.info('createMatchDB', newMatch);
       return await this.matchRepository.save(newMatch);

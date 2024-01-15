@@ -22,18 +22,24 @@ export class AuthService {
     private readonly otpService: OtpService,
   ) {}
 
+    private async validatePseudo(pseudo: string): Promise<string> {
+      let found = await this.userService.findUserByPseudo(pseudo);
+      let step = 0;
+      while (found || pseudo.length > 12) {
+        if (pseudo.length > 12)
+          pseudo = pseudo.substring(0, pseudo.length - step.toString().length);
+        found = await this.userService.findUserByPseudo(pseudo + step.toString());
+        if (!found)
+          return pseudo.concat(step.toString());
+        step++;
+      }
+      return pseudo;
+    }
+
   async createUser(userToLog: LogInUserDto): Promise<User> {
     let found = await this.userService.findUserByUsername(userToLog.username);
     if (found) throw new BadRequestException('Username is taken');
-    let pseudo: string = userToLog.username;
-    found = await this.userService.findUserByPseudo(pseudo);
-    let step = 0;
-    while (found) {
-      pseudo = pseudo.concat(step.toString());
-      found = await this.userService.findUserByPseudo(pseudo);
-      console.info(found);
-      step++;
-    }
+    const pseudo = await this.validatePseudo(userToLog.username);
     userToLog.password = await bcrypt.hash(userToLog.password, 10);
     const newUser: SecureUserDto = {
       ...userToLog,

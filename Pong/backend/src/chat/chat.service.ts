@@ -98,9 +98,11 @@ export class ChatService {
   }
 
   private readonly helpMessage = `/help : show this message
+  /users : show the list of users in the lobby
 	/block @pseudo : block a user
 	/unblock @pseudo : unblock a user
 	/invite @pseudo : invite a user to a custom game
+  /profile @pseudo : show the profile of a user
 	/addFriend @pseudo : add a user to your friend list`;
 
   private responseServer(
@@ -303,6 +305,16 @@ export class ChatService {
     });
   }
 
+  private async commandGetUsers(@ConnectedSocket() user: ValidSocket, lobby: string) {
+    console.info(`event [commandGetUsers]`, lobby);
+    const users = this.websocketService.getUsersFromLobby(lobby);
+    const usersPseudo = await this.userService.getUsersPseudo(users);
+    return this.websocketService.server.to(user.id).emit('messageLobby', {
+          message: usersPseudo.join(', '),
+          type: ChatMessageType.BOT,
+        });
+  }
+
   public sendCommandMessage(
     @ConnectedSocket() user: ValidSocket,
     body: messageLobbyDto,
@@ -316,6 +328,8 @@ export class ChatService {
           message: this.helpMessage,
           type: ChatMessageType.BOT,
         });
+      case 'users':
+        return this.commandGetUsers(user, body.lobby);
       case 'block':
         return this.commandBlock(user, msgSplit[1]);
       case 'unblock':
