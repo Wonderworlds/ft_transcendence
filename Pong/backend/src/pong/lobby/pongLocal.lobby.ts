@@ -73,7 +73,7 @@ export class PongLobbyLocal extends PongLobby {
       this.initMatch4p(this.pLeft, this.pRight, this.pTop, this.pBot);
       return;
     } else if (this.isTournament && this.listClients.size >= 4) {
-      if (this.listClients.size === 8) return this.initTournament();
+      if (this.listClients.size === 16) return this.initTournament();
       console.info('addClientLocal', 'tournamentIsReady');
       this.server.to(this.id).emit('tournamentIsReady');
     }
@@ -100,10 +100,10 @@ export class PongLobbyLocal extends PongLobby {
     if (oldClient.id !== client.id) {
       oldClient.leave(this.id);
       this.OwnerUser === user;
-      client.join(this.id);
       this.owner = client;
       this.listClients.set(user.pseudo, client);
     }
+    client.join(this.id);
     this.pongInstanceUnpause(this.OwnerUser.pseudo);
     this.serverUpdateClients();
     console.info('updateClientLocal', client.id, oldClient.id);
@@ -113,6 +113,7 @@ export class PongLobbyLocal extends PongLobby {
   override removeClient(@ConnectedSocket() client: ValidSocket) {
     console.info('removeClientLocal', client.name);
     this.ownerIsIn = false;
+    client.leave(this.id);
     this.pongInstancePause(this.OwnerUser.pseudo);
   }
 

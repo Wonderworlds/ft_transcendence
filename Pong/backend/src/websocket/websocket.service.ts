@@ -28,7 +28,6 @@ export class WebsocketService {
       newUser.lobby = oldLobby;
     }
     this.users.set(newUser.name, newUser);
-    this.usersRooms.delete(newUser.name);
   }
 
   public removeUser(user: ValidSocket) {

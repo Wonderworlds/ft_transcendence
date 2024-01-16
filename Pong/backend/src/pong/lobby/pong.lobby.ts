@@ -301,6 +301,8 @@ export class PongLobby {
 
   removeClient(@ConnectedSocket() client: ValidSocket): void | boolean {
     console.info('removeClient', client.id);
+    const user = this.listClients.get(client.name);
+    if (!user || user.id !== client.id) return console.info("removeClient", "Socket not known");
     client.leave(this.id);
     if (this.status === GameState.GAMEOVER) {
       this.status = GameState.AUTODESTRUCT;

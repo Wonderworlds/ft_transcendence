@@ -8,6 +8,7 @@ import { WebsocketService } from 'src/websocket/websocket.service';
 import { v4 as uuidv4 } from 'uuid';
 import { PongLobby } from './lobby/pong.lobby';
 import { PongLobbyLocal } from './lobby/pongLocal.lobby';
+import { cli } from 'webpack';
 
 @Injectable()
 export class PongService {
@@ -64,10 +65,11 @@ export class PongService {
     return lobby.onUnpauseCLI(pseudo);
   }
 
-  getLobbysOpen(): LobbyDto[] {
+  getLobbysOpen(@ConnectedSocket() client: ValidSocket): LobbyDto[] {
     const lobbysDto: Array<LobbyDto> = [];
     for (const [key, value] of this.listGameOnline.entries()) {
       if (value.getSize() >= value.maxClients) continue;
+      if (value.listClients.has(client.name)) continue;
       lobbysDto.push(this.lobbyToLobbyDto(value));
     }
     return lobbysDto;
@@ -98,7 +100,7 @@ export class PongService {
     lobbyLocal: LobbyDto;
     lobbyRejoin: LobbyDto[];
   } {
-    const lobbysDto: Array<LobbyDto> = this.getLobbysOpen();
+    const lobbysDto: Array<LobbyDto> = this.getLobbysOpen(client);
     let lobbyLocal: LobbyDto = null;
     for (const [key, value] of this.listGameLocal.entries()) {
       if (value.getOwner().name === client.name) {
