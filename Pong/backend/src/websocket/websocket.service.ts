@@ -31,6 +31,8 @@ export class WebsocketService {
   }
 
   public removeUser(user: ValidSocket) {
+      const client = this.users.get(user.name)
+      if (client.id !== user.id)  return ;
       this.users.delete(user.name);
       this.usersRooms.set(user.name, user.lobby);
   }

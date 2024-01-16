@@ -2,7 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
-import { AcceptLobbyDto, CreateCustomLobbyDto, CreateLobbyDto, GameState, InputLobbyDto, LobbyDto, LobbyIDDto, UserLobbyDto } from 'src/utils/Dtos';
+import {
+  AcceptLobbyDto,
+  CreateCustomLobbyDto,
+  CreateLobbyDto,
+  GameState,
+  InputLobbyDto,
+  LobbyDto,
+  LobbyIDDto,
+  UserLobbyDto,
+} from 'src/utils/Dtos';
 import { EventGame, GameType, ValidSocket } from 'src/utils/types';
 import { WebsocketService } from 'src/websocket/websocket.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,44 +40,62 @@ export class PongService {
   }
 
   movePaddleCli(lobbyID: string, pseudo: string, input: unknown) {
-    console.info('movePaddleCli', pseudo, lobbyID, input, EventGame.UP, EventGame.DOWN, EventGame.LEFT, EventGame.RIGHT);
+    console.info(
+      'movePaddleCli',
+      pseudo,
+      lobbyID,
+      input,
+      EventGame.UP,
+      EventGame.DOWN,
+      EventGame.LEFT,
+      EventGame.RIGHT,
+    );
     const lobby = this.getLobbyID(lobbyID);
-		if (!lobby) return {error: "Lobby not found", status: 404};
-		if (lobby.status !== GameState.PLAYING) return {error: "Pong not started", status: 400}
-    const res = lobby.movePlayerCLI(pseudo, input as EventGame.UP | EventGame.DOWN | EventGame.LEFT | EventGame.RIGHT);
+    if (!lobby) return { error: 'Lobby not found', status: 404 };
+    if (lobby.status !== GameState.PLAYING)
+      return { error: 'Pong not started', status: 400 };
+    const res = lobby.movePlayerCLI(
+      pseudo,
+      input as EventGame.UP | EventGame.DOWN | EventGame.LEFT | EventGame.RIGHT,
+    );
     if (res.sucess) return lobby.getGameUpdate();
-    return {error: res.error, status: 400};
+    return { error: res.error, status: 400 };
   }
 
   startCLI(lobbyID: string, pseudo: string) {
     const lobby = this.getLobbyID(lobbyID);
-    if (!lobby) return {error: "Lobby not found", status: 404};
-    if (lobby.status !== GameState.START) return {error: "Pong is not ready to start", status: 400}
+    if (!lobby) return { error: 'Lobby not found', status: 404 };
+    if (lobby.status !== GameState.START)
+      return { error: 'Pong is not ready to start', status: 400 };
     return lobby.startGameCLI(pseudo);
   }
 
   reMatchCLI(lobbyID: string) {
     const lobby = this.getLobbyID(lobbyID);
-    if (!lobby) return {error: "Lobby not found", status: 404};
+    if (!lobby) return { error: 'Lobby not found', status: 404 };
     return lobby.reMatchCLI();
   }
 
   pauseCli(lobbyID: string, pseudo: string) {
     const lobby = this.getLobbyID(lobbyID);
-    if (!lobby) return {error: "Lobby not found", status: 404};
+    if (!lobby) return { error: 'Lobby not found', status: 404 };
     return lobby.onPauseCLI(pseudo);
   }
 
   unpauseCli(lobbyID: string, pseudo: string) {
     const lobby = this.getLobbyID(lobbyID);
-    if (!lobby) return {error: "Lobby not found", status: 404};
+    if (!lobby) return { error: 'Lobby not found', status: 404 };
     return lobby.onUnpauseCLI(pseudo);
   }
 
   getLobbysOpen(@ConnectedSocket() client: ValidSocket): LobbyDto[] {
     const lobbysDto: Array<LobbyDto> = [];
     for (const [key, value] of this.listGameOnline.entries()) {
-      if (value.getSize() >= value.maxClients) continue;
+      if (
+        value.getSize() >= value.maxClients ||
+        value.status !== GameState.INIT
+      )
+        continue;
       if (value.listClients.has(client.name)) continue;
       lobbysDto.push(this.lobbyToLobbyDto(value));
     }
@@ -77,7 +104,7 @@ export class PongService {
 
   getPlayerReady(lobbyID: string) {
     const lobby = this.getLobbyID(lobbyID);
-    if (!lobby) return {error: "Lobby not found", status: 404};
+    if (!lobby) return { error: 'Lobby not found', status: 404 };
     return lobby.getPlayerReady();
   }
 
@@ -108,7 +135,11 @@ export class PongService {
         break;
       }
     }
-    const lobbyRejoin: LobbyDto[] = this.isClientinRooms(client).map((e) => this.lobbyToLobbyDto(e));
+    const lobbyRejoin: LobbyDto[] = [];
+    this.isClientinRooms(client).forEach((e) => {
+      if (e.status !== GameState.AUTODESTRUCT)
+        lobbyRejoin.push(this.lobbyToLobbyDto(e));
+    });
     return { lobbysDto, lobbyLocal, lobbyRejoin };
   }
 
@@ -348,7 +379,7 @@ export class PongService {
 
   public leaveDisconnect(@ConnectedSocket() client: ValidSocket) {
     if (!client.lobby) return;
-    this.leaveLobby(client, {lobby: client.lobby});
+    this.leaveLobby(client, { lobby: client.lobby });
   }
 
   private leaveLobbyOnline(
@@ -415,7 +446,7 @@ export class PongService {
     return false;
   }
 
-  private isClientinRooms(client: ValidSocket) : Array<PongLobby> {
+  private isClientinRooms(client: ValidSocket): Array<PongLobby> {
     const lobbys: PongLobby[] = [];
     for (const [key, value] of this.listGameOnline.entries()) {
       if (value.listClients.has(client.name)) lobbys.push(value);
