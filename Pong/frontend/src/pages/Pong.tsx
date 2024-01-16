@@ -47,23 +47,26 @@ const Pong: React.FC = () => {
 	};
 
 	const handleKeyPress = () => {
+		const inputs : EventGame[] = [];
 		if (pressedKeys.has('ArrowUp')) {
-			sendInput(EventGame.ARROW_UP);
+			inputs.push(EventGame.ARROW_UP);
 		}
 		if (pressedKeys.has('ArrowDown')) {
-			sendInput(EventGame.ARROW_DOWN);
+			inputs.push(EventGame.ARROW_DOWN);
 		}
 		if (pressedKeys.has('s')) {
-			sendInput(EventGame.S_KEY);
+			inputs.push(EventGame.S_KEY);
 		}
 		if (pressedKeys.has('w')) {
-			sendInput(EventGame.W_KEY);
+			inputs.push(EventGame.W_KEY);
 		}
+		if (inputs.length > 0)
+			sendInput(inputs)
 	};
 
-	function sendInput(input: EventGame) {
+	function sendInput(inputs: EventGame[]) {
 		if (socket && socketContext.lobby && user.pseudo)
-			socket.emit('input', { lobby: socketContext.lobby, input: input, pseudo: user.pseudo });
+			socket.emit('inputs', { inputs: inputs, lobby: socketContext.lobby, pseudo: user.pseudo });
 	}
 
 	window.requestAnimationFrame(gameLoop);

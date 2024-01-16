@@ -10,6 +10,7 @@ import {
   CreateCustomLobbyDto,
   CreateLobbyDto,
   InputLobbyDto,
+  InputsLobbyDto,
   LobbyIDDto,
   UserLobbyDto,
 } from 'src/utils/Dtos';
@@ -108,6 +109,15 @@ export class PongGateway {
     @Body() body: InputLobbyDto,
   ) {
     this.pongService.inputReceived(client, body);
+  }
+
+
+  @SubscribeMessage('inputs')
+  onInputsReceived(
+    @ConnectedSocket() client: ValidSocket,
+    @Body() body: InputsLobbyDto,
+  ) {
+    this.pongService.inputsReceived(client, body);
   }
 
   @SubscribeMessage('addClientLocal')

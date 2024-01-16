@@ -7,7 +7,7 @@ import { PongLobby } from './lobby/pong.lobby';
 export class Ball {
   protected position: Pos = { x: 50, y: 50 };
   protected direction: Pos;
-  protected speed = 0.8;
+  protected speed = 1;
 
   constructor() {
     this.setDirection(this.normalize(this.getRandomDirection()));
@@ -159,7 +159,7 @@ export class Pong {
   protected server: Server;
   private ball = new Ball();
   protected running: boolean = true;
-  protected scoreEnd = 10;
+  protected scoreEnd = 5;
   protected p1: Player;
   protected p2: Player;
   protected lobby: PongLobby;
@@ -194,7 +194,7 @@ export class Pong {
   }
 
   loop = () => {
-    setTimeout(this.loop, 1000 / 48);
+    setTimeout(this.loop, 1000 / 32);
     if (!this.running) return;
     this.ball.move(this.p1, this.p2);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());

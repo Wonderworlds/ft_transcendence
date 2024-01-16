@@ -1,6 +1,7 @@
 import { IntersectionType, PickType } from '@nestjs/mapped-types';
 import {
   IsAlphanumeric,
+  IsArray,
   IsBoolean,
   IsDate,
   IsEmail,
@@ -174,6 +175,12 @@ export class InputDto {
   input: EventGame;
 }
 
+
+export class InputsDto {
+  @IsEnum(EventGame, {each: true})
+  inputs: EventGame[];
+}
+
 enum InputMove {
   UP = EventGame.UP,
   DOWN = EventGame.DOWN,
@@ -206,6 +213,7 @@ export class PseudoLobbyDto extends IntersectionType(
   UserDtoPseudo,
 ) {}
 export class InputLobbyDto extends IntersectionType(InputDto, PseudoLobbyDto) {}
+export class InputsLobbyDto extends IntersectionType(InputsDto, PseudoLobbyDto) {}
 export class UserLobbyDto extends IntersectionType(
   LobbyIDDto,
   LimitedUserDto,

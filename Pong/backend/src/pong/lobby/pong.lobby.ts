@@ -670,6 +670,33 @@ export class PongLobby {
     }
   }
 
+  public onInputs(
+    @ConnectedSocket() client: ValidSocket,
+    inputs: EventGame[],
+    pseudo: string,
+  ) {
+    inputs.forEach(input => {
+      switch (input) {
+        case EventGame.ARROW_UP:
+          return this.inputGame(EventGame.UP, pseudo);
+        case EventGame.ARROW_DOWN:
+          return this.inputGame(EventGame.DOWN, pseudo);
+        case EventGame.W_KEY:
+          return this.inputGame(EventGame.UP, pseudo);
+        case EventGame.S_KEY:
+          return this.inputGame(EventGame.DOWN, pseudo);
+        case EventGame.ARROW_LEFT:
+          return this.inputGame4P(EventGame.LEFT, pseudo);
+        case EventGame.ARROW_RIGHT:
+          return this.inputGame4P(EventGame.RIGHT, pseudo);
+        case EventGame.A_KEY:
+          return this.inputGame4P(EventGame.LEFT, pseudo);
+        case EventGame.D_KEY:
+          return this.inputGame4P(EventGame.RIGHT, pseudo);
+      }
+    })
+  }
+
   //#endregion
 
   //#region APIRegion

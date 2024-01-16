@@ -8,6 +8,7 @@ import {
   CreateLobbyDto,
   GameState,
   InputLobbyDto,
+  InputsLobbyDto,
   LobbyDto,
   LobbyIDDto,
   UserLobbyDto,
@@ -130,7 +131,7 @@ export class PongService {
     const lobbysDto: Array<LobbyDto> = this.getLobbysOpen(client);
     let lobbyLocal: LobbyDto = null;
     for (const [key, value] of this.listGameLocal.entries()) {
-      if (value.getOwner().name === client.name) {
+      if (value.getOwner().name === client.name && value.status !== GameState.AUTODESTRUCT) {
         lobbyLocal = this.lobbyToLobbyDto(value);
         break;
       }
@@ -361,6 +362,16 @@ export class PongService {
       this.listCustomGame.get(body.lobby);
     if (!lobby) return;
     lobby.onInput(client, body.input, body.pseudo);
+  }
+
+
+  inputsReceived(client: ValidSocket, body: InputsLobbyDto) {
+    const lobby =
+      this.listGameLocal.get(body.lobby) ||
+      this.listGameOnline.get(body.lobby) ||
+      this.listCustomGame.get(body.lobby);
+    if (!lobby) return;
+    lobby.onInputs(client, body.inputs, body.pseudo);
   }
 
   addClientLocal(

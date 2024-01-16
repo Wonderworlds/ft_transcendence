@@ -60,35 +60,37 @@ const Pong4P: React.FC = () => {
 	};
 
 	const handleKeyPress = () => {
+		const inputs: EventGame[] = [];
 		if (pressedKeys.has('ArrowUp')) {
-			sendInput(EventGame.ARROW_UP);
+			inputs.push(EventGame.ARROW_UP);
 		}
 		if (pressedKeys.has('ArrowDown')) {
-			sendInput(EventGame.ARROW_DOWN);
+			inputs.push(EventGame.ARROW_DOWN);
 		}
 		if (pressedKeys.has('s')) {
-			sendInput(EventGame.S_KEY);
+			inputs.push(EventGame.S_KEY);
 		}
 		if (pressedKeys.has('w')) {
-			sendInput(EventGame.W_KEY);
+			inputs.push(EventGame.W_KEY);
 		}
 		if (pressedKeys.has('ArrowLeft')) {
-			sendInput(EventGame.ARROW_LEFT);
+			inputs.push(EventGame.ARROW_LEFT);
 		}
 		if (pressedKeys.has('ArrowRight')) {
-			sendInput(EventGame.ARROW_RIGHT);
+			inputs.push(EventGame.ARROW_RIGHT);
 		}
 		if (pressedKeys.has('d')) {
-			sendInput(EventGame.D_KEY);
+			inputs.push(EventGame.D_KEY);
 		}
 		if (pressedKeys.has('a')) {
-			sendInput(EventGame.A_KEY);
+			inputs.push(EventGame.A_KEY);
 		}
+		sendInput(inputs);
 	};
 
-	function sendInput(input: EventGame) {
+	function sendInput(inputs: EventGame[]) {
 		if (socket && socketContext.lobby && user.pseudo)
-			socket.emit('input', { lobby: socketContext.lobby, input: input, pseudo: user.pseudo });
+			socket.emit('inputs', { lobby: socketContext.lobby, inputs: inputs, pseudo: user.pseudo });
 	}
 
 	window.requestAnimationFrame(gameLoop);

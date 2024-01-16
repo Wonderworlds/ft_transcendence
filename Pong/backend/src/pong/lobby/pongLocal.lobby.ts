@@ -6,7 +6,7 @@ import {
   ChatMessageType,
   EventGame,
   GameType,
-  ValidSocket
+  ValidSocket,
 } from 'src/utils/types';
 import { GameState, LimitedUserDto, MatchDto } from '../../utils/Dtos';
 import { Pong } from '../Pong';
@@ -266,7 +266,7 @@ export class PongLobbyLocal extends PongLobby {
         this.winners = [];
         this.launchMatchTournament();
       }
-      return ;
+      return;
     }
     this.server.to(this.id).emit('gameOver', matchLog);
     this.serverUpdateClients();
@@ -330,6 +330,32 @@ export class PongLobbyLocal extends PongLobby {
       case EventGame.NEXT:
         return this.nextMatch();
     }
+  }
+  override onInputs(
+    @ConnectedSocket() client: ValidSocket,
+    inputs: EventGame[],
+    pseudo: string,
+  ) {
+    inputs.forEach((input) => {
+      switch (input) {
+        case EventGame.ARROW_UP:
+          return this.inputGameLocal(EventGame.UP, pseudo, false);
+        case EventGame.ARROW_DOWN:
+          return this.inputGameLocal(EventGame.DOWN, pseudo, false);
+        case EventGame.W_KEY:
+          return this.inputGameLocal(EventGame.UP, pseudo, true);
+        case EventGame.S_KEY:
+          return this.inputGameLocal(EventGame.DOWN, pseudo, true);
+        case EventGame.ARROW_LEFT:
+          return this.inputGameLocal4P(EventGame.LEFT, pseudo, false);
+        case EventGame.ARROW_RIGHT:
+          return this.inputGameLocal4P(EventGame.RIGHT, pseudo, false);
+        case EventGame.A_KEY:
+          return this.inputGameLocal4P(EventGame.LEFT, pseudo, true);
+        case EventGame.D_KEY:
+          return this.inputGameLocal4P(EventGame.RIGHT, pseudo, true);
+      }
+    });
   }
 
   public isOwnerConnected(): boolean {
