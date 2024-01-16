@@ -1,9 +1,9 @@
 version: "3.8"
 services:
  pong_docker:
-    image: node:latest
     #user: 501:20  a adapter en fonction de l'env
     container_name: pong_container
+    build: ./
     depends_on:
       - postgres_docker
     env_file:
@@ -12,9 +12,7 @@ services:
       - 3000:3000
       - 8080:8080
     volumes:
-      - type: bind
-        source: ./Pong
-        target: /srv/app
+      - /srv/app
     restart: always
     working_dir: /srv/app/
     entrypoint: /bin/bash init.bash
@@ -36,14 +34,6 @@ services:
         - /var/lib/postgresql #pgdata:    a replacer devant /var et remettre volumes
     networks:
       - transcendence
-
-#volumes:
-#   pgdata:
-#     driver: local
-#     driver_opts:
-#     type: none
-#     device: ./postgresql
-#     o: bind
 
 networks:
   transcendence:

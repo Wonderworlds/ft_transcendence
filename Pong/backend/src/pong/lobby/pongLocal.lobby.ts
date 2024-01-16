@@ -171,22 +171,7 @@ export class PongLobbyLocal extends PongLobby {
       message: 'match is starting',
       type: ChatMessageType.BOT,
     });
-    this.server.to(this.id).emit('messageLobby', {
-      message: 'pleft: ' + pleft.pseudo,
-      type: ChatMessageType.BOT,
-    });
-    this.server.to(this.id).emit('messageLobby', {
-      message: 'pright: ' + pright.pseudo,
-      type: ChatMessageType.BOT,
-    });
-    this.server.to(this.id).emit('messageLobby', {
-      message: 'ptop: ' + ptop.pseudo,
-      type: ChatMessageType.BOT,
-    });
-    this.server.to(this.id).emit('messageLobby', {
-      message: 'pbot: ' + pbot.pseudo,
-      type: ChatMessageType.BOT,
-    });
+    this.sendClientPlayer(this.id);
   }
 
   initMatch(pleft: LimitedUserDto, pright: LimitedUserDto) {

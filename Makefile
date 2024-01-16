@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: thbierne <thbierne@student.42.fr>          +#+  +:+       +#+         #
+#    By: fmauguin <fmauguin@student.42.fr >         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/11 21:40:38 by fmauguin          #+#    #+#              #
-#    Updated: 2024/01/13 14:43:46 by thbierne         ###   ########.fr        #
+#    Updated: 2024/01/16 16:07:15 by fmauguin         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ clean: stop down
 
 fclean: clean
 	-docker system prune --force --all
-	-sudo rm -rf ${vol_db} front/node_modules back/node_modules
+	-rm -rf ${vol_db} front/node_modules back/node_modules
 stop:
 	-docker stop $$(docker ps -qa)
 
