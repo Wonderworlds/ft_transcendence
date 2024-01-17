@@ -41,7 +41,7 @@ export class PongLobby {
   @Inject()
   protected tournament: Tournament;
   private matchlog: MatchDto = null;
-  private readonly destroyLobby: (id: string) => void;
+  protected readonly destroyLobby: (id: string) => void;
   //#endregion
 
   constructor(

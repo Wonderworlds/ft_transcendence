@@ -48,6 +48,7 @@ export class PongLobbyLocal extends PongLobby {
   ) {
     const oldClient = this.listClients.get(user.pseudo);
     if (oldClient && user.pseudo !== this.OwnerUser.pseudo) return;
+    client.lobby = this.id;
     if (oldClient) return this.updateClient(client, oldClient, user);
     if (this.listClients.size >= this.maxClients) return;
     if (this.listClients.size === 0) {
@@ -114,6 +115,12 @@ export class PongLobbyLocal extends PongLobby {
     console.info('removeClientLocal', client.name);
     this.ownerIsIn = false;
     client.leave(this.id);
+    const id = setTimeout(() => {
+      if (this.ownerIsIn)
+      return;
+      this.status=== GameState.AUTODESTRUCT;
+      this.destroyLobby(this.id);
+    }, 1000 * 20);
     this.pongInstancePause(this.OwnerUser.pseudo);
   }
 

@@ -50,9 +50,10 @@ export class UsersService {
       select: ['pseudo', 'id', 'username'],
     });
     console.info('getUsersPseudo', usernames, users);
-    const ret = users.map((user) => {
+    const ret : string[] = [];
+    users.forEach((user) => {
       if (usernames.includes(user.username))
-        return (user.pseudo);
+      ret.push(user.pseudo);
     });
     console.info('getUsersPseudo', ret);
     return ret;

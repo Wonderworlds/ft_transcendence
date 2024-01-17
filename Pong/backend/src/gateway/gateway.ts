@@ -80,6 +80,7 @@ export class Gateway
       `User ${client.name} | Connected to Gateway | wsID: ${client.id}`,
     );
     const user = await this.userService.findUserByUsername(client.name);
+    if (!user) return this.server.to(client.id).emit('forcedDisconnect');
     const userDto = this.userService.userToDto(user);
     this.websocketService.serverMessage('reconnect', [client.id], {
       user: userDto,

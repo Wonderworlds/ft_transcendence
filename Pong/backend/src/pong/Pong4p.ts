@@ -9,7 +9,7 @@ class Ball4p extends Ball {
   constructor(handleDeath: (zone: 'TOP' | 'BOT' | 'LEFT' | 'RIGHT') => void) {
     super();
     this.handleDeath = handleDeath;
-    this.speed = 1.5;
+    this.speed = 0.8;
   }
 
   public move4P(
@@ -230,7 +230,7 @@ export class Pong4p extends Pong {
   }
 
   override loop = () => {
-    setTimeout(this.loop, 1000 / 32);
+    setTimeout(this.loop, 1000 / 48);
     if (!this.running) return;
     this.ball4p.move4P(this.pLeft, this.pRight, this.pTop, this.pBot);
     this.server.to(this.id).emit('updateGame', this.getStateOfGame());
