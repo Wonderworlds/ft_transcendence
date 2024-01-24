@@ -290,6 +290,13 @@ export class PongLobby {
     console.info('removeClient', client.id);
     const user = this.listClients.get(client.name);
     if (!user || user.id !== client.id) return console.info("removeClient", "Socket not known");
+    else if (user.id === client.id)
+    {
+      const away = this.away.get(client.name)
+      const hasTimeout = this.mapTimeout.get(client.name);
+      if (away || hasTimeout) return console.info("removeClient", "client already left");
+    }
+      
     client.leave(this.id);
     if (this.status === GameState.GAMEOVER) {
       this.status = GameState.AUTODESTRUCT;
