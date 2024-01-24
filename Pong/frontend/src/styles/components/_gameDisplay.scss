@@ -1,103 +1,85 @@
 .headerGameDisplay {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: row;
+  background-color: rgba(0, 0, 0, 0.612);
 
-	display: flex;
-	width: 100%;
-	height: 100%;
-	flex-direction: row;
-	background-color: rgba(0, 0, 0, 0.612);
+  .display {
+    display: flex;
+    width: 71%;
+    height: 100%;
 
-		.display {
+    flex-direction: column;
+  }
 
-			display: flex;
-			width: 71%;
-			height: 100%;
+  .displayGame {
+    display: flex;
+    width: 100%;
+    height: 85%;
+    background-color: black;
+    border-bottom: 2px solid white;
+  }
 
-			flex-direction: column;
+  .divGameInfo {
+    display: flex;
+    width: 100%;
+    height: 15%;
+    flex-direction: row;
+    min-width: 900px;
+  }
+  .displayTypeGame {
+    display: flex;
+    width: 30%;
+    height: 100%;
 
-		}
+    flex-direction: column;
+    align-items: start;
+    justify-content: space-around;
+    margin-left: 1%;
+    h1 {
+      font-family: 'inter';
+      color: white;
+      font-size: clamp(10px, 2vw, 30px);
+    }
+  }
+  .RightDisplayTypeGame {
+    display: flex;
+    width: 70%;
+    height: 100%;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+  }
+  .divTitleReady {
+    display: flex;
+    width: 100%;
+    height: 50%;
+    align-self: center;
+    > p {
+      font-family: Inter;
+      color: white;
+      font-size: clamp(20px, 5vw, 40px);
+    }
+  }
 
-		.displayGame {
-
-			display: flex;
-			width: 100%;
-			height: 85%;
-			background-color: black;
-			border-bottom: 2px solid white;
-			
-
-		}
-
-
-		.divGameInfo {
-			display: flex;
-			width: 100%;
-			height: 15%;
-			flex-direction: row;
-			min-width: 900px;
-		}
-		.displayTypeGame {
-
-			display: flex;
-			width: 30%;
-			height: 100%;
-
-			flex-direction: column;
-			align-items: start;
-			justify-content: space-around;
-			margin-left: 1%;
-			h1 {
-
-				font-family: "inter";
-				color: white;
-				font-size: clamp(10px, 2vw, 30px);
-			}
-		}
-			.RightDisplayTypeGame {
-				
-				display: flex;
-				width: 70%;
-				height: 100%;
-				align-items: center;
-				justify-content: space-around;
-				flex-direction: row;
-
-			}
-				.divTitleReady {
-
-					display: flex;
-					width: 100%;
-					height: 50%;
-					align-self: center;
-					> p {
-						font-family: Inter;
-						color: white;
-						font-size: clamp(20px, 5vw, 40px);
-					}
-				}
-
-
-		#buttonGamePong {
-
-			color: white;
-			font-family: "Inter";
-			font-size: clamp(10px, 2vw, 20px);
-			width: auto;
-			height: auto;
-			background-color: rgba(0, 0, 0, 0.612);
-			border: 2px solid white;
-			&:active {
-
-				background-color: rgba($color: red, $alpha: 0.8);
-				border-color: brown;
-
-			}
-
-		}
-		.divChat {
-
-			display: flex;
-			width: 30%;
-			height: 100%;
-			border-left: 2px solid white;
-		}
-	}
+  #buttonGamePong {
+    color: white;
+    font-family: 'Inter';
+    font-size: clamp(10px, 2vw, 20px);
+    width: auto;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.612);
+    border: 2px solid white;
+    &:active {
+      background-color: rgba($color: red, $alpha: 0.8);
+      border-color: brown;
+    }
+  }
+  .divChat {
+    display: flex;
+    width: 30%;
+    height: 100%;
+    border-left: 2px solid white;
+  }
+}
